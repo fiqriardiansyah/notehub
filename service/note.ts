@@ -1,6 +1,6 @@
 import api from "@/config/axios";
 import { BaseResponse } from "@/models";
-import { CreateNote, Note, Tag } from "@/models/note";
+import { ChangeTodosData, CreateNote, DetailFolder, DetailNote, Folder, Note, Tag } from "@/models/note";
 import { AxiosResponse } from "axios";
 
 const noteService = {
@@ -9,13 +9,27 @@ const noteService = {
   ): Promise<AxiosResponse<BaseResponse<any>, any>> => api.post("/note", data),
 
   updateNote: (
-    data: CreateNote,
+    data: Partial<CreateNote>,
     id: string,
   ): Promise<AxiosResponse<BaseResponse<any>, any>> => api.put(`/note/update/${id}`, data),
 
   getNote: (): Promise<AxiosResponse<BaseResponse<Note[]>>> => api.get("/note"),
 
-  getOneNote: (id: string): Promise<AxiosResponse<BaseResponse<Note>>> => api.get(`/note/${id}`),
+  getAllItems: (): Promise<AxiosResponse<BaseResponse<(Note | Folder)[]>>> => api.get("/note/get-all"),
+
+  getOneNote: (id: string): Promise<AxiosResponse<BaseResponse<DetailNote>>> => api.get(`/note/${id}`),
+
+  getFolder: (): Promise<AxiosResponse<BaseResponse<Folder[]>>> => api.get(`/note/list-folder`),
+
+  changeTodos: (data: ChangeTodosData): Promise<AxiosResponse<BaseResponse<boolean>>> => api.post(`/note/ct`, data),
+
+  getFolderAndContent: (id: string): Promise<AxiosResponse<BaseResponse<DetailFolder>>> => api.get(`/note/f/${id}`),
+
+  updateFolder: (id: string, data: Partial<Folder>): Promise<AxiosResponse<BaseResponse<DetailFolder>>> => api.patch(`/note/f/${id}`, data),
+
+  addNoteToFolder: (folderId: string, noteIds: string[]): Promise<AxiosResponse<BaseResponse<any>>> => api.post(`/note/antf`, { folderId, noteIds }),
+
+  isSecureNote: (id: string): Promise<AxiosResponse<BaseResponse<boolean>>> => api.get(`/note/isn/${id}`),
 
   deleteNote: (id: string): Promise<AxiosResponse<BaseResponse<Note>>> =>
     api.delete(`/note/${id}`),
@@ -36,6 +50,11 @@ const noteService = {
       password: data.newPassword,
       "old-password": data.password,
     }),
+
+  isPasswordNoteCorrect: (
+    password: string
+  ): Promise<AxiosResponse<BaseResponse<boolean>>> =>
+    api.post("/note/ipnc", { password }),
 
   getTag: (): Promise<AxiosResponse<BaseResponse<Tag[]>>> => api.get("/note/tag"),
 

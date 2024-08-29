@@ -2,30 +2,38 @@
 
 import noteService from "@/service/note";
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
-import { useSession } from "next-auth/react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { ImPencil2 } from "react-icons/im";
-import CardNote from "./components/card-note";
+import LayoutGrid from "./components/layout-grid";
 import SettingNoteDrawer from "./components/setting-note-drawer";
 import ToolBar from "./components/tool-bar";
+import ReactDom from 'react-dom'
+import TopBar from "@/components/navigation-bar/top-bar";
+import Quotes from "@/components/quotes";
+import HabitsAlert from "./components/habits/habits-alert";
 
 export default function IndexPage() {
-  const { data: session } = useSession();
-
-  const noteQuery = useQuery([noteService.getNote.name], async () => {
-    return (await noteService.getNote()).data.data;
+  const itemsQuerey = useQuery([noteService.getAllItems.name], async () => {
+    return (await noteService.getAllItems()).data.data;
+  }, {
+    refetchOnWindowFocus: true,
   });
+
+  const renderTopNav = () => {
+    return typeof document !== "undefined" && document.querySelector("#top-nav") && ReactDom.createPortal(<TopBar />, document.querySelector("#top-nav")!)
+  }
 
   return (
     <>
-      <ToolBar />
-      <div className="w-full grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 container-custom my-7">
-        <AnimatePresence>
-          {noteQuery.data?.map((note) => (
-            <CardNote {...note} key={note.id} />
-          ))}
-        </AnimatePresence>
+      {renderTopNav()}
+      <div className="container-custom">
+        <Quotes />
+        <HabitsAlert />
+        <ToolBar />
+        <div className="w-full my-7">
+          <LayoutGrid notes={itemsQuerey.data} />
+        </div>
       </div>
       <Link href="/write" className="bottom-10 right-10 fixed z-10">
         <motion.button
@@ -36,7 +44,7 @@ export default function IndexPage() {
           <ImPencil2 className="text-xl" />
         </motion.button>
       </Link>
-      <SettingNoteDrawer.BottomSheet />
+      <SettingNoteDrawer.BottomSheet refetch={itemsQuerey.refetch} />
     </>
   );
 }

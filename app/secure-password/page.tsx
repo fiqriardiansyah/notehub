@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 export type SecurePasswordProps = {
-  onFinish?: (param: { secureNote: boolean }) => void;
+  onFinish?: () => void;
 };
 
 const SecurePassword = React.forwardRef(
@@ -101,7 +101,7 @@ const SecurePassword = React.forwardRef(
                 <p className="text-green-400">Password has been changed!</p>
               ),
             });
-            if (onFinish) onFinish({ secureNote: true });
+            if (onFinish) onFinish();
           });
         return;
       }
@@ -112,7 +112,7 @@ const SecurePassword = React.forwardRef(
             <p className="text-green-400">Password has been created!</p>
           ),
         });
-        if (onFinish) onFinish({ secureNote: true });
+        if (onFinish) onFinish();
       });
     }
 

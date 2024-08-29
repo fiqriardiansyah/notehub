@@ -1,0 +1,266 @@
+"use client";
+
+import { Todo } from "@/app/write/mode/todolist";
+import carAnimation from '@/asset/animation/car.json';
+import cupAnimation from '@/asset/animation/cup.json';
+import doneAnimation from '@/asset/animation/done.json';
+import lamaAnimation from '@/asset/animation/lama.json';
+import { useOverlay } from "@/components/overlay";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import useSkipFirstRender from "@/hooks/use-skip-first-render";
+import { easeDefault } from "@/lib/utils";
+import habitsService from "@/service/habits";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import { AnimatePresence, HTMLMotionProps, motion, MotionProps } from "framer-motion";
+import { Blocks, MoveRight, Timer } from "lucide-react";
+import React from "react";
+import Lottie from "react-lottie";
+import HabitsCountdown from "./habits-countdown";
+import noteService from "@/service/note";
+
+const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice'
+    }
+};
+
+export const progressCheer = [
+    {
+        donepoint: 1,
+        content: "Good start!",
+        color: "bg-yellow-400"
+    },
+    {
+        donepoint: 2,
+        content: "Keep it up! 🔥",
+        color: "bg-red-400",
+    },
+    {
+        donepoint: 3,
+        content: "Few more to go! 😎",
+        color: "bg-blue-400",
+    },
+    {
+        donepoint: 4,
+        content: "Finish, Good job! 🎉",
+        color: "bg-green-400"
+    }
+];
+
+const animations = [cupAnimation, carAnimation, lamaAnimation, doneAnimation];
+const wordCongrats = ["Congratulation!", "Awesome Job!", "You Rule!", "Nicely Done!", "You Rocked!", "You are on Fire!", "Woohoo!", "Habits Complete!", "Good Job!"];
+
+export type HabitsUrgentProps = HTMLMotionProps<"div"> & {
+    onChangeHabit?: () => void;
+    inPageHabits?: boolean;
+    renderWhenComplete?: (randomAnim: any) => React.ReactElement;
+}
+
+export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPageHabits, className, ...props }: HabitsUrgentProps) {
+    const [todos, setTodos] = React.useState<Todo[]>([]);
+    const prevProgressDoneCheer = React.useRef<number>();
+    const [progressDoneCheer, setProgressDoneCheer] = React.useState<number>();
+    const overlay = useOverlay();
+
+    const getHabitsUrgent = useQuery([habitsService.getUrgentHabit.name], async () => {
+        const list = (await habitsService.getUrgentHabit(1)).data.data;
+        return list;
+    }, {
+        onSuccess(data) {
+            if (data.length) {
+                setTodos(data[0].todos || []);
+                return;
+            }
+            setTodos([]);
+        },
+    });
+
+    const habit = getHabitsUrgent?.data?.length ? getHabitsUrgent.data[0] : null;
+
+    const changeTodosMutate = useMutation(async (todos: Todo[]) => {
+        return (await noteService.changeTodos({ noteId: habit!.id, todos })).data.data;
+    });
+
+    useSkipFirstRender(() => {
+        const update = setTimeout(() => {
+            if (!habit?.id) return;
+            changeTodosMutate.mutateAsync(todos).finally(() => {
+                if (onChangeHabit) onChangeHabit();
+            });
+        }, 1000);
+
+        return () => clearTimeout(update);
+    }, [todos]);
+
+    const finishHabits = useMutation(async (id: string) => {
+        return (await habitsService.finishHabits(id)).data.data
+    });
+
+    useSkipFirstRender(() => {
+        const update = setTimeout(() => {
+            setProgressDoneCheer(undefined);
+        }, 3000);
+
+        return () => clearTimeout(update);
+    }, [progressDoneCheer]);
+
+    const progressCheerUpdate = (currentTodos: Todo[]) => {
+        const progress = Math.round(currentTodos?.filter((t) => t.isCheck).length! / todos?.length! * 100);
+
+        const messagePoint = Math.round(progress / (100 / progressCheer.length));
+        if (messagePoint === prevProgressDoneCheer.current) return;
+        setProgressDoneCheer(messagePoint);
+        prevProgressDoneCheer.current = messagePoint === 100 ? undefined : messagePoint;
+    }
+
+    const onUpdateCheck = (todo: Todo) => {
+        return (isCheck: boolean) => {
+            const currentTodos = todos?.map((td) => {
+                if (td.id !== todo.id) return td;
+                return {
+                    ...td,
+                    isCheck,
+                    checkedAt: isCheck ? new Date().getTime() : null,
+                }
+            });
+            const isDoneIncrease = currentTodos?.filter((t) => t.isCheck).length! > todos?.filter((t) => t.isCheck).length!
+            setTodos(currentTodos);
+            if (isDoneIncrease) {
+                progressCheerUpdate(currentTodos!);
+            }
+        }
+    }
+
+    const onClickDone = () => {
+        finishHabits.mutateAsync(habit?.id as string).then(() => {
+            const randomAnimate = animations[Math.floor(Math.random() * animations.length)];
+            const wordCongrat = wordCongrats[Math.floor(Math.random() * wordCongrats.length)];
+
+            overlay.showContent(
+                <div className="w-full h-full flex flex-col items-center justify-center container-custom">
+                    <Lottie style={{ pointerEvents: 'none' }} options={{ ...defaultOptions, animationData: randomAnimate }} height={300} width={300} />
+                    <p className="drop-shadow text-xl font-medium">{wordCongrat}</p>
+                    <span className="text-gray-400 text-sm my-10 text-center w-[300px]">You did a great job today for completing your way to build a good habits!</span>
+                    <Button onClick={overlay.close} className="">
+                        Okei
+                    </Button>
+                </div>
+            );
+            getHabitsUrgent.refetch();
+            if (onChangeHabit) onChangeHabit();
+        });
+    }
+
+    const taskDone = todos?.filter((td) => td.isCheck).length
+    const progress = Math.round(taskDone! / todos!.length * 100);
+    const isDone = taskDone === todos.length;
+    const nameOftheDay = () => {
+        if (habit?.schedulerType === "day") {
+            const day = dayjs().format('dddd');
+            const date = dayjs().format('DD MMM YYYY');
+            return {
+                name: inPageHabits ? "Today" : day,
+                date,
+            }
+        }
+        if (habit?.schedulerType === "weekly") return { name: inPageHabits ? "This Week" : "Weeks" };
+        if (habit?.schedulerType === "monthly") return { name: inPageHabits ? "This Month" : "Months" };
+    }
+
+    return (
+        <div className="flex flex-col gap-1 overflow-hidden" >
+            <AnimatePresence>
+                {habit && (
+                    <motion.div
+                        className={`${className} rounded-md p-3 flex flex-col gap-3 w-full relative overflow-hidden`}
+                        key={habit?.id} exit={{ opacity: 0, height: 0 }} initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+                        {...props} >
+                        <div className="font-semibold z-10 leading-none">
+                            {!inPageHabits && <p className="text-sm z-10 m-0">Habits on this <span className="text-xs font-light">{nameOftheDay()?.date}</span> </p>}
+                            {inPageHabits && <p className="text-sm z-10 m-0 line-clamp-1 flex flex-row">
+                                <Blocks className="mr-2 text-gray-500" size={18} />
+                                {habit?.title}
+                            </p>}
+                            <div className="overflow-y-hidden h-[36px] flex-1 relative">
+                                <AnimatePresence mode="wait" >
+                                    {progressCheer.map((pc) => {
+                                        if (pc.donepoint === progressDoneCheer) {
+                                            return (
+                                                <motion.p
+                                                    key={pc.donepoint}
+                                                    initial={{ y: '40px' }}
+                                                    animate={{ y: 0 }}
+                                                    exit={{ y: '-40px' }}
+                                                    className={`font-semibold p-1 px-2 rounded w-fit text-xl text-white capitalize ${pc.color}`}>
+                                                    {pc.content}
+                                                </motion.p>
+                                            )
+                                        }
+                                        return null
+                                    })}
+                                    {(progressDoneCheer === null || progressDoneCheer === undefined) &&
+                                        <motion.div
+                                            key="day"
+                                            initial={{ y: '40px' }}
+                                            animate={{ y: 0 }}
+                                            exit={{ y: '-40px' }}
+                                            className={`font-semibold text-xl capitalize flex items-center gap-4`}>
+                                            {nameOftheDay()?.name}
+                                            <AnimatePresence>
+                                                {isDone && <motion.button
+                                                    onClick={onClickDone}
+                                                    exit={{ opacity: 0 }}
+                                                    className="flex text-xs font-light items-center gap-2 bg-yellow-500 text-white border-none rounded-md px-2 py-1">
+                                                    Check as Done <MoveRight />
+                                                </motion.button>}
+                                            </AnimatePresence>
+                                        </motion.div>
+                                    }
+                                </AnimatePresence>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-2 p-1 w-full max-h-[250px] overflow-y-auto z-10">
+                            {todos.map((todo) => (
+                                <div key={todo.id} className="w-full flex items-center justify-between">
+                                    <div className="flex gap-2 items-center h-[40px]">
+                                        <button className="bg-gray-100 rounded-md p-1 text-gray-400">
+                                            <Timer />
+                                        </button>
+                                        <div className="">
+                                            <p className="text-sm m-0 capitalize leading-none line-clamp-1">{todo.content}</p>
+                                            {todo.isCheck && (
+                                                <span className="text-xs font-light m-0 leading-none">done at {dayjs(todo.checkedAt).format("DD MMM, HH:mm")}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <Checkbox checked={todo.isCheck} onCheckedChange={onUpdateCheck(todo)} />
+                                </div>
+                            ))}
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-full h-full flex flex-col justify-end">
+                            <svg className="waves" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
+                                viewBox="0 24 150 28" preserveAspectRatio="none" shapeRendering="auto">
+                                <defs>
+                                    <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                                </defs>
+                                <g className="parallax">
+                                    <use xlinkHref="#gentle-wave" x="48" y="0" fill="rgb(172 176 255)" />
+                                    <use xlinkHref="#gentle-wave" x="48" y="3" fill="#c5c5ff" />
+                                    <use xlinkHref="#gentle-wave" x="48" y="5" fill="#d3d3ff" />
+                                </g>
+                            </svg>
+                            <motion.div animate={{ height: `${progress}%` }}
+                                transition={{ ease: easeDefault, delay: 0.4, duration: 0.8 }} className="transition duration-200 bg-[#d3d3ff] w-full"></motion.div>
+                        </div>
+                    </motion.div>
+                )}
+                {!habit && renderWhenComplete && renderWhenComplete(animations[Math.floor(Math.random() * animations.length)])}
+            </AnimatePresence>
+            {habit?.id && <HabitsCountdown noteHabits={habit || undefined} />}
+        </div>
+    )
+}

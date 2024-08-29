@@ -6,6 +6,7 @@ import { NoteProvider } from "@/context/note";
 import { CommonProvider } from "@/context/common";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { WriteProvider } from "@/context/write";
+import Overlay from "@/components/overlay";
 
 const client = new QueryClient();
 
@@ -22,7 +23,9 @@ export default function Provider({ children }: { children: any }) {
       <CommonProvider>
         <NoteProvider>
           <WriteProvider>
-            <TooltipProvider>{children}</TooltipProvider>
+            <Overlay>
+              <TooltipProvider>{children}</TooltipProvider>
+            </Overlay>
           </WriteProvider>
         </NoteProvider>
       </CommonProvider>

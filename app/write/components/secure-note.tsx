@@ -1,6 +1,7 @@
 "use client";
 
-import { SECURE_NOTE_GROUND } from "@/app/components/setting-note-ground/secure-note";
+import { INITIATE_SECURE_NOTE } from "@/app/components/setting-note-ground/initiate-secure-note";
+import { SECURE_NOTE } from "@/app/components/setting-note-ground/secure-note";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -8,23 +9,29 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { WriteContext, WriteContextType } from "@/context/write";
-import { pause } from "@/lib/utils";
-import noteService from "@/service/note";
-import { useMutation } from "@tanstack/react-query";
+import useSecureNote from "@/hooks/use-secure-note";
+import useSidePage from "@/hooks/use-side-page";
+import { motion } from "framer-motion";
 import { LockKeyhole, LockKeyholeOpen } from "lucide-react";
 import React from "react";
-import { motion } from "framer-motion";
-import useSidePage from "@/hooks/use-side-page";
 
 export default function SecureNote() {
   const { dataNote, setDataNote } = React.useContext(
     WriteContext
   ) as WriteContextType;
-  const [setSidePage] = useSidePage();
+  const [setSidePage, resetSidePage] = useSidePage();
 
-  const checkHasPassNote = useMutation(["has-password"], async () => {
-    await pause(0.4);
-    return (await noteService.hasPasswordNote()).data.data;
+  const { checkHasPassNote } = useSecureNote({
+    onInitiateSecure() {
+      setDataNote((prev) => ({ ...(prev || {}), isSecure: true }));
+      resetSidePage();
+    },
+    onSecure(isPasswordCorrect) {
+      if (isPasswordCorrect) {
+        setDataNote((prev) => ({ ...(prev || {}), isSecure: true }));
+        resetSidePage();
+      }
+    },
   });
 
   const onClickLock = () => {
@@ -37,13 +44,11 @@ export default function SecureNote() {
     }
     checkHasPassNote.mutateAsync().then((isHasPassword) => {
       if (!isHasPassword) {
-        setSidePage(SECURE_NOTE_GROUND);
+        setSidePage(INITIATE_SECURE_NOTE);
         return;
       }
-      setDataNote((prev) => ({
-        ...prev,
-        isSecure: !prev?.isSecure,
-      }));
+
+      setSidePage(SECURE_NOTE);
     });
   };
 

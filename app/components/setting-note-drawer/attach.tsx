@@ -9,9 +9,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NoteContext, NoteContextType } from "@/context/note";
 import useSettingList, { NoteSetting } from "@/hooks/use-setting-list";
+import useSidePage from "@/hooks/use-side-page";
 import { Note } from "@/models/note";
 import React from "react";
 import { useMediaQuery } from "react-responsive";
+import { INITIATE_SECURE_NOTE } from "../setting-note-ground/initiate-secure-note";
 
 export type AttachType = {
   note?: Note;
@@ -22,6 +24,7 @@ export default function Attach({ children, note: currentNote }: AttachType) {
   const { note, setNote } = React.useContext(NoteContext) as NoteContextType;
   const isSmallScreen = useMediaQuery({ query: "(min-width: 600px)" });
   const settings = useSettingList(currentNote);
+  const [setContentSidePage] = useSidePage();
 
   const onOpenChange = (val: boolean) => {
     if (!val) {
@@ -39,6 +42,10 @@ export default function Attach({ children, note: currentNote }: AttachType) {
     return () => {
       if (setting.type === "delete") {
         setting.func(currentNote);
+        return;
+      }
+      if (setting.type === "secure_note") {
+        setContentSidePage(INITIATE_SECURE_NOTE);
         return;
       }
       setting.func();

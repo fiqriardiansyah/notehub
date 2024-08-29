@@ -19,7 +19,7 @@ import React from "react";
 
 export const REMOVE_NOTE_EVENT = "removeNoteEvent";
 
-export default function DeleteGround() {
+export default function DialogDeleteGround() {
   const { note, setNote } = React.useContext(NoteContext) as NoteContextType;
   const [open, setOpen] = React.useState(false);
   const [payloadListenerEvent, setPayloadListenerEvent] =
@@ -61,9 +61,8 @@ export default function DeleteGround() {
     setStatusBar({
       type: "loading",
       show: true,
-      message: `Deleting ${
-        note?.note?.title || payloadListenerEvent?.title || ""
-      } note...`,
+      message: `Deleting ${note?.note?.title || payloadListenerEvent?.title || ""
+        } note...`,
     });
     deleteMutate
       .mutateAsync(note.note?.id || payloadListenerEvent?.id)

@@ -1,3 +1,5 @@
+import { Todo } from "@/app/write/mode/todolist";
+
 export interface Tag {
   id: string;
   text: string;
@@ -7,19 +9,58 @@ export interface Tag {
   creatorId?: string;
 }
 
+export type ModeNote = "freetext" | "todolist" | "habits"
+
 export interface Note {
   id: string;
   title: string;
-  note: {
+  note?: {
     time: number;
     blocks: any[];
     version: string;
   };
-  type: "freetext";
+  description?: {
+    time: number;
+    blocks: any[];
+    version: string;
+  }
+  type: ModeNote;
   createdAt: string;
   updatedAt: string;
   isSecure?: boolean;
   tags?: Tag[];
+  isHang?: boolean;
+  folderId?: string;
+  newFolder?: {
+    title?: string;
+  };
+  todos?: Todo[];
+  schedulerType?: "day" | "weekly" | "monthly";
+  schedulerDays?: string[];
+  schedulerStartTime?: string;
+  schedulerEndTime?: string;
+}
+
+export interface DetailNote extends Note {
+  folderName?: string;
+}
+
+export interface Folder {
+  type: "folder";
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DetailFolder {
+  folder: Folder;
+  notes: Note[];
 }
 
 export interface CreateNote extends Omit<Note, "createdAt" | "updatedAt"> { }
+
+export interface ChangeTodosData {
+  noteId: string;
+  todos: Todo[];
+}

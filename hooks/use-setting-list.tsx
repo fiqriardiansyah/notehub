@@ -1,20 +1,27 @@
 import { REMOVE_NOTE_EVENT } from "@/app/components/setting-note-ground/delete";
 import { Note } from "@/models/note";
-import { FolderPlus, LockKeyhole, Paperclip, Trash } from "lucide-react";
+import { Bookmark, BookmarkX, FolderOutput, FolderPlus, LockKeyhole, Paperclip, Trash } from "lucide-react";
 
 export type NoteSetting = {
     icon: any;
     text: string;
     func: (val?: any) => void;
     danger?: boolean;
-    type: "hang_note" | "secure_note" | "add_folder" | "delete";
+    type: "hang_note" | "unhang_note" | "secure_note" | "add_folder" | "remove_folder" | "delete";
 };
 
 const hangNoteSetting: NoteSetting = {
-    icon: Paperclip,
+    icon: Bookmark,
     text: "Hang Note",
     func: () => { },
     type: "hang_note",
+};
+
+const unHangNoteSetting: NoteSetting = {
+    icon: BookmarkX,
+    text: "UnHang Note",
+    func: () => { },
+    type: "unhang_note",
 };
 
 const secureNoteSetting: NoteSetting = {
@@ -31,6 +38,13 @@ const addToFolderSetting: NoteSetting = {
     type: "add_folder",
 };
 
+const removeFromFolderSetting: NoteSetting = {
+    icon: FolderOutput,
+    text: "Remove from folder",
+    func: () => { },
+    type: "remove_folder"
+}
+
 const deleteSetting: NoteSetting = {
     icon: Trash,
     text: "Delete",
@@ -46,14 +60,24 @@ const deleteSetting: NoteSetting = {
 export default function useSettingList(note?: Note | null) {
     if (!note) return [];
 
-    const settings: NoteSetting[] = [];
+    let settings: NoteSetting[] = [];
 
     if (!settings.find((s) => s.type === "hang_note")) {
         settings.push(hangNoteSetting);
     }
 
+    if (!settings.find((s) => s.type === "unhang_note") && note?.isHang) {
+        settings = settings.filter((s) => s.type !== "hang_note");
+        settings.push(unHangNoteSetting);
+    }
+
     if (!settings.find((s) => s.type === "add_folder")) {
         settings.push(addToFolderSetting);
+    }
+
+    if (!settings.find((s) => s.type === "remove_folder") && note?.folderId) {
+        settings = settings.filter((s) => s.type !== "add_folder");
+        settings.push(removeFromFolderSetting);
     }
 
     if (!settings.find((s) => s.type === "secure_note") && !note?.isSecure) {

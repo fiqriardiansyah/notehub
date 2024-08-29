@@ -1,5 +1,7 @@
 "use client";
 
+import { BUTTON_SUCCESS_ANIMATION_TRIGGER } from "@/components/animation/button-success";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { WriteContext, WriteContextType } from "@/context/write";
 import useStatusBar from "@/hooks/use-status-bar";
@@ -10,28 +12,21 @@ import noteService from "@/service/note";
 import validation from "@/validation";
 import { noteValidation } from "@/validation/note";
 import { useMutation } from "@tanstack/react-query";
-import dynamic from 'next/dynamic';
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next-nprogress-bar";
 import React, { useRef } from "react";
 import ToolsBar from "./components/tool-bar";
-
-const Editor = dynamic<{
-  editorRef: any
-  children?: any
-  data?: any
-  options?: any
-}>(
-  () =>
-    import("@/components/editor/index").then((mod) => mod.Editor),
-  { ssr: false }
-)
+import FreetextModeEditor from "./mode/freetext";
+import TodoListModeEditor, { Todo } from "./mode/todolist/index";
+import HabitsModeEditor from "./mode/habits";
 
 export default function Write() {
+  const router = useRouter();
+  const { dataNote, setDataNote } = React.useContext(WriteContext) as WriteContextType;
   const titleRef = useRef<HTMLInputElement | null>(null);
+  const saveBtnRef = React.useRef<HTMLButtonElement>(null);
   const [_, setStatusBar] = useStatusBar();
-  const { dataNote } = React.useContext(WriteContext) as WriteContextType;
-
-  const [editor, setEditor] = React.useState<any>(null)
-
   const { toast } = useToast();
 
   const saveMutate = useMutation(
@@ -49,25 +44,25 @@ export default function Write() {
     }
   );
 
-  const saveWrite = async () => {
-    if (!editor) return;
-    const note = await editor.save();
+  const onClickBack = () => {
+    router.back();
+  }
 
-    const data = {
+  const saveWrite = async (restData: any) => {
+
+    let data = {
       title: titleRef.current?.value,
-      note,
-      type: "freetext",
+      type: dataNote.modeWrite,
       isSecure: dataNote?.isSecure,
       tags: dataNote?.tags,
+      ...restData,
     } as CreateNote;
 
     try {
-      validation(noteValidation.CREATE, data);
+      validation(noteValidation.CREATE, data as any);
       saveMutate.mutateAsync(data as CreateNote).then(() => {
-        toast({
-          title: "Success",
-          description: <p className="text-green-400">New Note Created!</p>,
-        });
+        setDataNote({ modeWrite: dataNote.modeWrite });
+        window.dispatchEvent(new CustomEvent(BUTTON_SUCCESS_ANIMATION_TRIGGER + "button-save-write"))
       });
     } catch (e: any) {
       setStatusBar({
@@ -80,18 +75,44 @@ export default function Write() {
 
   shortCut.saveWrite(saveWrite);
 
+  const onSaveClick = () => {
+    if (!saveBtnRef.current) return;
+    saveBtnRef.current.click();
+  }
+
   return (
-    <div className="container-custom">
-      <ShowedTags />
-      <input
-        autoFocus={true}
-        ref={titleRef}
-        type="text"
-        placeholder="Your Title ..."
-        className="text-2xl text-gray-500 w-full font-medium border-none focus:outline-none outline-none my-7 bg-transparent"
-      />
-      <Editor editorRef={setEditor} />
-      <ToolsBar isLoading={saveMutate.isLoading} save={saveWrite} />
-    </div>
+    <>
+      <div className="container-custom py-2 pb-20">
+        <div className="w-full flex items-center gap-3">
+          <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10 flex-1">
+            <ChevronLeft />
+          </Button>
+          <input
+            autoFocus={true}
+            ref={titleRef}
+            type="text"
+            placeholder="Title ..."
+            className="text-2xl flex-1 text-gray-500 font-medium border-none focus:outline-none outline-none bg-transparent"
+          />
+        </div>
+        <ShowedTags className="my-5" />
+        {dataNote.modeWrite === "freetext" && <FreetextModeEditor onSave={saveWrite}>
+          <button ref={saveBtnRef} type="submit">submit</button>
+        </FreetextModeEditor>}
+        {dataNote.modeWrite === "todolist" && <TodoListModeEditor onSave={saveWrite}>
+          <button ref={saveBtnRef} type="submit">submit</button>
+        </TodoListModeEditor>}
+        {dataNote.modeWrite === "habits" && <HabitsModeEditor onSave={saveWrite}>
+          <button ref={saveBtnRef} type="submit">submit</button>
+        </HabitsModeEditor>}
+      </div>
+      <div className="fixed z-40 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 bottom-0 left-0 container-custom w-full">
+        <AnimatePresence>
+          <motion.div animate={{ scale: 1 }} initial={{ scale: 0 }} className="flex justify-center w-full">
+            <ToolsBar excludeSettings={dataNote.modeWrite === "habits" ? ["folder"] : undefined} isLoading={saveMutate.isLoading} save={onSaveClick} />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </>
   );
 }

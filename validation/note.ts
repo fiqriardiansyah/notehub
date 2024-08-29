@@ -5,7 +5,7 @@ export const noteValidation = {
     title: z
       .string()
       .min(1, { message: "Title must contain at least 1 characters" }),
-    type: z.enum(["freetext", ""]),
+    type: z.enum(["freetext", "todolist", "habits"]),
     note: z.any(),
   }),
 };

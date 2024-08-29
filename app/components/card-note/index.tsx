@@ -3,14 +3,15 @@
 import { NoteContext, NoteContextType } from "@/context/note";
 import { formatDate } from "@/lib/utils";
 import { Note } from "@/models/note";
+import { motion } from "framer-motion";
+import { Bookmark, icons } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { GoGear } from "react-icons/go";
-import FreeTextCardNote from "./freetext";
 import SettingNoteDrawer from "../setting-note-drawer";
-import { motion } from "framer-motion";
-import { icons } from "lucide-react";
+import FreeTextCardNote from "./freetext";
 import Secure from "./secure";
+import TodolistCardNote from "./todolist";
 
 export type CardNoteType = Note;
 
@@ -25,14 +26,16 @@ export default function CardNote({ title, updatedAt, ...props }: CardNoteType) {
 
   const content = () => {
     if (props?.isSecure) return <Secure />
-    return <FreeTextCardNote {...props} />
+    if (props.type === "freetext") return <FreeTextCardNote note={props} />
+    if (props.type === "todolist") return <TodolistCardNote note={props} />
+    return ""
   }
 
   return (
     <motion.div
       exit={{ scale: 0.3, opacity: 0, transition: { delay: 0.3 } }}
       style={{ opacity: !note?.note ? 1 : note.note.id === props.id ? 1 : 0.3 }}
-      className="bg-white rounded-xl p-3 flex flex-col gap-3"
+      className="bg-white rounded-xl p-3 flex flex-col gap-3 border border-solid border-gray-500"
     >
       <div className="flex w-full items-center justify-between gap-2">
         <Link href={`/write/${props.id}`}>
@@ -40,21 +43,23 @@ export default function CardNote({ title, updatedAt, ...props }: CardNoteType) {
         </Link>
         <div className="flex items-center gap-1">
           <SettingNoteDrawer.Attach note={{ ...props, title, updatedAt }} />
-          <GoGear
-            className="text-gray-500 cursor-pointer"
-            onClick={onClickGear}
-          />
+          <button onClick={onClickGear} className=" cursor-pointer bg-transparent border-none">
+            <GoGear className="text-gray-500" />
+          </button>
         </div>
       </div>
       {content()}
-      <div className="flex items-center gap-2 line-clamp-1">
-        {props?.tags?.map((tag) => {
-          const Icon = icons[tag.icon as keyof typeof icons];
-          return <Icon size={15} key={tag.id} className="text-gray-700" />
-        })}
-      </div>
+      {!!props?.tags?.length && (
+        <div className="flex items-center gap-2 line-clamp-1">
+          {props?.tags?.map((tag) => {
+            const Icon = icons[tag.icon as keyof typeof icons];
+            return <Icon size={15} key={tag.id} className="text-gray-700" />
+          })}
+        </div>
+      )}
       <div className="flex w-full items-center justify-between">
         <span className="caption">{formatDate(updatedAt)}</span>
+        {props?.isHang && <Bookmark className="text-black" size={16} />}
       </div>
     </motion.div>
   );

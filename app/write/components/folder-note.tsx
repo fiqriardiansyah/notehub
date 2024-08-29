@@ -7,27 +7,31 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { WriteContext, WriteContextType } from "@/context/write";
 import useSidePage from "@/hooks/use-side-page";
-import { FolderPlus } from "lucide-react";
+import { FolderCheck, FolderPlus } from "lucide-react";
+import React from "react";
 
 export default function FolderNote() {
+    const { dataNote } = React.useContext(WriteContext) as WriteContextType;
+
     const [setSidePage] = useSidePage();
 
     const onClickLock = () => {
         setSidePage(FOLDER_NOTE_GROUND);
     };
 
+    const isInFolder = (dataNote?.folder?.id || dataNote?.folder?.name)
+
     return (
         <Tooltip>
             <TooltipTrigger asChild>
                 <Button
-                    //   loading={checkHasPassNote.isLoading}
                     onClick={onClickLock}
                     size="icon"
-                    //   variant={dataNote?.isSecure ? "default" : "ghost"}
-                    variant="ghost"
+                    variant={isInFolder ? "default" : "ghost"}
                 >
-                    <FolderPlus />
+                    {isInFolder ? <FolderCheck /> : <FolderPlus />}
                 </Button>
             </TooltipTrigger>
             <TooltipContent>Add to folder</TooltipContent>

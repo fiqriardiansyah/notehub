@@ -3,7 +3,7 @@ import { pause } from "@/lib/utils";
 import React from "react";
 
 export default function useSidePage() {
-    const { setCommon } = React.useContext(CommonContext) as CommonContextType;
+    const { setCommon, common } = React.useContext(CommonContext) as CommonContextType;
 
     const setContent = (type: string) => {
         setCommon((prev) => ({
@@ -19,5 +19,7 @@ export default function useSidePage() {
         setCommon((prev) => ({ ...prev, groundOpen: undefined }));
     }
 
-    return [setContent, reset] as [(type: string) => void, () => void]
+    const isOpen = common?.sidePageOpen;
+
+    return [setContent, reset, isOpen] as [(type: string) => void, () => void, boolean]
 }

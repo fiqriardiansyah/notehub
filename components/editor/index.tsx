@@ -6,7 +6,7 @@ import List from "@editorjs/list";
 import Quote from "@editorjs/quote";
 import React, { useEffect, useState } from "react";
 
-const tools = {
+export const toolsDefault = {
     header: {
         class: Header as any,
         inlineToolbar: true
@@ -28,11 +28,16 @@ const tools = {
     }
 }
 
-export const useEditor = (
-    toolsList: { [toolName: string]: ToolConstructable | ToolSettings<any> },
-    { data, editorRef }: any,
-    options: EditorJS.EditorConfig = {}
-) => {
+export type EditorProps = {
+    tools?: { [toolName: string]: ToolConstructable | ToolSettings<any> },
+    data?: any;
+    editorRef?: any;
+    options?: EditorJS.EditorConfig,
+    asEdit?: boolean;
+    placeholder?: string;
+}
+
+export const useEditor = ({ tools, data, editorRef, options = {}, asEdit, placeholder = "Type anything here..." }: EditorProps) => {
     const [editorInstance, setEditor] = useState<EditorJS>()
     const {
         data: ignoreData,
@@ -44,10 +49,11 @@ export const useEditor = (
     // initialize
     useEffect(() => {
         // create instance
+        if (!data && asEdit) return;
         const editor = new EditorJS({
-            placeholder: "Type anything here...",
+            placeholder,
             holder: "editor-js",
-            tools: toolsList,
+            tools,
             data: data || {},
             initialBlock: "paragraph",
             ...editorOptions,
@@ -56,7 +62,7 @@ export const useEditor = (
         if (editorInstance) return;
         setEditor(editor);
 
-    }, [toolsList])
+    }, [tools, data, asEdit, placeholder])
 
     // set reference
     useEffect(() => {
@@ -72,13 +78,12 @@ export const useEditor = (
     return { editor: editorInstance }
 }
 
-export const Editor = ({ editorRef, children, data, options }: any) => {
-    useEditor(tools, { data, editorRef }, options)
+export const Editor = ({ tools = undefined, ...props }: EditorProps) => {
+    useEditor({ ...props, tools })
 
     return (
         <div className="relative">
-            {!children && <div className="container" id="editor-js"></div>}
-            {children}
+            <div className="container" id="editor-js"></div>
         </div>
     )
 }

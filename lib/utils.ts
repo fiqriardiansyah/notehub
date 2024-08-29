@@ -1,13 +1,16 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { FaGoogle, FaGithub } from "react-icons/fa";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import advancedFormat from "dayjs/plugin/advancedFormat";
 import { Note } from "@/models/note";
+import { type ClassValue, clsx } from "clsx";
+import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+import relativeTime from "dayjs/plugin/relativeTime";
+import moment from "moment";
+import { FaGithub, FaGoogle } from "react-icons/fa";
+import { twMerge } from "tailwind-merge";
 
 dayjs.extend(relativeTime);
 dayjs.extend(advancedFormat);
+
+export const ISO_FORMAT = "YYYY-MM-DDTHH:mm:ss.SSSZ"
 
 export function formatDate(date: any) {
   const now = dayjs();
@@ -17,6 +20,50 @@ export function formatDate(date: any) {
     return givenDate.fromNow(); // e.g., "yesterday at 4pm"
   } else {
     return givenDate.format("dddd D MMM"); // e.g., "Saturday 20 Aug"
+  }
+}
+
+export function remainingTimeInDays(unitOfTime: moment.unitOfTime.StartOf) {
+  const endOfWeek = moment().endOf(unitOfTime);
+
+  const duration = moment.duration(endOfWeek.diff(moment()));
+  const days = duration.days();
+  const hours = duration.hours();
+  const minutes = duration.minutes();
+  const seconds = duration.seconds();
+
+  return {
+    days,
+    hours,
+    minutes,
+    seconds,
+    string: `${days} day, ${hours}:${minutes}:${seconds}`,
+    isTimesUp: !moment().isBetween(moment().startOf("week"), endOfWeek),
+  }
+}
+
+export function remainingTimeInHour(time: { start: any, end: any }) {
+  const time1 = moment(time.start, ISO_FORMAT).format("HH:mm:ss");
+  const time2 = moment(time.end, ISO_FORMAT).format("HH:mm:ss");
+
+  const format = "YYYY-MM-DD HH:mm:ss";
+  const startTime = moment(`1970-01-01 ${time1}`, format);
+  const endTime = moment(`1970-01-01 ${time2}`, format);
+
+  const now = moment();
+  const currentTime = moment(`1970-01-01 ${now.format('HH:mm:ss')}`, format);
+
+  const duration = moment.duration(endTime.diff(currentTime));
+  const hours = Math.floor(duration.asHours());
+  const minutes = duration.minutes()
+  const seconds = duration.seconds();
+
+  return {
+    hours,
+    minutes,
+    seconds,
+    string: `${hours}:${minutes}:${seconds}`,
+    isTimesUp: !currentTime.isBetween(startTime, endTime),
   }
 }
 
