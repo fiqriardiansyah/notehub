@@ -19,7 +19,7 @@ export default function ListCardHabit({ habit, index }: ListCardHabitProps) {
     const progress = Math.round(taskDone! / habit.todos!.length * 100);
 
     return (
-        <Link href="/">
+        <Link href={`/habits/${habit.id}`}>
             {index === 0 && <p className="text-xs mb-1">On Going 🔥</p>}
             <div className={`flex justify-between items-center p-2 gap-3 w-full rounded-xl border-2 border-dashed bg-white 
                 ${index === 0 ? "!border-solid border-orange-400" : "border-gray-300"}`}>

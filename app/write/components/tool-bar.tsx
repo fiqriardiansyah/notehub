@@ -26,7 +26,7 @@ export default function ToolsBar({ save, isLoading, excludeSettings }: ToolsBarT
             <div className="w-full h-full flex items-center justify-between gap-2">
                 {!excludeSettings?.find((s) => s === "tag") && <TagNote />}
                 {!excludeSettings?.find((s) => s === "folder") && <FolderNote />}
-                {!excludeSettings?.find((s) => s === "secure") && <SecureNote />}
+                {!excludeSettings?.find((s) => s === "secure") && dataNote.modeWrite !== "habits" && <SecureNote />}
                 {dataNote.modeWrite === "habits" && <Scheduler />}
                 <ButtonSuccessAnim id="button-save-write" message="Saved ✨">
                     <Button

@@ -33,6 +33,14 @@ export default function HabitsModeEditor({ children, onSave }: HabitsModeEditorP
             });
             return;
         }
+        if (!dataNote.scheduler?.type) {
+            setStatusBar({
+                type: "danger",
+                show: true,
+                message: "Choose scheduler type first",
+            });
+            return;
+        }
         const description = await freetextEditor?.save()
         onSave({
             todos,

@@ -163,6 +163,18 @@ export async function pause(time: number = 1) {
   await new Promise((r) => setTimeout(r, time * 1000));
 }
 
+export function hexToRgba(hex: string, opacity: number) {
+  hex = hex.replace(/^#/, '');
+
+  let r = parseInt(hex.substring(0, 2), 16);
+  let g = parseInt(hex.substring(2, 4), 16);
+  let b = parseInt(hex.substring(4, 6), 16);
+
+  let a = Math.round(opacity * 255).toString(16).padStart(2, '0');
+
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}${a}`;
+}
+
 export const easeDefault = [0.79, 0.14, 0.15, 0.86]
 
 export const defaultIcons = [
@@ -200,4 +212,31 @@ export const defaultIcons = [
   "Twitter",
   "Trello",
   "Youtube"
+];
+
+export const progressCheer = [
+  {
+    donepoint: 1,
+    content: "Good start!",
+    color: "text-yellow-400",
+    bgColor: "#facc15",
+  },
+  {
+    donepoint: 2,
+    content: "Keep it up! 🔥",
+    color: "text-red-400",
+    bgColor: "#f87171 ",
+  },
+  {
+    donepoint: 3,
+    content: "Few more to go! 😎",
+    color: "text-blue-400",
+    bgColor: "#60a5fa",
+  },
+  {
+    donepoint: 4,
+    content: "Finish, Good job! 🎉",
+    color: "text-green-400",
+    bgColor: "#4ade80 ",
+  }
 ];

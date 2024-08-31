@@ -1,58 +1,20 @@
 "use client";
 
 import { Todo } from "@/app/write/mode/todolist";
-import carAnimation from '@/asset/animation/car.json';
-import cupAnimation from '@/asset/animation/cup.json';
-import doneAnimation from '@/asset/animation/done.json';
-import lamaAnimation from '@/asset/animation/lama.json';
-import { useOverlay } from "@/components/overlay";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import useSkipFirstRender from "@/hooks/use-skip-first-render";
-import { easeDefault } from "@/lib/utils";
+import { easeDefault, progressCheer } from "@/lib/utils";
 import habitsService from "@/service/habits";
+import noteService from "@/service/note";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { AnimatePresence, HTMLMotionProps, motion, MotionProps } from "framer-motion";
-import { Blocks, MoveRight, Timer } from "lucide-react";
+import { AnimatePresence, HTMLMotionProps, motion } from "framer-motion";
+import { Blocks, Check, Timer } from "lucide-react";
+import Link from "next/link";
 import React from "react";
-import Lottie from "react-lottie";
 import HabitsCountdown from "./habits-countdown";
-import noteService from "@/service/note";
+import useHabitComplete, { JSON_ANIMATIONS } from "@/hooks/use-habit-complete";
 
-const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    rendererSettings: {
-        preserveAspectRatio: 'xMidYMid slice'
-    }
-};
-
-export const progressCheer = [
-    {
-        donepoint: 1,
-        content: "Good start!",
-        color: "bg-yellow-400"
-    },
-    {
-        donepoint: 2,
-        content: "Keep it up! 🔥",
-        color: "bg-red-400",
-    },
-    {
-        donepoint: 3,
-        content: "Few more to go! 😎",
-        color: "bg-blue-400",
-    },
-    {
-        donepoint: 4,
-        content: "Finish, Good job! 🎉",
-        color: "bg-green-400"
-    }
-];
-
-const animations = [cupAnimation, carAnimation, lamaAnimation, doneAnimation];
-const wordCongrats = ["Congratulation!", "Awesome Job!", "You Rule!", "Nicely Done!", "You Rocked!", "You are on Fire!", "Woohoo!", "Habits Complete!", "Good Job!"];
 
 export type HabitsUrgentProps = HTMLMotionProps<"div"> & {
     onChangeHabit?: () => void;
@@ -64,7 +26,7 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
     const [todos, setTodos] = React.useState<Todo[]>([]);
     const prevProgressDoneCheer = React.useRef<number>();
     const [progressDoneCheer, setProgressDoneCheer] = React.useState<number>();
-    const overlay = useOverlay();
+    const habitComplete = useHabitComplete();
 
     const getHabitsUrgent = useQuery([habitsService.getUrgentHabit.name], async () => {
         const list = (await habitsService.getUrgentHabit(1)).data.data;
@@ -137,19 +99,7 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
 
     const onClickDone = () => {
         finishHabits.mutateAsync(habit?.id as string).then(() => {
-            const randomAnimate = animations[Math.floor(Math.random() * animations.length)];
-            const wordCongrat = wordCongrats[Math.floor(Math.random() * wordCongrats.length)];
-
-            overlay.showContent(
-                <div className="w-full h-full flex flex-col items-center justify-center container-custom">
-                    <Lottie style={{ pointerEvents: 'none' }} options={{ ...defaultOptions, animationData: randomAnimate }} height={300} width={300} />
-                    <p className="drop-shadow text-xl font-medium">{wordCongrat}</p>
-                    <span className="text-gray-400 text-sm my-10 text-center w-[300px]">You did a great job today for completing your way to build a good habits!</span>
-                    <Button onClick={overlay.close} className="">
-                        Okei
-                    </Button>
-                </div>
-            );
+            habitComplete.show();
             getHabitsUrgent.refetch();
             if (onChangeHabit) onChangeHabit();
         });
@@ -173,6 +123,9 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
 
     return (
         <div className="flex flex-col gap-1 overflow-hidden" >
+            {habit && <div className="flex w-full justify-end">
+                <Link href={`/habits/${habit?.id}`} passHref> <a className="text-gray-400 text-xs font-light">View Details</a> </Link>
+            </div>}
             <AnimatePresence>
                 {habit && (
                     <motion.div
@@ -186,7 +139,7 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
                                 {habit?.title}
                             </p>}
                             <div className="overflow-y-hidden h-[36px] flex-1 relative">
-                                <AnimatePresence mode="wait" >
+                                <AnimatePresence mode="wait">
                                     {progressCheer.map((pc) => {
                                         if (pc.donepoint === progressDoneCheer) {
                                             return (
@@ -195,7 +148,8 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
                                                     initial={{ y: '40px' }}
                                                     animate={{ y: 0 }}
                                                     exit={{ y: '-40px' }}
-                                                    className={`font-semibold p-1 px-2 rounded w-fit text-xl text-white capitalize ${pc.color}`}>
+                                                    style={{ background: pc.bgColor }}
+                                                    className="font-semibold p-1 px-2 rounded w-fit text-xl text-white capitalize">
                                                     {pc.content}
                                                 </motion.p>
                                             )
@@ -215,7 +169,7 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
                                                     onClick={onClickDone}
                                                     exit={{ opacity: 0 }}
                                                     className="flex text-xs font-light items-center gap-2 bg-yellow-500 text-white border-none rounded-md px-2 py-1">
-                                                    Check as Done <MoveRight />
+                                                    Check as Done <Check />
                                                 </motion.button>}
                                             </AnimatePresence>
                                         </motion.div>
@@ -258,7 +212,7 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
                         </div>
                     </motion.div>
                 )}
-                {!habit && renderWhenComplete && renderWhenComplete(animations[Math.floor(Math.random() * animations.length)])}
+                {!habit && renderWhenComplete && renderWhenComplete(JSON_ANIMATIONS[Math.floor(Math.random() * JSON_ANIMATIONS.length)])}
             </AnimatePresence>
             {habit?.id && <HabitsCountdown noteHabits={habit || undefined} />}
         </div>

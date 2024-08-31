@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import ListCardHabit from "./components/list-card-habit";
 import { AnimatePresence, motion } from "framer-motion";
 import CompleteAllHabit from "./components/complete-all-habit";
+import moment from "moment";
 
 const staggerVariants = {
     initial: { opacity: 0, x: '100%' },
@@ -32,6 +33,9 @@ const itemVariants = {
 export default function Habits() {
     const router = useRouter();
 
+    const today = moment().format("dddd");
+    const date = moment().format("DD MMM YYYY");
+
     const habitsToday = useQuery([habitsService.getUrgentHabit.name, "habitstoday"], async () => {
         return (await habitsService.getUrgentHabit(5)).data.data;
     });
@@ -44,7 +48,7 @@ export default function Habits() {
                         <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10 flex-1">
                             <ChevronLeft />
                         </Button>
-                        <p className="m-0 font-semibold">Saturday, <span className="text-xs font-normal">12 Okt 2024</span> 👋</p>
+                        <p className="m-0 font-semibold">{today}, <span className="text-xs font-normal">{date}</span> 👋</p>
                     </div>
                     <div className="w-fit">
                         <Tooltip>

@@ -4,6 +4,7 @@ import { Todo } from "@/app/write/mode/todolist";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import useSkipFirstRender from "@/hooks/use-skip-first-render";
+import { progressCheer } from "@/lib/utils";
 import { Note } from "@/models/note";
 import noteService from "@/service/note";
 import { useMutation } from "@tanstack/react-query";
@@ -15,29 +16,6 @@ export type TodolistCardNoteType = React.HTMLProps<HTMLDivElement> & {
     canInteract?: boolean;
     maxItemShow?: number;
 };
-
-const progressCheer = [
-    {
-        donepoint: 1,
-        content: "Good start!",
-        color: "text-yellow-400"
-    },
-    {
-        donepoint: 2,
-        content: "Keep it up!",
-        color: "text-red-400",
-    },
-    {
-        donepoint: 3,
-        content: "Few more to go!",
-        color: "text-blue-400",
-    },
-    {
-        donepoint: 4,
-        content: "Finish, Good job!",
-        color: "text-green-400"
-    }
-]
 
 export default function TodolistCardNote({ note, maxItemShow, canInteract = true, className, ...props }: TodolistCardNoteType) {
     const [todos, setTodos] = React.useState(() => note.todos);

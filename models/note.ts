@@ -39,6 +39,7 @@ export interface Note {
   schedulerDays?: string[];
   schedulerStartTime?: string;
   schedulerEndTime?: string;
+  reschedule?: boolean;
 }
 
 export interface DetailNote extends Note {
