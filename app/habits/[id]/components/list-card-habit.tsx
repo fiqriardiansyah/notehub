@@ -12,7 +12,7 @@ import React from "react";
 export type ListCardHabitProps = {
     todo: Todo;
     progressDoneCheer?: { progress: number; todoId: string };
-    onCheck: (todo: Todo) => void;
+    onCheck?: (todo: Todo) => void;
     completedHabit?: boolean;
 }
 
@@ -53,7 +53,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
                 </Tooltip>
             )}
             {!completedHabit ? (
-                <Button onClick={() => onCheck(todo)} size="icon-small" variant={todo?.isCheck ? "default" : "ghost"}>
+                <Button onClick={() => onCheck && onCheck(todo)} size="icon-small" variant={todo?.isCheck ? "default" : "ghost"}>
                     <Check size={16} />
                 </Button>
             ) : <>

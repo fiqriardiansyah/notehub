@@ -16,7 +16,7 @@ export default function SignInPage() {
 
   const handleSignin = async (provider: { id: any; name: any }) => {
     const result = await signIn(provider.id, {
-      callbackUrl: process.env.NEXT_PUBLIC_DOMAIN_DEV,
+      callbackUrl: process.env.NEXT_PUBLIC_DOMAIN,
     });
     if (result?.error) {
       setError(result?.error);

@@ -9,6 +9,8 @@ import moment from "moment";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import Lottie from "react-lottie";
 import themeColor from "tailwindcss/colors";
+import HistoryDetailDrawer from './history-detail-drawer';
+import React from 'react';
 
 const defaultOptions = {
     loop: true,
@@ -27,6 +29,8 @@ export type HistoryCalendarProps = {
 export const FORMAT_DATE_CALENDAR = "DD-MM-YYYY"
 
 export default function HistoryCalendar({ histories, currentHabit }: HistoryCalendarProps) {
+    const [] = React.useState();
+
     const isOnGoingHabitToday = (date: string) => {
         const today = moment(moment.now()).format(FORMAT_DATE_CALENDAR);
         const isAlreadyFinish = histories?.find((h) => moment(h.completedTime).format(FORMAT_DATE_CALENDAR) === today);
@@ -66,10 +70,18 @@ export default function HistoryCalendar({ histories, currentHabit }: HistoryCale
                                     {isOnGoing && <div className="absolute top-[-40px] left-1/2 transform -translate-x-1/2 z-10">
                                         <Lottie style={{ pointerEvents: 'none' }} options={defaultOptions} height={40} width={40} />
                                     </div>}
-                                    <CircularProgressbar value={progress} text={`${progress}%`} styles={buildStyles({
-                                        trailColor: isOnGoing ? 'rgba(251, 146, 60, 0.3)' : `rgba(89, 89, 89, 0.2)`,
-                                        pathColor: isOnGoing ? 'rgba(251, 146, 60, 1)' : progress === 100 ? 'rgba(82, 255, 102)' : 'rgba(0, 0, 0, 0.3)'
-                                    })} />
+                                    <HistoryDetailDrawer history={history} schedulerType="day">
+                                        {(ctrl) => (
+                                            <button onClick={isOnGoing ? undefined : ctrl.open} className='w-full h-full border-none bg-transparent'>
+                                                <CircularProgressbar value={progress} text={moment(day.date).format("D")} styles={buildStyles({
+                                                    textSize: '30px',
+                                                    textColor: hexToRgba("#000000", 0.5),
+                                                    trailColor: isOnGoing ? hexToRgba(themeColor.orange[400], 0.3) : hexToRgba(themeColor.gray[400], 0.3),
+                                                    pathColor: isOnGoing ? themeColor.orange[400] : progress === 100 ? themeColor.green[400] : themeColor.gray[400]
+                                                })} />
+                                            </button>
+                                        )}
+                                    </HistoryDetailDrawer>
                                 </div>
                             )
                         }
@@ -101,17 +113,21 @@ export default function HistoryCalendar({ histories, currentHabit }: HistoryCale
                     }
 
                     return <tr {...props} className={`${className} relative`}>
-                        {isOnGoing && <div className="absolute top-1/2 transform -translate-y-1/2 left-0 z-10">
+                        {isOnGoing && <tr className="absolute top-1/2 transform -translate-y-1/2 left-0 z-10">
                             <Lottie style={{ pointerEvents: 'none' }} options={defaultOptions} height={40} width={40} />
-                        </div>}
+                        </tr>}
                         {(history || isOnGoing) && (
-                            <td style={{ borderColor: color() }}
-                                className="w-full h-full border-2 border-solid absolute bg-opacity-25 top-0 left-0 z-[1] rounded-full flex justify-start">
-                                <div style={{ width: progress + "%", background: hexToRgba(color(), 0.2), height: '100%' }}
-                                    className={`duration-200 relative transition rounded-tl-full rounded-bl-full ${progress === 100 ? "rounded-full" : ""}`}>
-                                    <p className='absolute bottom-0 text-[10px] right-0'>{progress}%</p>
-                                </div>
-                            </td>
+                            <HistoryDetailDrawer history={history} schedulerType="weekly">
+                                {(ctrl) => (
+                                    <td onClick={isOnGoing ? undefined : ctrl.open}
+                                        style={{ borderColor: color() }}
+                                        className="w-full h-full border-2 cursor-pointer border-solid absolute bg-opacity-25 top-0 left-0 z-[1] rounded-full flex justify-start">
+                                        <div style={{ width: progress + "%", background: hexToRgba(color(), 0.2), height: '100%' }}
+                                            className={`duration-200 hover:opacity-70 relative transition rounded-tl-full rounded-bl-full ${progress === 100 ? "rounded-full" : ""}`}>
+                                        </div>
+                                    </td>
+                                )}
+                            </HistoryDetailDrawer>
                         )}
                         {children}
                     </tr>
