@@ -1,6 +1,6 @@
 "use client";
 
-import SecurePassword from "@/app/secure-password/page";
+import SecurePassword from "@/app/secure-password/secure-password";
 import { motion } from 'framer-motion';
 
 export const INITIATE_SECURE_NOTE = "initiateSecureNote";

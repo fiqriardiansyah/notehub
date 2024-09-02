@@ -17,9 +17,16 @@ import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
 import React, { useRef } from "react";
 import ToolsBar from "./components/tool-bar";
-import FreetextModeEditor from "./mode/freetext";
-import TodoListModeEditor, { Todo } from "./mode/todolist/index";
-import HabitsModeEditor from "./mode/habits";
+import dynamic from "next/dynamic";
+import TodoListModeEditor from "./mode/todolist/index";
+
+const FreetextModeEditor = dynamic(() => import("./mode/freetext").then((mod) => mod.default),
+  { ssr: false }
+)
+
+const HabitsModeEditor = dynamic(() => import("./mode/habits").then((mod) => mod.default),
+  { ssr: false }
+)
 
 export default function Write() {
   const router = useRouter();
