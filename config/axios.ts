@@ -2,7 +2,7 @@ import { BaseResponse } from "@/models";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API,
+  baseURL: process.env.NODE_ENV === "production" ? "http://18.142.50.60:1111" : "http://localhost:1111",
   headers: {
     "Content-Type": "application/json",
     "x-auth-secret": "fiqriardiansyah",
