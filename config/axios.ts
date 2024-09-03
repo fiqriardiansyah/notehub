@@ -6,7 +6,8 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
     "x-auth-secret": "fiqriardiansyah",
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": process.env.NODE_ENV === "production" ? "http://18.142.50.60:1111" : "http://localhost:1111",
+    "Access-Control-Allow-Methods": "*",
   },
   withCredentials: true,
 });
