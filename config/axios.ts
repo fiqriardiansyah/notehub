@@ -8,6 +8,7 @@ const api = axios.create({
     "x-auth-secret": "fiqriardiansyah",
     "Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_API,
     "Access-Control-Allow-Methods": "*",
+    "Access-Control-Allow-Credentials": true,
   },
   withCredentials: true,
 });
