@@ -1,5 +1,6 @@
 import { BaseResponse } from "@/models";
 import axios from "axios";
+import cookie from 'js-cookie'
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API,
@@ -9,6 +10,7 @@ const api = axios.create({
     "Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_API,
     "Access-Control-Allow-Methods": "*",
     "Access-Control-Allow-Credentials": true,
+    "Cookie": cookie.get("authjs.session-token")
   },
   withCredentials: true,
 });
