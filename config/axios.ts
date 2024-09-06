@@ -6,7 +6,7 @@ const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API,
   headers: {
     "Content-Type": "application/json",
-    "x-auth-secret": process.env.SECRET,
+    "x-auth-secret": process.env.NEXT_PUBLIC_SECRET,
     "Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_API,
     "Access-Control-Allow-Methods": "*",
     "Access-Control-Allow-Credentials": true,
