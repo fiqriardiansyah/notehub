@@ -145,8 +145,12 @@ export default function Write() {
     }
 
     return (
-        <div className="container-custom py-2 pb-20">
-            <div className="w-full flex items-center gap-3">
+        <div className="container-custom pb-20">
+
+            <div className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
+                <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
+                    <ChevronLeft />
+                </Button>
                 {noteDetailQuery.isLoading ? <p>Getting Detail...</p> : (
                     <input
                         value={dataNote?.title}
@@ -154,11 +158,12 @@ export default function Write() {
                         autoFocus={true}
                         ref={titleRef}
                         type="text"
-                        placeholder="Your Title ..."
+                        placeholder="Title ..."
                         className="text-2xl text-gray-500 flex-1 font-medium border-none focus:outline-none outline-none bg-transparent"
                     />
                 )}
             </div>
+
             {noteDetailQuery.data?.folderName && (
                 <Breadcrumb>
                     <BreadcrumbList>
@@ -184,7 +189,7 @@ export default function Write() {
                             {dataNote.modeWrite === "freetext" && <FreetextModeEditor editorRef={setFreetextEditor} asEdit data={noteDetailQuery.data?.note} />}
                             {dataNote.modeWrite === "todolist" && <TodoListModeEditor todos={todos} onChange={setTodos} />}
 
-                            <div className="fixed z-40 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 bottom-0 left-0 w-full container-custom">
+                            <div className="fixed z-40 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 bottom-0 left-0 w-full">
                                 <AnimatePresence>
                                     <motion.div animate={{ scale: 1 }} initial={{ scale: 0 }} className="flex justify-center">
                                         <ToolsBar excludeSettings={["folder", "mode"]} isLoading={saveMutate.isLoading} save={saveWrite} />

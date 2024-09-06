@@ -100,8 +100,8 @@ export default function FolderPage() {
     }
 
     return (
-        <div className="container-custom py-2">
-            <div className="w-full flex items-center gap-3 z-20 sticky top-0 left-0">
+        <div className="container-custom pb-20">
+            <div className="w-full flex items-center gap-3 py-1 z-20 sticky top-0 left-0 bg-primary-foreground">
                 <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
                     <ChevronLeft />
                 </Button>

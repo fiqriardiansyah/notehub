@@ -89,9 +89,9 @@ export default function Write() {
 
   return (
     <>
-      <div className="container-custom py-2 pb-20">
-        <div className="w-full flex items-center gap-3">
-          <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10 flex-1">
+      <div className="container-custom pb-20">
+        <div className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
+          <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
             <ChevronLeft />
           </Button>
           <input
@@ -113,7 +113,7 @@ export default function Write() {
           <button ref={saveBtnRef} type="submit">submit</button>
         </HabitsModeEditor>}
       </div>
-      <div className="fixed z-40 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 bottom-0 left-0 container-custom w-full">
+      <div className="fixed z-40 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 bottom-0 left-0 w-full">
         <AnimatePresence>
           <motion.div animate={{ scale: 1 }} initial={{ scale: 0 }} className="flex justify-center w-full">
             <ToolsBar excludeSettings={dataNote.modeWrite === "habits" ? ["folder"] : undefined} isLoading={saveMutate.isLoading} save={onSaveClick} />

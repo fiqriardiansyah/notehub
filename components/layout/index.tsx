@@ -20,12 +20,12 @@ export default function Layout({ children }: { children: any }) {
         <>
             <motion.div
                 animate={
-                    common?.sidePageOpen ? { x: "-80vw", scale: 0.9 } : { x: 0, scale: 1 }
+                    common?.sidePageOpen ? { left: "-80vw", scale: 0.9 } : { left: 0, scale: 1 }
                 }
                 className="!w-screen min-h-screen z-[1] relative"
                 transition={{ ease: easeDefault }}
             >
-                <div className="w-full relative" id="top-nav"></div>
+                <div className="w-full sticky top-0 left-0 z-50" id="top-nav"></div>
                 <StatusBar />
                 {children}
             </motion.div>
