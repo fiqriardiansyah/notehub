@@ -3,6 +3,7 @@
 import OpenSecureNote from "@/app/components/open-secure-note";
 import { BUTTON_SUCCESS_ANIMATION_TRIGGER } from "@/components/animation/button-success";
 import StateRender from "@/components/state-render";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
@@ -18,13 +19,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, FolderOpen } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useRef } from "react";
 import ToolsBar from "../components/tool-bar";
 import FreetextModeEditor from "../mode/freetext";
 import TodoListModeEditor, { Todo } from "../mode/todolist";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import Link from "next/link";
 
 export default function Write() {
     const router = useRouter();
@@ -43,6 +43,9 @@ export default function Write() {
         return (await noteService.getOneNote(id as string)).data.data
     }, {
         onSuccess(data) {
+            if (data.type === "habits") {
+                router.replace("/", { scroll: true });
+            }
             setTodos(data?.todos || []);
             setDataNote((prev) => ({
                 ...prev,
