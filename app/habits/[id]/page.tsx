@@ -23,6 +23,7 @@ import ListCardHabit from "./components/list-card-habit";
 import Lottie from "react-lottie";
 import fireAnim from '@/asset/animation/fire.json';
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
+import HabitsCountdown from "@/app/components/habits/habits-countdown";
 
 const defaultOptions = {
     loop: true,
@@ -197,7 +198,7 @@ export default function HabitDetail() {
                                 <p className="m-0 text-xs text-gray-500 text-end">{`${taskDone}/${todos?.length}`}</p>
                             </div>
                         </div>
-                        <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+                        <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2">
                             {todos?.map((todo) => <ListCardHabit
                                 completedHabit={!noteDetailQuery.data?.reschedule}
                                 progressDoneCheer={progressDoneCheer}
@@ -205,6 +206,7 @@ export default function HabitDetail() {
                                 key={todo.id}
                                 todo={todo} />)}
                         </div>
+                        <HabitsCountdown noteHabits={noteDetailQuery.data} />
                         <span className="text-gray-400 text-xs mt-8 mb-2">Description</span>
                         <div className="text-gray-700 capitalize">{noteDetailQuery.data?.description ? parse(convertEditorDataToText(noteDetailQuery.data.description!)) : "-"}</div>
                         <span className="text-gray-400 text-xs mt-8 mb-2">History streak</span>
