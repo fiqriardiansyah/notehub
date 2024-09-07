@@ -29,7 +29,6 @@ export type HistoryCalendarProps = {
 export const FORMAT_DATE_CALENDAR = "DD-MM-YYYY"
 
 export default function HistoryCalendar({ histories, currentHabit }: HistoryCalendarProps) {
-
     const isOnGoingHabitToday = (date: string) => {
         const today = moment(moment.now()).format(FORMAT_DATE_CALENDAR);
         const isAlreadyFinish = histories?.find((h) => moment(h.completedTime).format(FORMAT_DATE_CALENDAR) === today);

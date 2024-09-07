@@ -134,6 +134,8 @@ export default function HabitDetail() {
 
     const habitCompleted = !noteDetailQuery.data?.reschedule && !noteDetailQuery.isLoading;
 
+    const calenderViewMemo = React.useMemo(() => <HistoryCalendar histories={historyQuery.data} currentHabit={noteDetailForCalenderView.data} />, [noteDetailForCalenderView.data, historyQuery.data]);
+
     return (
         <div className="w-screen bg-white min-h-screen pb-20">
             <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
@@ -212,7 +214,7 @@ export default function HabitDetail() {
                         <span className="text-gray-400 text-xs mt-8 mb-2">History streak</span>
                         <StateRender data={historyQuery.data} isLoading={historyQuery.isLoading}>
                             <StateRender.Data>
-                                <HistoryCalendar histories={historyQuery.data} currentHabit={noteDetailForCalenderView.data} />
+                                {calenderViewMemo}
                             </StateRender.Data>
                             <StateRender.Loading>
                                 <p>Getting history</p>
