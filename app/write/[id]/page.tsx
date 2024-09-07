@@ -25,6 +25,8 @@ import React, { useRef } from "react";
 import ToolsBar from "../components/tool-bar";
 import FreetextModeEditor from "../mode/freetext";
 import TodoListModeEditor, { Todo } from "../mode/todolist";
+import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
+import { easeDefault } from "@/lib/utils";
 
 export default function Write() {
     const router = useRouter();
@@ -33,6 +35,7 @@ export default function Write() {
     const titleRef = useRef<HTMLInputElement | null>(null);
     const [_, setStatusBar] = useStatusBar();
     const { dataNote, setDataNote } = React.useContext(WriteContext) as WriteContextType;
+    const isNavHide = useToggleHideNav();
 
     const [freetextEditor, setFreetextEditor] = React.useState<any>(null)
     const [todos, setTodos] = React.useState<Todo[]>([]);
@@ -150,7 +153,7 @@ export default function Write() {
     return (
         <div className="container-custom pb-20">
 
-            <div className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
+            <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
                 <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
                     <ChevronLeft />
                 </Button>
@@ -165,7 +168,7 @@ export default function Write() {
                         className="text-2xl text-gray-500 flex-1 font-medium border-none focus:outline-none outline-none bg-transparent"
                     />
                 )}
-            </div>
+            </motion.div>
 
             {noteDetailQuery.data?.folderName && (
                 <Breadcrumb>

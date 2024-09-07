@@ -1,6 +1,7 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import SearchBar from "@/app/components/search-bar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,18 +11,20 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import SearchBar from "@/app/components/search-bar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { shortCut } from "@/lib/shortcut";
 import { Session } from "@/models";
+import { LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next-nprogress-bar";
 import Link from "next/link";
+import React from "react";
+import { motion } from "framer-motion";
+import { easeDefault } from "@/lib/utils";
+import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 
 export default function TopBar() {
   const { data } = useSession();
-  const router = useRouter();
   const session = data as Session;
+  const isNavHide = useToggleHideNav();
 
   shortCut.logout(() => {
     signOut();
@@ -31,13 +34,9 @@ export default function TopBar() {
     signOut();
   };
 
-  const onClickBack = () => {
-    router.back();
-  }
-
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 w-screen container-custom z-50 bg-background-primary">
+      <motion.header animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="fixed top-0 left-0 right-0 w-screen container-custom z-50 bg-background-primary">
         <nav className="w-full flex items-center justify-between py-1">
           <div className="flex items-center gap-2">
             <Link href="/" className="hidden md:block">
@@ -77,7 +76,7 @@ export default function TopBar() {
             </DropdownMenu>
           )}
         </nav>
-      </header>
+      </motion.header>
       <div className="h-[50px]" />
     </>
   );

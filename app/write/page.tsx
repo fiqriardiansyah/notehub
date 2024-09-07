@@ -19,6 +19,8 @@ import React, { useRef } from "react";
 import ToolsBar from "./components/tool-bar";
 import dynamic from "next/dynamic";
 import TodoListModeEditor from "./mode/todolist/index";
+import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
+import { easeDefault } from "@/lib/utils";
 
 const FreetextModeEditor = dynamic(() => import("./mode/freetext").then((mod) => mod.default),
   { ssr: false }
@@ -35,6 +37,7 @@ export default function Write() {
   const saveBtnRef = React.useRef<HTMLButtonElement>(null);
   const [_, setStatusBar] = useStatusBar();
   const { toast } = useToast();
+  const isNavHide = useToggleHideNav();
 
   const saveMutate = useMutation(
     async (data: CreateNote) => {
@@ -90,7 +93,7 @@ export default function Write() {
   return (
     <>
       <div className="container-custom pb-20">
-        <div className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
+        <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
           <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
             <ChevronLeft />
           </Button>
@@ -101,7 +104,7 @@ export default function Write() {
             placeholder="Title ..."
             className="text-2xl flex-1 text-gray-500 font-medium border-none focus:outline-none outline-none bg-transparent"
           />
-        </div>
+        </motion.div>
         <ShowedTags className="my-5" />
         {dataNote.modeWrite === "freetext" && <FreetextModeEditor onSave={saveWrite}>
           <button ref={saveBtnRef} type="submit">submit</button>

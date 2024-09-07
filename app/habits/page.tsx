@@ -11,6 +11,9 @@ import ListCardHabit from "./components/list-card-habit";
 import { AnimatePresence, motion } from "framer-motion";
 import CompleteAllHabit from "./components/complete-all-habit";
 import moment from "moment";
+import BottomBar from "@/components/navigation-bar/bottom-bar";
+import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
+import { easeDefault } from "@/lib/utils";
 
 const staggerVariants = {
     initial: { opacity: 0, x: '100%' },
@@ -32,6 +35,7 @@ const itemVariants = {
 
 export default function Habits() {
     const router = useRouter();
+    const isNavHide = useToggleHideNav();
 
     const today = moment().format("dddd");
     const date = moment().format("DD MMM YYYY");
@@ -42,7 +46,7 @@ export default function Habits() {
 
     return (
         <div className="w-screen bg-white min-h-screen pb-20">
-            <div className="sticky top-0 left-0 py-1 bg-white z-50">
+            <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
                 <div className="container-custom flex flex-row items-center justify-between">
                     <div className="flex gap-2 items-center">
                         <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10 flex-1">
@@ -63,7 +67,7 @@ export default function Habits() {
                         </Tooltip>
                     </div>
                 </div>
-            </div>
+            </motion.div>
             <div className="container-custom flex flex-col mt-2">
                 <HabitsUrgent
                     inPageHabits
@@ -86,6 +90,7 @@ export default function Habits() {
                     </motion.div>
                 </AnimatePresence>
             </div>
+            <BottomBar />
         </div>
     )
 }

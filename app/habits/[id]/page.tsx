@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import useHabitComplete from "@/hooks/use-habit-complete";
 import useSkipFirstRender from "@/hooks/use-skip-first-render";
-import { convertEditorDataToText, progressCheer } from "@/lib/utils";
+import { convertEditorDataToText, easeDefault, progressCheer } from "@/lib/utils";
 import habitsService from "@/service/habits";
 import noteService from "@/service/note";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -22,6 +22,7 @@ import HistoryCalendar from "./components/history-calendar";
 import ListCardHabit from "./components/list-card-habit";
 import Lottie from "react-lottie";
 import fireAnim from '@/asset/animation/fire.json';
+import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 
 const defaultOptions = {
     loop: true,
@@ -40,6 +41,7 @@ export default function HabitDetail() {
     const prevProgressDoneCheer = React.useRef<number>();
     const [progressDoneCheer, setProgressDoneCheer] = React.useState<{ progress: number; todoId: string }>();
     const habitComplete = useHabitComplete();
+    const isNavHide = useToggleHideNav();
 
     const noteDetailQuery = useQuery(["get-note", id], async () => {
         return (await noteService.getOneNote(id as string)).data.data
@@ -123,7 +125,7 @@ export default function HabitDetail() {
 
     return (
         <div className="w-screen bg-white min-h-screen pb-20">
-            <div className="sticky top-0 left-0 py-1 bg-white z-50">
+            <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
                 <div className="container-custom flex flex-row items-center justify-between">
                     <div className="flex gap-2 items-center">
                         <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10 flex-1">
@@ -154,7 +156,7 @@ export default function HabitDetail() {
                         </Tooltip>
                     </div>
                 </div>
-            </div>
+            </motion.div>
             <AnimatePresence>
                 {clickToFinish && (
                     <motion.div

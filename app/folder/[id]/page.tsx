@@ -12,12 +12,14 @@ import { ChevronLeft, Pencil, Plus, Trash } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
 import { useParams } from "next/navigation";
 import React from "react";
+import { motion } from "framer-motion";
 import FormTitle from "../components/form-title";
 import useSidePage from "@/hooks/use-side-page";
 import { emitterPickNotes, PICK_NOTES, PICK_NOTES_SUBMIT, usePickNotes } from "@/app/components/pick-notes";
 import { Note } from "@/models/note";
-import { pause } from "@/lib/utils";
+import { easeDefault, pause } from "@/lib/utils";
 import useStatusBar from "@/hooks/use-status-bar";
+import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 
 export default function FolderPage() {
     const queryClient = useQueryClient();
@@ -30,6 +32,7 @@ export default function FolderPage() {
     const [setSidePage, resetSidePage] = useSidePage();
     const pickNotes = usePickNotes();
     const [_, setStatusBar] = useStatusBar();
+    const isNavHide = useToggleHideNav();
 
     const detailFolderQuery = useQuery([noteService.getFolderAndContent.name, id], async () => {
         return (await noteService.getFolderAndContent(id as string)).data.data
@@ -101,7 +104,7 @@ export default function FolderPage() {
 
     return (
         <div className="container-custom pb-20">
-            <div className="w-full flex items-center gap-3 py-1 z-20 sticky top-0 left-0 bg-primary-foreground">
+            <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center gap-3 py-1 z-20 sticky top-0 left-0 bg-primary-foreground">
                 <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
                     <ChevronLeft />
                 </Button>
@@ -110,7 +113,7 @@ export default function FolderPage() {
                     !edit.isEdit ? <p className="font-medium text-lg line-clamp-1 capitalize">{edit?.tempTitle}</p> :
                         <FormTitle title={edit.tempTitle} onDiscard={onClickDiscard} refetch={detailFolderQuery.refetch} setEdit={setEdit} />
                 }
-            </div>
+            </motion.div>
             <div className={`${edit.isEdit ? "blur-sm pointer-events-none" : ""}`}>
                 <ToolBar rightAddition={() => (
                     <>

@@ -13,12 +13,15 @@ export default function SignInPage() {
   const params = useSearchParams();
 
   const [error, setError] = React.useState(() => params.get("error"));
+  const [loading, setLoading] = React.useState();
 
   const handleSignin = async (provider: { id: any; name: any }) => {
+    setLoading(provider.id);
     const result = await signIn(provider.id, {
       callbackUrl: process.env.NEXT_PUBLIC_DOMAIN,
     });
     if (result?.error) {
+      setLoading(undefined);
       setError(result?.error);
     }
   };
@@ -45,6 +48,7 @@ export default function SignInPage() {
       )}
       {Object.values(providerWithIcon).map((Provider) => (
         <Button
+          loading={Provider.id === loading}
           className="flex items-center gap-3"
           variant="outline"
           key={Provider.id}
