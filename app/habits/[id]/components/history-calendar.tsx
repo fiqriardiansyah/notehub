@@ -29,7 +29,6 @@ export type HistoryCalendarProps = {
 export const FORMAT_DATE_CALENDAR = "DD-MM-YYYY"
 
 export default function HistoryCalendar({ histories, currentHabit }: HistoryCalendarProps) {
-    const [] = React.useState();
 
     const isOnGoingHabitToday = (date: string) => {
         const today = moment(moment.now()).format(FORMAT_DATE_CALENDAR);

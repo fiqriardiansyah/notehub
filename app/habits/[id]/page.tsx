@@ -53,6 +53,13 @@ export default function HabitDetail() {
         }
     });
 
+    const noteDetailForCalenderView = useQuery(["get-note(calendar only)", id], async () => {
+        return (await noteService.getOneNote(id as string)).data.data
+    }, {
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+    });
+
     const historyQuery = useQuery(["get-history", id], async () => {
         return (await habitsService.getHabitHistory(id as string)).data.data;
     }, {
@@ -71,7 +78,10 @@ export default function HabitDetail() {
     useSkipFirstRender(() => {
         const update = setTimeout(() => {
             if (!id) return;
-            changeTodosMutate.mutateAsync(todos).then(() => noteDetailQuery.refetch())
+            changeTodosMutate.mutateAsync(todos).catch(() => {
+                // why in catch ? only when error refetch the detail
+                noteDetailQuery.refetch()
+            }).finally(noteDetailForCalenderView.refetch);
         }, 1000);
 
         return () => clearTimeout(update);
@@ -200,7 +210,7 @@ export default function HabitDetail() {
                         <span className="text-gray-400 text-xs mt-8 mb-2">History streak</span>
                         <StateRender data={historyQuery.data} isLoading={historyQuery.isLoading}>
                             <StateRender.Data>
-                                <HistoryCalendar histories={historyQuery.data} currentHabit={noteDetailQuery.data} />
+                                <HistoryCalendar histories={historyQuery.data} currentHabit={noteDetailForCalenderView.data} />
                             </StateRender.Data>
                             <StateRender.Loading>
                                 <p>Getting history</p>
