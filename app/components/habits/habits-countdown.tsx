@@ -18,8 +18,8 @@ export default function HabitsCountdown({ noteHabits }: HabitsCountdownProps) {
             refCount.current!.classList.remove("text-red-400");
             refCount.current!.classList.remove("text-green-400");
             if (noteHabits?.schedulerType === "day") {
-                const start = noteHabits?.schedulerStartTime ? moment(noteHabits?.schedulerStartTime) : moment().startOf("day");
-                const end = noteHabits?.schedulerEndTime ? moment(noteHabits?.schedulerEndTime) : moment().endOf("day");
+                const start = noteHabits?.schedulerStartTime ? moment(noteHabits?.schedulerStartTime) : moment(moment().startOf("day"));
+                const end = noteHabits?.schedulerEndTime ? moment(noteHabits?.schedulerEndTime) : moment(moment().endOf("day"));
                 const countdown = remainingTimeInHour({ start, end });
 
                 if (!noteHabits?.schedulerStartTime) {
@@ -27,9 +27,11 @@ export default function HabitsCountdown({ noteHabits }: HabitsCountdownProps) {
                     return;
                 }
 
-                const isStartCount = moment().isSameOrAfter(moment(noteHabits?.schedulerStartTime));
+                const isStartCount = moment(moment.now(), "HH:mm:ss").isSameOrAfter(countdown.string);
+
                 if (noteHabits.schedulerStartTime && isStartCount) {
                     refCount.current!.innerText = `Have to finish in ${countdown.string}`;
+                    return;
                 }
 
                 if (noteHabits.schedulerStartTime && !isStartCount) {

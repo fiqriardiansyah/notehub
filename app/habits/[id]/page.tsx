@@ -33,7 +33,6 @@ const defaultOptions = {
     }
 };
 
-
 export default function HabitDetail() {
     const router = useRouter();
     const { id } = useParams();
@@ -208,7 +207,7 @@ export default function HabitDetail() {
                                 key={todo.id}
                                 todo={todo} />)}
                         </div>
-                        <HabitsCountdown noteHabits={noteDetailQuery.data} />
+                        {noteDetailQuery.data?.reschedule && <HabitsCountdown noteHabits={noteDetailQuery.data} />}
                         <span className="text-gray-400 text-xs mt-8 mb-2">Description</span>
                         <div className="text-gray-700 capitalize">{noteDetailQuery.data?.description ? parse(convertEditorDataToText(noteDetailQuery.data.description!)) : "-"}</div>
                         <span className="text-gray-400 text-xs mt-8 mb-2">History streak</span>

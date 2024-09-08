@@ -54,9 +54,9 @@ export function remainingTimeInHour(time: { start: any, end: any }) {
   const currentTime = moment(`1970-01-01 ${now.format('HH:mm:ss')}`, format);
 
   const duration = moment.duration(endTime.diff(currentTime));
-  const hours = Math.floor(duration.asHours());
-  const minutes = duration.minutes()
-  const seconds = duration.seconds();
+  const hours = Math.floor(duration.asHours()).toString().padStart(2, "0");
+  const minutes = duration.minutes().toString().padStart(2, "0");
+  const seconds = duration.seconds().toString().padStart(2, "0");
 
   return {
     hours,
