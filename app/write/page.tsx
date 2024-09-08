@@ -92,19 +92,19 @@ export default function Write() {
 
   return (
     <>
-      <div className="container-custom pb-20">
-        <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
-          <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
-            <ChevronLeft />
-          </Button>
-          <input
-            autoFocus={true}
-            ref={titleRef}
-            type="text"
-            placeholder="Title ..."
-            className="text-2xl flex-1 text-gray-500 font-medium border-none focus:outline-none outline-none bg-transparent"
-          />
-        </motion.div>
+      <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center container-custom z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
+        <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
+          <ChevronLeft />
+        </Button>
+        <input
+          autoFocus={true}
+          ref={titleRef}
+          type="text"
+          placeholder="Title ..."
+          className="text-2xl flex-1 text-gray-500 font-medium border-none focus:outline-none outline-none bg-transparent"
+        />
+      </motion.div>
+      <div className="pb-20">
         <ShowedTags className="my-5" />
         {dataNote.modeWrite === "freetext" && <FreetextModeEditor onSave={saveWrite}>
           <button ref={saveBtnRef} type="submit">submit</button>

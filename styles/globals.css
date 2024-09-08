@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  width: 100vw;
-  overflow-x: hidden;
-  background: #f9f9f9;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -66,6 +60,10 @@ body {
 }
 
 @layer {
+  body {
+    @apply w-screen overflow-x-hidden bg-slate-50;
+  }
+
   .container-custom {
     @apply container mx-auto px-4 md:px-10 lg:px-16 xl:px-20;
   }
