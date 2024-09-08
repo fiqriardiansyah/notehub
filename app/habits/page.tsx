@@ -14,6 +14,7 @@ import moment from "moment";
 import BottomBar from "@/components/navigation-bar/bottom-bar";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { easeDefault } from "@/lib/utils";
+import React from "react";
 
 const staggerVariants = {
     initial: { opacity: 0, x: '100%' },
@@ -44,30 +45,34 @@ export default function Habits() {
         return (await habitsService.getUrgentHabit(5)).data.data;
     });
 
+    const navbar = React.useMemo(() => (
+        <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
+            <div className="container-custom flex flex-row items-center justify-between">
+                <div className="flex gap-2 items-center">
+                    <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10 flex-1">
+                        <ChevronLeft />
+                    </Button>
+                    <p className="m-0 font-semibold">{today}, <span className="text-xs font-normal">{date}</span> 👋</p>
+                </div>
+                <div className="w-fit">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button size="icon" variant="ghost" className="!w-10 flex-1">
+                                <CalendarRange />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            Calendar
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
+            </div>
+        </motion.div>
+    ), [isNavHide, today, date, router]);
+
     return (
         <div className="w-screen bg-white min-h-screen pb-20">
-            <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
-                <div className="container-custom flex flex-row items-center justify-between">
-                    <div className="flex gap-2 items-center">
-                        <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10 flex-1">
-                            <ChevronLeft />
-                        </Button>
-                        <p className="m-0 font-semibold">{today}, <span className="text-xs font-normal">{date}</span> 👋</p>
-                    </div>
-                    <div className="w-fit">
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button size="icon" variant="ghost" className="!w-10 flex-1">
-                                    <CalendarRange />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                Calendar
-                            </TooltipContent>
-                        </Tooltip>
-                    </div>
-                </div>
-            </motion.div>
+            {navbar}
             <div className="container-custom flex flex-col mt-2">
                 <HabitsUrgent
                     inPageHabits

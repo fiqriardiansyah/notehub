@@ -135,40 +135,44 @@ export default function HabitDetail() {
 
     const calenderViewMemo = React.useMemo(() => <HistoryCalendar histories={historyQuery.data} currentHabit={noteDetailForCalenderView.data} />, [noteDetailForCalenderView.data, historyQuery.data]);
 
-    return (
-        <div className="w-screen bg-white min-h-screen pb-20">
-            <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
-                <div className="container-custom flex flex-row items-center justify-between">
-                    <div className="flex gap-2 items-center">
-                        <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10 flex-1">
-                            <ChevronLeft />
-                        </Button>
-                        <div className="m-0 font-semibold line-clamp-1 capitalize flex items-center">
-                            {noteDetailQuery.isLoading ? "Getting Habit..." : noteDetailQuery?.data?.title}
-                            {noteDetailQuery.data?.tags?.length ? (
-                                <div className="flex items-center gap-2 line-clamp-1 ml-2">
-                                    {noteDetailQuery.data?.tags?.map((tag) => {
-                                        const Icon = icons[tag.icon as keyof typeof icons];
-                                        return <Icon size={13} key={tag.id} className="text-gray-700" />
-                                    })}
-                                </div>
-                            ) : null}
-                        </div>
-                    </div>
-                    <div className="w-fit">
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button size="icon" variant="ghost" className="!w-10 flex-1 text-gray-700">
-                                    <PencilRuler size={18} />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                Edit
-                            </TooltipContent>
-                        </Tooltip>
+    const navbar = React.useMemo(() => (
+        <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
+            <div className="container-custom flex flex-row items-center justify-between">
+                <div className="flex gap-2 items-center">
+                    <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10 flex-1">
+                        <ChevronLeft />
+                    </Button>
+                    <div className="m-0 font-semibold line-clamp-1 capitalize flex items-center">
+                        {noteDetailQuery.isLoading ? "Getting Habit..." : noteDetailQuery?.data?.title}
+                        {noteDetailQuery.data?.tags?.length ? (
+                            <div className="flex items-center gap-2 line-clamp-1 ml-2">
+                                {noteDetailQuery.data?.tags?.map((tag) => {
+                                    const Icon = icons[tag.icon as keyof typeof icons];
+                                    return <Icon size={13} key={tag.id} className="text-gray-700" />
+                                })}
+                            </div>
+                        ) : null}
                     </div>
                 </div>
-            </motion.div>
+                <div className="w-fit">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button size="icon" variant="ghost" className="!w-10 flex-1 text-gray-700">
+                                <PencilRuler size={18} />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            Edit
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
+            </div>
+        </motion.div>
+    ), [isNavHide, noteDetailQuery, router]);
+
+    return (
+        <div className="w-screen bg-white min-h-screen pb-20">
+            {navbar}
             <AnimatePresence>
                 {clickToFinish && (
                     <motion.div
