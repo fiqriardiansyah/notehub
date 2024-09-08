@@ -1,12 +1,13 @@
 "use client";
 
-import { convertEditorDataToText } from "@/lib/utils";
+import { convertEditorDataToText, hexToRgba } from "@/lib/utils";
 import { Note } from "@/models/note";
 import parse from "html-react-parser";
 import { ChevronRight, icons } from "lucide-react";
 import Link from "next/link";
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import themeColor from "tailwindcss/colors";
 
 export type ListCardHabitProps = {
     habit: Note;
@@ -29,10 +30,10 @@ export default function ListCardHabit({ habit, index }: ListCardHabitProps) {
                             value={progress}
                             text={`${progress}%`}
                             styles={buildStyles({
-                                trailColor: index === 0 ? 'rgba(251, 146, 60, 0.5)' : `rgba(89, 89, 89, 0.2)`,
+                                trailColor: index === 0 ? themeColor.orange[100] : themeColor.gray[100],
                                 textSize: '22px',
-                                textColor: index === 0 ? `rgba(251, 146, 60, 1)` : `rgba(89, 89, 89, 1)`,
-                                pathColor: index === 0 ? `rgba(251, 146, 60, 1)` : `rgba(89, 89, 89, ${progress / 100})`
+                                textColor: index === 0 ? themeColor.orange[400] : themeColor.gray[400],
+                                pathColor: index === 0 ? themeColor.orange[400] : hexToRgba(themeColor.gray[400], progress / 100),
                             })} />
                     </div>
                     <div className="flex flex-col gap-1">

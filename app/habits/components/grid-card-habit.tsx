@@ -1,0 +1,80 @@
+"use client";
+
+import { Note } from "@/models/note";
+import { icons } from "lucide-react";
+import moment from "moment";
+import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
+import cupAnimation from '@/asset/animation/cup.json';
+import fireAnimation from "@/asset/animation/fire.json";
+import Lottie from "react-lottie";
+import themeColor from "tailwindcss/colors";
+import Link from "next/link";
+
+const defaultOptions = {
+    loop: true,
+    animationData: cupAnimation,
+    autoplay: true,
+    rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice'
+    }
+};
+
+type GridCardHabitProps = {
+    habits: Note;
+    onGoingHabits?: string
+}
+
+export default function GridCardHabit({ habits, onGoingHabits }: GridCardHabitProps) {
+
+    const taskDone = habits.todos?.filter((td) => td.isCheck).length
+    const progress = Math.round(taskDone! / habits.todos!.length * 100);
+
+    return (
+        <Link href={`/habits/${habits.id}`}>
+            <div className="bg-white rounded-xl border justify-between border-gray-400 border-solid p-2 flex flex-col text-sm">
+                <div className="w-full flex flex-col justify-start text-start">
+                    <p className="m-0 line-clamp-1 font-semibold mb-1 capitalize">{habits.title}</p>
+                    {habits?.schedulerStartTime && (
+                        <span className="m-0 capitalize  text-xs">
+                            Start at {moment(habits?.schedulerStartTime).format("HH:mm:ss")}
+                            {habits?.schedulerEndTime && ` - ${moment(habits?.schedulerEndTime).format("HH:mm:ss")}`}
+                        </span>
+                    )}
+                </div>
+                <div className="w-full flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-2 line-clamp-1">
+                        <div className="capitalize font-semibold text-[10px] w-6 h-6 rounded-full border border-solid border-gray-400 text-gray-400 flex items-center justify-center">
+                            {habits!.schedulerType![0]}
+                        </div>
+                        {habits?.tags?.map((tag, i) => {
+                            if (i >= 3) return null;
+                            const Icon = icons[tag.icon as keyof typeof icons];
+                            return <Icon size={16} key={tag.id} className="text-gray-700" />
+                        })}
+                        {(habits?.tags?.length || 0) >= 3 && <span className="m-0 text-xs text-gray-500">
+                            {habits!.tags!.length - 3}+
+                        </span>}
+                    </div>
+                    <div className="flex items-center gap-3">
+                        {!habits?.reschedule ? (
+                            <Lottie style={{ pointerEvents: 'none' }} options={defaultOptions} height={40} width={40} />
+                        ) :
+                            <div className="w-[40px] h-[40px] rounded-full relative">
+                                {onGoingHabits === habits.id && <div className="absolute top-[-40px] left-1/2 transform -translate-x-1/2 z-10">
+                                    <Lottie style={{ pointerEvents: 'none' }} options={{ ...defaultOptions, animationData: fireAnimation }} height={40} width={40} />
+                                </div>}
+                                <CircularProgressbar
+                                    value={progress}
+                                    text={`${progress}%`}
+                                    styles={buildStyles({
+                                        trailColor: onGoingHabits === habits.id ? themeColor.orange[100] : themeColor.green[100],
+                                        pathColor: onGoingHabits === habits.id ? themeColor.orange[400] : themeColor.green[400],
+                                        textColor: onGoingHabits === habits.id ? themeColor.orange[400] : themeColor.gray[400],
+                                        textSize: 24
+                                    })} />
+                            </div>}
+                    </div>
+                </div>
+            </div></Link>
+    )
+}

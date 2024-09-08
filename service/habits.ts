@@ -8,6 +8,7 @@ const habitsService = {
     getUrgentHabit: (limit?: number): Promise<AxiosResponse<BaseResponse<Note[]>>> => api.get("/habits/urgent", { params: { limit } }),
     finishHabits: (id: string): Promise<AxiosResponse<BaseResponse<boolean>>> => api.get(`/habits/finish/${id}`),
     getHabitHistory: (id?: string): Promise<AxiosResponse<BaseResponse<HabitHistory[]>>> => api.get(`/habits/history/${id}`),
+    getHabits: (type?: string): Promise<AxiosResponse<BaseResponse<Note[]>>> => api.get(`/habits/${type}`),
 };
 
 export default habitsService;

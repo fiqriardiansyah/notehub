@@ -27,7 +27,7 @@ export default function HabitsCountdown({ noteHabits }: HabitsCountdownProps) {
                     return;
                 }
 
-                const isStartCount = moment(moment.now(), "HH:mm:ss").isSameOrAfter(countdown.string);
+                const isStartCount = moment().isSameOrAfter(moment(start), 'second');
 
                 if (noteHabits.schedulerStartTime && isStartCount) {
                     refCount.current!.innerText = `Have to finish in ${countdown.string}`;

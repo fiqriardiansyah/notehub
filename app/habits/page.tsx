@@ -15,6 +15,8 @@ import BottomBar from "@/components/navigation-bar/bottom-bar";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { easeDefault } from "@/lib/utils";
 import React from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import AllHabits from "./components/all-habits";
 
 const staggerVariants = {
     initial: { opacity: 0, x: '100%' },
@@ -34,6 +36,25 @@ const itemVariants = {
     exit: { opacity: 0, x: '-100%' },
 };
 
+const tabs = [
+    {
+        value: "all",
+        label: "All",
+    },
+    {
+        value: "day",
+        label: "Daily"
+    },
+    {
+        value: "weekly",
+        label: "Weekly",
+    },
+    {
+        value: "monthly",
+        label: "Monthly"
+    }
+]
+
 export default function Habits() {
     const router = useRouter();
     const isNavHide = useToggleHideNav();
@@ -41,9 +62,15 @@ export default function Habits() {
     const today = moment().format("dddd");
     const date = moment().format("DD MMM YYYY");
 
+    const [activeTab, setActiveTab] = React.useState(tabs[0].value);
+
     const habitsToday = useQuery([habitsService.getUrgentHabit.name, "habitstoday"], async () => {
         return (await habitsService.getUrgentHabit(5)).data.data;
     });
+
+    const onTabChange = (key: string) => {
+        setActiveTab(key);
+    }
 
     const navbar = React.useMemo(() => (
         <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
@@ -73,7 +100,7 @@ export default function Habits() {
     return (
         <div className="w-screen bg-white min-h-screen pb-20">
             {navbar}
-            <div className="container-custom flex flex-col mt-2">
+            <div className="container-custom flex flex-col mt-2 mb-16">
                 <HabitsUrgent
                     inPageHabits
                     onChangeHabit={habitsToday.refetch}
@@ -94,6 +121,14 @@ export default function Habits() {
                         ))}
                     </motion.div>
                 </AnimatePresence>
+            </div>
+            <Tabs defaultValue={activeTab} className="w-full sticky top-0 left-0 z-20" onValueChange={onTabChange}>
+                <TabsList className="!w-full">
+                    {tabs?.map((tab) => <TabsTrigger className="!flex-1" key={tab.value} value={tab.value}>{tab.label}</TabsTrigger>)}
+                </TabsList>
+            </Tabs>
+            <div className="container-custom flex flex-col mt-2 min-h-[50vh] pb-20">
+                {activeTab === "all" && <AllHabits onGoingHabits={habitsToday.data?.length ? habitsToday.data[0]?.id : undefined} />}
             </div>
             <BottomBar />
         </div>
