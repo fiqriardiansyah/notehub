@@ -48,7 +48,7 @@ export default function ListCardHabit({ habit, index }: ListCardHabitProps) {
                             )}
                         </div>
                         <span className="m-0 leading-[13px] text-xs line-clamp-2">
-                            {parse(convertEditorDataToText(habit?.description))}
+                            {habit.schedulerType} | {parse(convertEditorDataToText(habit?.description))}
                         </span>
                     </div>
                 </div>
