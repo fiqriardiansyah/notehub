@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Plus, Trash } from "lucide-react";
+import { Info, Plus, Trash } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
@@ -29,13 +29,15 @@ export type TodoListModeEditorProps = {
     todos?: Todo[];
     children?: React.ReactElement
     onSave?: (data: Partial<Note>) => void;
+    showInfoDefault?: boolean;
 }
 
-export default function TodoListModeEditor({ onChange, todos = [], children, onSave }: TodoListModeEditorProps) {
+export default function TodoListModeEditor({ onChange, todos = [], children, onSave, showInfoDefault = true }: TodoListModeEditorProps) {
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
     const [_, setStatusBar] = useStatusBar();
     const [list, setList] = React.useState<Todo[]>(() => todos);
     const [str, setStr] = React.useState("");
+    const [showInfo, setShowInfo] = React.useState(true);
 
     React.useEffect(() => {
         if (onChange) onChange(list);
@@ -141,6 +143,14 @@ export default function TodoListModeEditor({ onChange, todos = [], children, onS
             <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
                 {children}
             </form>
+            <div className="w-full flex justify-center my-10">
+                {showInfo && showInfoDefault && (
+                    <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">
+                        <Info className="mr-2" size={14} />
+                        Todo list mode
+                    </p>
+                )}
+            </div>
         </>
     )
 }

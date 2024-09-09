@@ -6,6 +6,7 @@ import TodoListModeEditor, { Todo } from "../todolist";
 import { Note } from "@/models/note";
 import useStatusBar from "@/hooks/use-status-bar";
 import { WriteContext, WriteContextType } from "@/context/write";
+import { Info } from "lucide-react";
 
 const Editor = dynamic(() => import("@/components/editor/index").then((mod) => mod.Editor),
     { ssr: false }
@@ -21,6 +22,8 @@ export default function HabitsModeEditor({ children, onSave }: HabitsModeEditorP
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
     const [freetextEditor, setFreetextEditor] = React.useState<any>(null);
     const [todos, setTodos] = React.useState<Todo[]>([]);
+    const [showInfo, setShowInfo] = React.useState(true);
+
 
     const onSubmit = async (e: any) => {
         e.preventDefault();
@@ -57,11 +60,19 @@ export default function HabitsModeEditor({ children, onSave }: HabitsModeEditorP
             <div className="flex w-full flex-col gap-2">
                 <Editor placeholder="Description" editorRef={setFreetextEditor} />
                 <hr />
-                <TodoListModeEditor onChange={setTodos} />
+                <TodoListModeEditor onChange={setTodos} showInfoDefault={false} />
             </div>
             <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
                 {children}
             </form>
+            <div className="w-full flex justify-center my-10">
+                {showInfo && (
+                    <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">
+                        <Info className="mr-2" size={14} />
+                        Habits mode
+                    </p>
+                )}
+            </div>
         </>
     )
 }

@@ -6,7 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { WriteContext, WriteContextType } from "@/context/write";
 import useStatusBar from "@/hooks/use-status-bar";
 import { shortCut } from "@/lib/shortcut";
-import { CreateNote } from "@/models/note";
+import { CreateNote, ModeNote } from "@/models/note";
 import ShowedTags from "@/module/tags/showed-tags";
 import noteService from "@/service/note";
 import validation from "@/validation";
@@ -21,6 +21,7 @@ import dynamic from "next/dynamic";
 import TodoListModeEditor from "./mode/todolist/index";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { easeDefault } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
 
 const FreetextModeEditor = dynamic(() => import("./mode/freetext").then((mod) => mod.default),
   { ssr: false }
@@ -32,12 +33,24 @@ const HabitsModeEditor = dynamic(() => import("./mode/habits").then((mod) => mod
 
 export default function Write() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { dataNote, setDataNote } = React.useContext(WriteContext) as WriteContextType;
   const titleRef = useRef<HTMLInputElement | null>(null);
   const saveBtnRef = React.useRef<HTMLButtonElement>(null);
   const [_, setStatusBar] = useStatusBar();
   const { toast } = useToast();
   const isNavHide = useToggleHideNav();
+  const typeDefault = searchParams.get("type") as ModeNote;
+
+  React.useEffect(() => {
+    if (!typeDefault) return;
+    if (typeDefault === "freetext" || typeDefault === "todolist" || typeDefault === "habits") {
+      setDataNote((prev) => ({
+        ...prev,
+        modeWrite: typeDefault,
+      }));
+    };
+  }, []);
 
   const saveMutate = useMutation(
     async (data: CreateNote) => {

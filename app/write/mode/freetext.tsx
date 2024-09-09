@@ -4,6 +4,7 @@ import { EditorProps, toolsDefault } from "@/components/editor/index";
 import { WriteContext, WriteContextType } from "@/context/write";
 import useStatusBar from "@/hooks/use-status-bar";
 import { Note } from "@/models/note";
+import { Info } from "lucide-react";
 import dynamic from "next/dynamic";
 import React from "react";
 
@@ -20,6 +21,7 @@ export default function FreetextModeEditor({ onSave, children, ...props }: Freet
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
     const [_, setStatusBar, reset] = useStatusBar();
     const [freetextEditor, setFreetextEditor] = React.useState<any>(null);
+    const [showInfo, setShowInfo] = React.useState(true);
 
     const onSubmit = async (e: any) => {
         e.preventDefault();
@@ -55,6 +57,14 @@ export default function FreetextModeEditor({ onSave, children, ...props }: Freet
             <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
                 {children}
             </form>
+            <div className="w-full flex justify-center my-10">
+                {showInfo && (
+                    <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">
+                        <Info className="mr-2" size={14} />
+                        Freetext mode
+                    </p>
+                )}
+            </div>
         </>
     )
 }
