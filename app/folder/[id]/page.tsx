@@ -103,7 +103,7 @@ export default function FolderPage() {
     }
 
     return (
-        <div className="container-custom pb-20">
+        <div className="container-custom pb-20 min-h-[150vh]">
             <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center gap-3 py-1 z-20 sticky top-0 left-0 bg-primary-foreground">
                 <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
                     <ChevronLeft />

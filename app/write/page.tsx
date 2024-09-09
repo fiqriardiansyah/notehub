@@ -104,7 +104,7 @@ export default function Write() {
           className="text-2xl flex-1 text-gray-500 font-medium border-none focus:outline-none outline-none bg-transparent"
         />
       </motion.div>
-      <div className="pb-20">
+      <div className="pb-20 min-h-[150vh]">
         <ShowedTags className="my-5" />
         {dataNote.modeWrite === "freetext" && <FreetextModeEditor onSave={saveWrite}>
           <button ref={saveBtnRef} type="submit">submit</button>

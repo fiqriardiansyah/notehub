@@ -101,7 +101,7 @@ export default function Habits() {
     ), [isNavHide, today, date, router]);
 
     return (
-        <div className="w-screen bg-white min-h-screen pb-20">
+        <div className="w-screen bg-white min-h-[150vh] pb-20">
             {navbar}
             <div className="container-custom flex flex-col mt-2 mb-16">
                 <HabitsUrgent

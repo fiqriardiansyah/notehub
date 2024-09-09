@@ -151,8 +151,7 @@ export default function Write() {
     }
 
     return (
-        <div className="container-custom pb-20">
-
+        <div className="container-custom pb-20 min-h-[150vh]">
             <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
                 <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
                     <ChevronLeft />
@@ -169,7 +168,6 @@ export default function Write() {
                     />
                 )}
             </motion.div>
-
             {noteDetailQuery.data?.folderName && (
                 <Breadcrumb>
                     <BreadcrumbList>
@@ -184,7 +182,6 @@ export default function Write() {
                     </BreadcrumbList>
                 </Breadcrumb>
             )}
-
             <ShowedTags className="my-5" />
             <StateRender data={noteDetailQuery.data || isSecureNoteQuery.data} isLoading={noteDetailQuery.isLoading || isSecureNoteQuery.isLoading}>
                 <StateRender.Data>
