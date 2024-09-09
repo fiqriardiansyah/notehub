@@ -43,7 +43,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
             {!completedHabit && (
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Button size="icon-small" variant="secondary">
+                        <Button size="icon-small" variant="secondary" className="mb-3">
                             <Timer size={16} />
                         </Button>
                     </TooltipTrigger>
@@ -53,14 +53,14 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
                 </Tooltip>
             )}
             {!completedHabit ? (
-                <Button onClick={() => onCheck && onCheck(todo)} size="icon-small" variant={todo?.isCheck ? "default" : "ghost"}>
+                <Button onClick={() => onCheck && onCheck(todo)} size="icon-small" variant={todo?.isCheck ? "default" : "ghost"} className="mb-3">
                     <Check size={16} />
                 </Button>
             ) : <>
-                {todo?.isCheck ? <Check size={16} /> : null}
+                {todo?.isCheck ? <Check size={16} className="mb-3" /> : null}
             </>}
         </div>
-        <p className="m-0 capitalize font-medium mt-3">{todo.content}</p>
+        <p className="m-0 capitalize font-medium">{todo.content}</p>
         {todo.checkedAt && <span className="m-0 text-xs leading-[10px] text-gray-400">Done at {moment(todo.checkedAt).format("DD MMM, HH:mm")}</span>}
     </div>
 }

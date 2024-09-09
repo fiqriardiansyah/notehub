@@ -30,6 +30,9 @@ export default function GridCardHabit({ habits, onGoingHabits }: GridCardHabitPr
     const taskDone = habits.todos?.filter((td) => td.isCheck).length
     const progress = Math.round(taskDone! / habits.todos!.length * 100);
 
+    const isFreeToday = habits?.schedulerType === "day"
+        && !habits?.schedulerDays?.includes(moment().format("dddd").toLocaleLowerCase());
+
     return (
         <Link href={`/habits/${habits.id}`} className="h-full">
             <div className="bg-white rounded-xl border justify-between h-full border-gray-400 border-solid p-2 flex flex-col text-sm">
@@ -50,9 +53,11 @@ export default function GridCardHabit({ habits, onGoingHabits }: GridCardHabitPr
                         <ResponsiveTagsListed tags={habits?.tags} size={14} />
                     </div>
                     <div className="flex items-center gap-3">
-                        {!habits?.reschedule ? (
+                        {!habits?.reschedule && (
                             <Lottie style={{ pointerEvents: 'none' }} options={defaultOptions} height={40} width={40} />
-                        ) :
+                        )}
+
+                        {habits?.reschedule && !isFreeToday &&
                             <div className="w-[40px] h-[40px] rounded-full relative">
                                 {onGoingHabits === habits.id && <div className="absolute top-[-40px] left-1/2 transform -translate-x-1/2 z-10">
                                     <Lottie style={{ pointerEvents: 'none' }} options={{ ...defaultOptions, animationData: fireAnimation }} height={40} width={40} />

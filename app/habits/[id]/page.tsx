@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Todo } from "@/app/write/mode/todolist";
@@ -25,6 +26,9 @@ import fireAnim from '@/asset/animation/fire.json';
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import HabitsCountdown from "@/app/components/habits/habits-countdown";
 import ResponsiveTagsListed from "@/components/common/tag-listed";
+import enjoyAnim from "@/asset/animation/enjoy.json";
+import moment from "moment";
+import Image from "next/image";
 
 const defaultOptions = {
     loop: true,
@@ -134,7 +138,11 @@ export default function HabitDetail() {
 
     const habitCompleted = !noteDetailQuery.data?.reschedule && !noteDetailQuery.isLoading;
 
-    const calenderViewMemo = React.useMemo(() => <HistoryCalendar histories={historyQuery.data} currentHabit={noteDetailForCalenderView.data} />, [noteDetailForCalenderView.data, historyQuery.data]);
+    const isFreeToday = noteDetailQuery.data?.schedulerType === "day"
+        && !noteDetailQuery.data?.schedulerDays?.includes(moment().format("dddd").toLocaleLowerCase())
+
+    const calenderViewMemo = React.useMemo(() => <HistoryCalendar isFreeToday={isFreeToday} histories={historyQuery.data} currentHabit={noteDetailForCalenderView.data} />,
+        [noteDetailForCalenderView.data, historyQuery.data, isFreeToday]);
 
     const navbar = React.useMemo(() => (
         <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
@@ -187,25 +195,33 @@ export default function HabitDetail() {
             <StateRender data={noteDetailQuery.data} isLoading={noteDetailQuery.isLoading}>
                 <StateRender.Data>
                     <div className="container-custom flex flex-col">
-                        <div className="flex items-center justify-between gap-3 mt-4 mb-2">
-                            {!habitCompleted ? <span className="text-gray-400 text-xs ">Need to do</span> :
-                                <span className="text-green-600 text-xs flex items-center">Complete!
-                                    <Lottie style={{ pointerEvents: 'none' }} options={{ ...defaultOptions, animationData: fireAnim }} height={30} width={30} />
-                                </span>}
-                            <div className="flex-1 flex gap-2 items-center max-w-[400px]">
-                                <Progress className="h-[5px]" value={progress} />
-                                <p className="m-0 text-xs text-gray-500 text-end">{`${taskDone}/${todos?.length}`}</p>
+                        {isFreeToday && (
+                            <div className="flex gap-3 relative overflow-hidden rounded-lg my-10">
+                                <Lottie style={{ pointerEvents: 'none', zIndex: 10 }} options={{ ...defaultOptions, animationData: enjoyAnim }} height={150} width={250} />
+                                <p className="text-xl z-10">Enjoy, there is no task today 😎</p>
                             </div>
-                        </div>
+                        )}
+                        {!isFreeToday && (
+                            <div className="flex items-center justify-between gap-3 mt-4 mb-2">
+                                {!habitCompleted ? <span className="text-gray-400 text-xs ">Need to do</span> :
+                                    <span className="text-green-600 text-xs flex items-center">Complete!
+                                        <Lottie style={{ pointerEvents: 'none' }} options={{ ...defaultOptions, animationData: fireAnim }} height={30} width={30} />
+                                    </span>}
+                                <div className="flex-1 flex gap-2 items-center max-w-[400px]">
+                                    <Progress className="h-[5px]" value={progress} />
+                                    <p className="m-0 text-xs text-gray-500 text-end">{`${taskDone}/${todos?.length}`}</p>
+                                </div>
+                            </div>
+                        )}
                         <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2">
                             {todos?.map((todo) => <ListCardHabit
-                                completedHabit={!noteDetailQuery.data?.reschedule}
+                                completedHabit={!noteDetailQuery.data?.reschedule || isFreeToday}
                                 progressDoneCheer={progressDoneCheer}
                                 onCheck={onUpdateCheck}
                                 key={todo.id}
                                 todo={todo} />)}
                         </div>
-                        {noteDetailQuery.data?.reschedule && <HabitsCountdown noteHabits={noteDetailQuery.data} />}
+                        {noteDetailQuery.data?.reschedule && !isFreeToday && <HabitsCountdown noteHabits={noteDetailQuery.data} />}
                         <span className="text-gray-400 text-xs mt-8 mb-2">Description</span>
                         <div className="text-gray-700 capitalize">{noteDetailQuery.data?.description ? parse(convertEditorDataToText(noteDetailQuery.data.description!)) : "-"}</div>
                         <span className="text-gray-400 text-xs mt-8 mb-2">Scheduler in</span>

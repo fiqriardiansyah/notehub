@@ -11,6 +11,8 @@ import Lottie from "react-lottie";
 import themeColor from "tailwindcss/colors";
 import HistoryDetailDrawer from './history-detail-drawer';
 import React from 'react';
+import { Todo } from '@/app/write/mode/todolist';
+import DetailTaskDoneMonth from './detail-task-done-month';
 
 const defaultOptions = {
     loop: true,
@@ -24,15 +26,17 @@ const defaultOptions = {
 export type HistoryCalendarProps = {
     histories?: HabitHistory[];
     currentHabit?: DetailNote;
+    isFreeToday?: boolean;
 }
 
 export const FORMAT_DATE_CALENDAR = "DD-MM-YYYY"
 
-export default function HistoryCalendar({ histories, currentHabit }: HistoryCalendarProps) {
+export default function HistoryCalendar({ histories = [], currentHabit, isFreeToday }: HistoryCalendarProps) {
     const isOnGoingHabitToday = (date: string) => {
         const today = moment(moment.now()).format(FORMAT_DATE_CALENDAR);
         const isAlreadyFinish = histories?.find((h) => moment(h.completedTime).format(FORMAT_DATE_CALENDAR) === today);
-        if (isAlreadyFinish) return false
+        if (isAlreadyFinish) return false;
+        if (isFreeToday) return false;
         return currentHabit?.schedulerType === "day" && today === date;
     }
 
@@ -41,6 +45,13 @@ export default function HistoryCalendar({ histories, currentHabit }: HistoryCale
         const isAlreadyFinish = histories?.find((h) => moment(h.completedTime).week() === currentWeek);
         if (isAlreadyFinish) return false;
         return currentWeek === weekNumber;
+    }
+
+    const isOnGoingHabitMonthly = (date: Date) => {
+        const currentMonth = moment().month();
+        const isAlreadyFinish = histories?.find((h) => moment(h.completedTime).month() === currentMonth);
+        if (isAlreadyFinish) return false;
+        return currentMonth === moment(date).month();
     }
 
     const currentTaskDone = currentHabit?.todos?.filter((td) => td.isCheck).length;
@@ -56,7 +67,9 @@ export default function HistoryCalendar({ histories, currentHabit }: HistoryCale
                         const date = moment(day.date).format(FORMAT_DATE_CALENDAR);
                         const dateHistory = histories?.map((dt) => moment(dt.completedTime).format(FORMAT_DATE_CALENDAR));
 
-                        if (dateHistory?.includes(date) || moment(moment.now()).format(FORMAT_DATE_CALENDAR) === date) {
+                        const historyOrToday = dateHistory?.includes(date) || moment(moment.now()).format(FORMAT_DATE_CALENDAR) === date;
+
+                        if (historyOrToday && !isFreeToday) {
                             const isOnGoing = isOnGoingHabitToday(date);
 
                             const history = histories?.find((h) => moment(h.completedTime).format(FORMAT_DATE_CALENDAR) === date);
@@ -134,5 +147,60 @@ export default function HistoryCalendar({ histories, currentHabit }: HistoryCale
         )
     }
 
-    return <h1>Calender</h1>
+    return (
+        <Calendar className="rounded-md calendar-history-habit" mode="multiple"
+            showOutsideDays={false}
+            components={{
+                MonthCaption({ calendarMonth, displayIndex, className, ...props }) {
+                    const isOnGoing = isOnGoingHabitMonthly(calendarMonth.date);
+
+                    const history = histories?.find((h) => moment(h.completedTime).month() === moment(calendarMonth.date).month());
+                    const taskDone = history?.todos?.filter((td) => td.isCheck).length;
+                    const progress = isOnGoing ? currentProgress : Math.round(taskDone! / (history?.todos?.length || 1) * 100);
+
+                    return <div {...props} className={`${className} flex items-center gap-3`}>
+                        {(isOnGoing || history) && (
+                            <div className="w-7 h-7">
+                                <CircularProgressbar value={progress} text={`${progress}%`} styles={buildStyles({
+                                    textSize: '24px',
+                                    textColor: hexToRgba("#000000", 0.5),
+                                    trailColor: isOnGoing ? hexToRgba(themeColor.orange[400], 0.3) : hexToRgba(themeColor.gray[400], 0.3),
+                                    pathColor: isOnGoing ? themeColor.orange[400] : progress === 100 ? themeColor.green[400] : themeColor.gray[400]
+                                })} />
+                            </div>
+                        )}
+                        {moment(calendarMonth.date).format("MMMM YYYY")}
+                    </div>
+                },
+                DayButton({ day, modifiers, ...props }) {
+                    const date = moment(day.date).format(FORMAT_DATE_CALENDAR);
+                    const dayMarksTodos: Todo[] = [];
+
+                    [...histories, currentHabit]?.forEach((history) => {
+                        history?.todos?.forEach((todo) => {
+                            if (moment(todo.checkedAt).format(FORMAT_DATE_CALENDAR) === date) {
+                                dayMarksTodos.push(todo);
+                            }
+                        })
+                    });
+
+                    if (dayMarksTodos.length) {
+                        return <DetailTaskDoneMonth todos={dayMarksTodos} date={day.date}>
+                            {(ctrl) => (
+                                <button onClick={ctrl.open} className="h-10 w-10 z-[2] rounded-full border-2 relative border-solid border-gray-400">
+                                    <span className='absolute -top-[20px] origin-left -rotate-[30deg] text-[10px] z-10 font-semibold whitespace-nowrap'>
+                                        {dayMarksTodos.length} task done
+                                    </span>
+                                    {moment(day.date).format("D")}
+                                </button>
+                            )}
+                        </DetailTaskDoneMonth>
+                    }
+
+                    return <button className="h-10 w-10 z-[2] pointer-events-none text-gray-300">
+                        {moment(day.date).format("D")}
+                    </button>
+                },
+            }} />
+    )
 }
