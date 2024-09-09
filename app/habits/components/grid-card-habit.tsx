@@ -9,6 +9,7 @@ import fireAnimation from "@/asset/animation/fire.json";
 import Lottie from "react-lottie";
 import themeColor from "tailwindcss/colors";
 import Link from "next/link";
+import ResponsiveTagsListed from "@/components/common/tag-listed";
 
 const defaultOptions = {
     loop: true,
@@ -41,19 +42,12 @@ export default function GridCardHabit({ habits, onGoingHabits }: GridCardHabitPr
                         </span>
                     )}
                 </div>
-                <div className="w-full flex items-center justify-between mt-2">
-                    <div className="flex items-center gap-2 line-clamp-1">
+                <div className="w-full flex items-center justify-between mt-2 gap-3">
+                    <div className="flex flex-1 items-center gap-2 line-clamp-1">
                         <div className="capitalize font-semibold text-[10px] w-6 h-6 rounded-full border border-solid border-gray-400 text-gray-400 flex items-center justify-center">
                             {habits!.schedulerType![0]}
                         </div>
-                        {habits?.tags?.map((tag, i) => {
-                            if (i >= 3) return null;
-                            const Icon = icons[tag.icon as keyof typeof icons];
-                            return <Icon size={16} key={tag.id} className="text-gray-700" />
-                        })}
-                        {(habits?.tags?.length || 0) >= 3 && <span className="m-0 text-xs text-gray-500">
-                            {habits!.tags!.length - 3}+
-                        </span>}
+                        <ResponsiveTagsListed tags={habits?.tags} size={14} />
                     </div>
                     <div className="flex items-center gap-3">
                         {!habits?.reschedule ? (

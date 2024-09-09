@@ -24,6 +24,7 @@ import Lottie from "react-lottie";
 import fireAnim from '@/asset/animation/fire.json';
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import HabitsCountdown from "@/app/components/habits/habits-countdown";
+import ResponsiveTagsListed from "@/components/common/tag-listed";
 
 const defaultOptions = {
     loop: true,
@@ -142,16 +143,9 @@ export default function HabitDetail() {
                     <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10 flex-1">
                         <ChevronLeft />
                     </Button>
-                    <div className="m-0 font-semibold line-clamp-1 capitalize flex items-center">
+                    <div className="m-0 font-semibold line-clamp-1 capitalize flex items-center gap-2">
                         {noteDetailQuery.isLoading ? "Getting Habit..." : noteDetailQuery?.data?.title}
-                        {noteDetailQuery.data?.tags?.length ? (
-                            <div className="flex items-center gap-2 line-clamp-1 ml-2">
-                                {noteDetailQuery.data?.tags?.map((tag) => {
-                                    const Icon = icons[tag.icon as keyof typeof icons];
-                                    return <Icon size={13} key={tag.id} className="text-gray-700" />
-                                })}
-                            </div>
-                        ) : null}
+                        <ResponsiveTagsListed tags={noteDetailQuery.data?.tags} size={14} />
                     </div>
                 </div>
                 <div className="w-fit">

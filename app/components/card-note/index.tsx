@@ -12,6 +12,7 @@ import SettingNoteDrawer from "../setting-note-drawer";
 import FreeTextCardNote from "./freetext";
 import Secure from "./secure";
 import TodolistCardNote from "./todolist";
+import ResponsiveTagsListed from "@/components/common/tag-listed";
 
 export type CardNoteType = Note;
 
@@ -49,14 +50,7 @@ export default function CardNote({ title, updatedAt, ...props }: CardNoteType) {
         </div>
       </div>
       {content()}
-      {!!props?.tags?.length && (
-        <div className="flex items-center gap-2 line-clamp-1">
-          {props?.tags?.map((tag) => {
-            const Icon = icons[tag.icon as keyof typeof icons];
-            return <Icon size={15} key={tag.id} className="text-gray-700" />
-          })}
-        </div>
-      )}
+      <ResponsiveTagsListed tags={props?.tags} size={15} />
       <div className="flex w-full items-center justify-between">
         <span className="caption">{formatDate(updatedAt)}</span>
         {props?.isHang && <Bookmark className="text-black" size={16} />}

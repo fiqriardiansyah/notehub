@@ -17,6 +17,9 @@ import { easeDefault } from "@/lib/utils";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AllHabits from "./components/all-habits";
+import DailyHabits from "./components/daily-habits";
+import WeeklyHabits from "./components/weekly-habits";
+import MonthlyHabits from "./components/monthly-habits";
 
 const staggerVariants = {
     initial: { opacity: 0, x: '100%' },
@@ -129,6 +132,9 @@ export default function Habits() {
             </Tabs>
             <div className="container-custom flex flex-col mt-2 min-h-[50vh] pb-20">
                 {activeTab === "all" && <AllHabits onGoingHabits={habitsToday.data?.length ? habitsToday.data[0]?.id : undefined} />}
+                {activeTab === "day" && <DailyHabits onGoingHabits={habitsToday.data?.length ? habitsToday.data[0]?.id : undefined} />}
+                {activeTab === "weekly" && <WeeklyHabits onGoingHabits={habitsToday.data?.length ? habitsToday.data[0]?.id : undefined} />}
+                {activeTab === "monthly" && <MonthlyHabits onGoingHabits={habitsToday.data?.length ? habitsToday.data[0]?.id : undefined} />}
             </div>
             <BottomBar />
         </div>
