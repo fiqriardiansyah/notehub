@@ -22,8 +22,8 @@ export default function ToolsBar({ save, isLoading, excludeSettings }: ToolsBarT
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
 
     return (
-        <div className="sm:shadow-[-1px_2px_7px_rgb(139_139_139_/_50%)] p-1 w-full sm:w-fit bg-white sm:rounded-full">
-            <div className="w-full h-full flex items-center justify-between gap-2 container-custom">
+        <div className="p-1 w-full bg-white">
+            <div className="w-full h-full flex items-center justify-center gap-2 container-custom">
                 {!excludeSettings?.find((s) => s === "tag") && <TagNote />}
                 {!excludeSettings?.find((s) => s === "folder") && <FolderNote />}
                 {!excludeSettings?.find((s) => s === "secure") && dataNote.modeWrite !== "habits" && <SecureNote />}

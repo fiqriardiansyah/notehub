@@ -188,18 +188,14 @@ export default function Write() {
                     {(isSecureNoteQuery.data && !dataNote?.authorized) ? (
                         <OpenSecureNote refetch={noteDetailQuery.mutate} />
                     ) : (
-                        <>
+                        <div className="!w-screen overflow-x-hidden">
                             {dataNote.modeWrite === "freetext" && <FreetextModeEditor editorRef={setFreetextEditor} asEdit data={noteDetailQuery.data?.note} />}
                             {dataNote.modeWrite === "todolist" && <TodoListModeEditor todos={todos} onChange={setTodos} />}
 
-                            <div className="fixed z-40 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 bottom-0 left-0 w-full">
-                                <AnimatePresence>
-                                    <motion.div animate={{ scale: 1 }} initial={{ scale: 0 }} className="flex justify-center">
-                                        <ToolsBar excludeSettings={["folder", "mode"]} isLoading={saveMutate.isLoading} save={saveWrite} />
-                                    </motion.div>
-                                </AnimatePresence>
-                            </div>
-                        </>
+                            <motion.div animate={{ y: 0, transition: { delay: 0.8 } }} initial={{ y: '100%' }} className="flex justify-center fixed z-40 bottom-0 left-0 w-full">
+                                <ToolsBar excludeSettings={["folder", "mode"]} isLoading={saveMutate.isLoading} save={saveWrite} />
+                            </motion.div>
+                        </div>
 
                     )}
                 </StateRender.Data>
