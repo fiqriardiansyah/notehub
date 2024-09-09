@@ -214,6 +214,10 @@ export default function HabitDetail() {
                         {noteDetailQuery.data?.reschedule && <HabitsCountdown noteHabits={noteDetailQuery.data} />}
                         <span className="text-gray-400 text-xs mt-8 mb-2">Description</span>
                         <div className="text-gray-700 capitalize">{noteDetailQuery.data?.description ? parse(convertEditorDataToText(noteDetailQuery.data.description!)) : "-"}</div>
+                        <span className="text-gray-400 text-xs mt-8 mb-2">Scheduler in</span>
+                        <div className="text-gray-700 capitalize text-xs">
+                            {noteDetailQuery.data?.schedulerType === "day" ? noteDetailQuery.data?.schedulerDays?.join(", ") : noteDetailQuery.data?.schedulerType}
+                        </div>
                         <span className="text-gray-400 text-xs mt-8 mb-2">History streak</span>
                         <StateRender data={historyQuery.data} isLoading={historyQuery.isLoading}>
                             <StateRender.Data>

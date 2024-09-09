@@ -30,8 +30,8 @@ export default function GridCardHabit({ habits, onGoingHabits }: GridCardHabitPr
     const progress = Math.round(taskDone! / habits.todos!.length * 100);
 
     return (
-        <Link href={`/habits/${habits.id}`}>
-            <div className="bg-white rounded-xl border justify-between border-gray-400 border-solid p-2 flex flex-col text-sm">
+        <Link href={`/habits/${habits.id}`} className="h-full">
+            <div className="bg-white rounded-xl border justify-between h-full border-gray-400 border-solid p-2 flex flex-col text-sm">
                 <div className="w-full flex flex-col justify-start text-start">
                     <p className="m-0 line-clamp-1 font-semibold mb-1 capitalize">{habits.title}</p>
                     {habits?.schedulerStartTime && (
