@@ -29,7 +29,6 @@ export default function CompleteAllHabit({ anim }: CompleteAllHabitProps) {
             </div>
             <div className="flex flex-col gap-2 flex-1 z-10">
                 <h1 className="text-xl font-medium">Todays Habit is <br /> Complete 👍</h1>
-                <button className="border-none bg-transparent cursor-pointer text-green-400 text-xs w-fit">See history</button>
             </div>
         </div>
     )

@@ -19,7 +19,7 @@ import useHabitComplete, { JSON_ANIMATIONS } from "@/hooks/use-habit-complete";
 export type HabitsUrgentProps = HTMLMotionProps<"div"> & {
     onChangeHabit?: () => void;
     inPageHabits?: boolean;
-    renderWhenComplete?: (randomAnim: any) => React.ReactElement;
+    renderWhenComplete?: (randomAnim: any) => any;
 }
 
 export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPageHabits, className, ...props }: HabitsUrgentProps) {

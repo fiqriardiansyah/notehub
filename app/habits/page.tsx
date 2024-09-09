@@ -20,6 +20,7 @@ import AllHabits from "./components/all-habits";
 import DailyHabits from "./components/daily-habits";
 import WeeklyHabits from "./components/weekly-habits";
 import MonthlyHabits from "./components/monthly-habits";
+import StateRender from "@/components/state-render";
 
 const staggerVariants = {
     initial: { opacity: 0, x: '100%' },
@@ -71,6 +72,10 @@ export default function Habits() {
         return (await habitsService.getUrgentHabit(5)).data.data;
     });
 
+    const allHabit = useQuery([habitsService.getHabits.name, "all"], async () => {
+        return (await habitsService.getHabits("all")).data.data
+    });
+
     const onTabChange = (key: string) => {
         setActiveTab(key);
     }
@@ -103,28 +108,45 @@ export default function Habits() {
     return (
         <div className="w-screen bg-white min-h-[150vh] pb-20">
             {navbar}
-            <div className="container-custom flex flex-col mt-2 mb-16">
-                <HabitsUrgent
-                    inPageHabits
-                    onChangeHabit={habitsToday.refetch}
-                    renderWhenComplete={(anim) => <div className="my-7"><CompleteAllHabit anim={anim} /></div>} />
-                {habitsToday.data?.length ? <p className="text-2xl my-3 mt-5">Should Do! 💪</p> : null}
-                <AnimatePresence>
-                    <motion.div
-                        variants={staggerVariants}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"
-                        className="flex flex-col gap-3"
-                    >
-                        {habitsToday.data?.map((habit, i) => (
-                            <motion.div key={habit.id} variants={itemVariants} >
-                                <ListCardHabit index={i} habit={habit} />
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </AnimatePresence>
-            </div>
+            <StateRender data={allHabit.data} isLoading={allHabit.isLoading}>
+                <StateRender.Data>
+                    {allHabit.data?.length ? (
+                        <div className="container-custom flex flex-col mt-2 mb-16">
+                            <HabitsUrgent
+                                inPageHabits
+                                onChangeHabit={habitsToday.refetch}
+                                renderWhenComplete={(anim) => {
+                                    if (allHabit.isLoading) return <p>Getting Data...</p>
+                                    if (!allHabit.data?.length) return null;
+                                    return (
+                                        <div className="my-7">
+                                            <CompleteAllHabit anim={anim} />
+                                        </div>
+                                    )
+                                }} />
+                            {habitsToday.data?.length ? <p className="text-2xl my-3 mt-5">Should Do! 💪</p> : null}
+                            <AnimatePresence>
+                                <motion.div
+                                    variants={staggerVariants}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit"
+                                    className="flex flex-col gap-3"
+                                >
+                                    {habitsToday.data?.map((habit, i) => (
+                                        <motion.div key={habit.id} variants={itemVariants} >
+                                            <ListCardHabit index={i} habit={habit} />
+                                        </motion.div>
+                                    ))}
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
+                    ) : null}
+                </StateRender.Data>
+                <StateRender.Loading>
+                    <p>Getting habits...</p>
+                </StateRender.Loading>
+            </StateRender>
             <Tabs defaultValue={activeTab} className="w-full sticky top-0 left-0 z-20" onValueChange={onTabChange}>
                 <TabsList className="!w-full">
                     {tabs?.map((tab) => <TabsTrigger className="!flex-1" key={tab.value} value={tab.value}>{tab.label}</TabsTrigger>)}

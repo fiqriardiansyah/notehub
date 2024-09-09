@@ -13,7 +13,7 @@ export type AllHabitsProps = {
 export default function AllHabits({ onGoingHabits }: AllHabitsProps) {
     const habits = useQuery([habitsService.getHabits.name, "all"], async () => {
         return (await habitsService.getHabits("all")).data.data
-    })
+    });
 
     return (
         <StateRender data={habits.data} isLoading={habits.isLoading} isError={habits.isError}>
