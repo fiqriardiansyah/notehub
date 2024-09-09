@@ -12,7 +12,7 @@ export type ToolbarProps = {
 
 export default function ToolBar({ rightAddition }: ToolbarProps) {
   return (
-    <div className="flex items-center justify-between my-4 gap-8">
+    <div className="flex items-center justify-between my-4 gap-8 sticky top-0 left-0 bg-slate-50">
       <Button size="sm" variant="ghost" className="flex items-center gap-2">
         <GoArrowDown className="text-xl" />
         Last Modified

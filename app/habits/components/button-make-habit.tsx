@@ -9,7 +9,7 @@ export type ButtonToWriteProps = {
 
 export default function ButtonToWrite({ href, title = "There is no habit available" }: ButtonToWriteProps) {
     return (
-        <div className='font-medium text-center self-center flex w-full flex-col items-center justify-center h-full'>
+        <div className='font-medium text-center self-center flex w-full flex-col items-center justify-center min-h-[30vh]'>
             {title}<br />
             <Link href={href} className='text-blue-500'>Make one +</Link>
         </div>

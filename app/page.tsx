@@ -33,7 +33,7 @@ export default function IndexPage() {
         <ToolBar />
         <StateRender data={itemsQuery.data} isLoading={itemsQuery.isLoading}>
           <StateRender.Data>
-            <div className="w-full my-7 min-h-[50vh]">
+            <div className="w-full my-7">
               {itemsQuery.data?.length ? <LayoutGrid notes={itemsQuery.data} /> : <ButtonToWrite href="/write" title="There is no notes available" />}
             </div>
           </StateRender.Data>
