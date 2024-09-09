@@ -10,9 +10,11 @@ import HabitsAlert from "./components/habits/habits-alert";
 import LayoutGrid from "./components/layout-grid";
 import SettingNoteDrawer from "./components/setting-note-drawer";
 import ToolBar from "./components/tool-bar";
+import StateRender from "@/components/state-render";
+import ButtonToWrite from "./habits/components/button-make-habit";
 
 export default function IndexPage() {
-  const itemsQuerey = useQuery([noteService.getAllItems.name], async () => {
+  const itemsQuery = useQuery([noteService.getAllItems.name], async () => {
     return (await noteService.getAllItems()).data.data;
   }, {
     refetchOnWindowFocus: true,
@@ -29,11 +31,18 @@ export default function IndexPage() {
         <Quotes />
         <HabitsAlert />
         <ToolBar />
-        <div className="w-full my-7">
-          <LayoutGrid notes={itemsQuerey.data} />
-        </div>
+        <StateRender data={itemsQuery.data} isLoading={itemsQuery.isLoading}>
+          <StateRender.Data>
+            <div className="w-full my-7 min-h-[50vh]">
+              {itemsQuery.data?.length ? <LayoutGrid notes={itemsQuery.data} /> : <ButtonToWrite href="/write" title="There is no notes available" />}
+            </div>
+          </StateRender.Data>
+          <StateRender.Loading>
+            <p>Getting Notes...</p>
+          </StateRender.Loading>
+        </StateRender>
       </div>
-      <SettingNoteDrawer.BottomSheet refetch={itemsQuerey.refetch} />
+      <SettingNoteDrawer.BottomSheet refetch={itemsQuery.refetch} />
       <BottomBar />
     </>
   );

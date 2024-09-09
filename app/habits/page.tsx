@@ -107,7 +107,7 @@ export default function Habits() {
                 <HabitsUrgent
                     inPageHabits
                     onChangeHabit={habitsToday.refetch}
-                    renderWhenComplete={(anim) => <CompleteAllHabit anim={anim} />} />
+                    renderWhenComplete={(anim) => <div className="my-7"><CompleteAllHabit anim={anim} /></div>} />
                 {habitsToday.data?.length ? <p className="text-2xl my-3 mt-5">Should Do! 💪</p> : null}
                 <AnimatePresence>
                     <motion.div

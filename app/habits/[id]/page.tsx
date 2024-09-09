@@ -1,34 +1,33 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import HabitsCountdown from "@/app/components/habits/habits-countdown";
 import { Todo } from "@/app/write/mode/todolist";
+import enjoyAnim from "@/asset/animation/enjoy.json";
+import fireAnim from '@/asset/animation/fire.json';
+import ResponsiveTagsListed from "@/components/common/tag-listed";
 import StateRender from "@/components/state-render";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import useHabitComplete from "@/hooks/use-habit-complete";
 import useSkipFirstRender from "@/hooks/use-skip-first-render";
+import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { convertEditorDataToText, easeDefault, progressCheer } from "@/lib/utils";
 import habitsService from "@/service/habits";
 import noteService from "@/service/note";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import parse from 'html-react-parser';
-import { Check, ChevronLeft, icons, PencilRuler } from "lucide-react";
+import { Check, ChevronLeft, PencilRuler } from "lucide-react";
+import moment from "moment";
 import { useRouter } from "next-nprogress-bar";
 import { useParams } from "next/navigation";
 import React from "react";
 import 'react-circular-progressbar/dist/styles.css';
+import Lottie from "react-lottie";
 import HistoryCalendar from "./components/history-calendar";
 import ListCardHabit from "./components/list-card-habit";
-import Lottie from "react-lottie";
-import fireAnim from '@/asset/animation/fire.json';
-import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
-import HabitsCountdown from "@/app/components/habits/habits-countdown";
-import ResponsiveTagsListed from "@/components/common/tag-listed";
-import enjoyAnim from "@/asset/animation/enjoy.json";
-import moment from "moment";
-import Image from "next/image";
 
 const defaultOptions = {
     loop: true,
