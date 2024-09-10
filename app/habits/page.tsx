@@ -21,6 +21,7 @@ import DailyHabits from "./components/daily-habits";
 import WeeklyHabits from "./components/weekly-habits";
 import MonthlyHabits from "./components/monthly-habits";
 import StateRender from "@/components/state-render";
+import PickDate from "./components/pick-date";
 
 const staggerVariants = {
     initial: { opacity: 0, x: '100%' },
@@ -63,12 +64,12 @@ export default function Habits() {
     const router = useRouter();
     const isNavHide = useToggleHideNav();
 
-    const today = moment().format("dddd");
-    const date = moment().format("DD MMM YYYY");
+    const pickedDay = moment().format("dddd");
+    const pickedDate = moment().format("DD MMM YYYY");
 
     const [activeTab, setActiveTab] = React.useState(tabs[0].value);
 
-    const habitsToday = useQuery([habitsService.getUrgentHabit.name, "habitstoday"], async () => {
+    const habitsToday = useQuery([habitsService.getUrgentHabit.name, "habitstoday", pickedDate], async () => {
         return (await habitsService.getUrgentHabit(5)).data.data;
     });
 
@@ -80,34 +81,34 @@ export default function Habits() {
         setActiveTab(key);
     }
 
-    const navbar = React.useMemo(() => (
-        <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
-            <div className="container-custom flex flex-row items-center justify-between">
-                <div className="flex gap-2 items-center">
-                    <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10 flex-1">
-                        <ChevronLeft />
-                    </Button>
-                    <p className="m-0 font-semibold">{today}, <span className="text-xs font-normal">{date}</span> 👋</p>
-                </div>
-                <div className="w-fit">
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button size="icon" variant="ghost" className="!w-10 flex-1">
-                                <CalendarRange />
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            Calendar
-                        </TooltipContent>
-                    </Tooltip>
-                </div>
-            </div>
-        </motion.div>
-    ), [isNavHide, today, date, router]);
-
     return (
         <div className="w-screen bg-white min-h-[150vh] pb-20">
-            {navbar}
+            <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
+                <div className="container-custom flex flex-row items-center justify-between">
+                    <div className="flex gap-2 items-center">
+                        <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10 flex-1">
+                            <ChevronLeft />
+                        </Button>
+                        <p className="m-0 font-semibold">{pickedDay}, <span className="text-xs font-normal">{pickedDate}</span> 👋</p>
+                    </div>
+                    {/* <div className="w-fit">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <PickDate onSelectDate={onSelectDate} pickedDate={momentDate}>
+                                    {(ctrl) => (
+                                        <Button onClick={ctrl.open} size="icon" variant="ghost" className="!w-10 flex-1">
+                                            <CalendarRange />
+                                        </Button>
+                                    )}
+                                </PickDate>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                Calendar
+                            </TooltipContent>
+                        </Tooltip>
+                    </div> */}
+                </div>
+            </motion.div>
             <StateRender data={allHabit.data} isLoading={allHabit.isLoading}>
                 <StateRender.Data>
                     {allHabit.data?.length ? (
