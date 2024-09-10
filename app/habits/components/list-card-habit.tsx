@@ -1,5 +1,6 @@
 "use client";
 
+import ResponsiveTagsListed from "@/components/common/tag-listed";
 import { convertEditorDataToText, hexToRgba } from "@/lib/utils";
 import { Note } from "@/models/note";
 import parse from "html-react-parser";
@@ -37,16 +38,9 @@ export default function ListCardHabit({ habit, index }: ListCardHabitProps) {
                             })} />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <div className="m-0 leading-none font-medium capitalize line-clamp-1 flex">
+                        <div className="m-0 leading-none font-medium capitalize line-clamp-1 flex flex-1 w-full">
                             {habit.title}
-                            {!!habit?.tags?.length && (
-                                <div className="flex items-center gap-2 line-clamp-1 ml-2">
-                                    {habit?.tags?.map((tag) => {
-                                        const Icon = icons[tag.icon as keyof typeof icons];
-                                        return <Icon size={13} key={tag.id} className="text-gray-700" />
-                                    })}
-                                </div>
-                            )}
+                            <ResponsiveTagsListed tags={habit?.tags} size={14} />
                         </div>
                         <span className="m-0 leading-[13px] text-xs line-clamp-2">
                             {habit.schedulerType} | {parse(convertEditorDataToText(habit?.description))}
