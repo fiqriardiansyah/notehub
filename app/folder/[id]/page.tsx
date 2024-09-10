@@ -16,10 +16,11 @@ import { motion } from "framer-motion";
 import FormTitle from "../components/form-title";
 import useSidePage from "@/hooks/use-side-page";
 import { emitterPickNotes, PICK_NOTES, PICK_NOTES_SUBMIT, usePickNotes } from "@/app/components/pick-notes";
-import { Note } from "@/models/note";
+import { DetailFolder, Note } from "@/models/note";
 import { easeDefault, pause } from "@/lib/utils";
 import useStatusBar from "@/hooks/use-status-bar";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
+import { REMOVE_FOLDER_EVENT, REMOVE_FOLDER_EVENT_FAILED, REMOVE_FOLDER_EVENT_SUCCESS } from "@/app/components/setting-note-ground/delete-folder";
 
 export default function FolderPage() {
     const queryClient = useQueryClient();
@@ -102,6 +103,22 @@ export default function FolderPage() {
         return detailFolderQuery.data?.notes
     }
 
+    const onClickDelete = () => {
+        window.dispatchEvent(new CustomEvent(REMOVE_FOLDER_EVENT, { detail: detailFolderQuery.data }));
+    }
+
+    React.useEffect(() => {
+        const onDeleteSuccess = (e: { detail: DetailFolder }) => {
+            router.replace("/");
+        }
+
+        window.addEventListener(REMOVE_FOLDER_EVENT_SUCCESS, onDeleteSuccess as any);
+
+        return () => {
+            window.removeEventListener(REMOVE_FOLDER_EVENT_SUCCESS, onDeleteSuccess as any);
+        }
+    }, []);
+
     return (
         <div className="container-custom pb-20 min-h-[150vh]">
             <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center gap-3 py-1 z-20 sticky top-0 left-0 bg-primary-foreground">
@@ -120,7 +137,7 @@ export default function FolderPage() {
                         <button onClick={onClickAddNotes} title="Add Note" className="bg-none cursor-pointer p-2 text-lg">
                             <Plus size={20} strokeWidth={1.25} />
                         </button>
-                        <button title="Delete Folder" className="bg-none cursor-pointer p-2 text-lg">
+                        <button onClick={onClickDelete} title="Delete Folder" className="bg-none cursor-pointer p-2 text-lg">
                             <Trash className="text-red-500" size={20} strokeWidth={1.25} />
                         </button>
                         <button onClick={onClickEdit} title="Edit Folder" className="bg-none cursor-pointer p-2 text-lg">

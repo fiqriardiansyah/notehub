@@ -2,6 +2,7 @@
 
 import PickNotesProvider, { PICK_NOTES } from "@/app/components/pick-notes";
 import DialogDeleteGround, { REMOVE_NOTE_EVENT } from "@/app/components/setting-note-ground/delete";
+import DialogDeleteFolderGround, { REMOVE_FOLDER_EVENT } from "@/app/components/setting-note-ground/delete-folder";
 import FolderNoteGround, { FOLDER_NOTE_GROUND } from "@/app/components/setting-note-ground/folder-note";
 import InitiateSecureNote, { INITIATE_SECURE_NOTE } from "@/app/components/setting-note-ground/initiate-secure-note";
 import Scheduler, { SCHEDULER } from "@/app/components/setting-note-ground/scheduler";
@@ -22,6 +23,7 @@ export default function SidePage() {
                 {common?.groundOpen === FOLDER_NOTE_GROUND && <FolderNoteGround key={FOLDER_NOTE_GROUND} />}
                 {common?.groundOpen === TAG_NOTE_GROUND && <TagNote key={TAG_NOTE_GROUND} />}
                 <DialogDeleteGround key={REMOVE_NOTE_EVENT} />
+                <DialogDeleteFolderGround key={REMOVE_FOLDER_EVENT} />
                 {common?.groundOpen === PICK_NOTES && <PickNotesProvider key={PICK_NOTES} />}
                 {common?.groundOpen === SCHEDULER && <Scheduler />}
             </AnimatePresence>

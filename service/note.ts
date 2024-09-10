@@ -34,6 +34,9 @@ const noteService = {
   deleteNote: (id: string): Promise<AxiosResponse<BaseResponse<Note>>> =>
     api.delete(`/note/${id}`),
 
+  deleteFolder: (id: string): Promise<AxiosResponse<BaseResponse<{ folderId: string }>>> =>
+    api.delete(`/note/folder/${id}`),
+
   hasPasswordNote: (): Promise<AxiosResponse<BaseResponse<boolean>>> =>
     api.get("/note/hpn"),
 
