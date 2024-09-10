@@ -19,7 +19,7 @@ export default function ShowedTags({ className, ...props }: ShowedTagsProps) {
     }
 
     return (
-        <div {...props} className={`${className} flex items-center flex-wrap gap-1`}>
+        <div {...props} className={`${className} flex items-center flex-nowrap overflow-x-auto gap-1`}>
             <AnimatePresence>
                 {dataNote?.tags?.map((tag) => (
                     <motion.div key={tag.id} initial={{ scale: 0.3 }} animate={{ scale: 1 }} exit={{ scale: 0, width: 0 }}>
