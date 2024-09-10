@@ -25,7 +25,7 @@ export default function ListCardHabit({ habit, index }: ListCardHabitProps) {
             {index === 0 && <p className="text-xs mb-1">On Going 🔥</p>}
             <div className={`flex justify-between items-center p-2 gap-3 w-full rounded-xl border-2 border-dashed bg-white 
                 ${index === 0 ? "!border-solid border-orange-400" : "border-gray-300"}`}>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-1">
                     <div className="w-[50px] h-[50px] rounded-full ">
                         <CircularProgressbar
                             value={progress}
@@ -37,7 +37,7 @@ export default function ListCardHabit({ habit, index }: ListCardHabitProps) {
                                 pathColor: index === 0 ? themeColor.orange[400] : hexToRgba(themeColor.gray[400], progress / 100),
                             })} />
                     </div>
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1 flex-1">
                         <div className="m-0 leading-none font-medium capitalize line-clamp-1 flex flex-1 w-full">
                             {habit.title}
                             <ResponsiveTagsListed tags={habit?.tags} size={14} />
