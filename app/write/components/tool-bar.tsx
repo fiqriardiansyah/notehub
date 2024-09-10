@@ -9,21 +9,25 @@ import TagNote from "./tag-note";
 import { WriteContext, WriteContextType } from "@/context/write";
 import React from "react";
 import Scheduler from "./scheduler";
+import { Note } from "@/models/note";
+import DeleteNote from "./delete-note";
 
-export type ToolsType = "tag" | "folder" | "secure" | "mode";
+export type ToolsType = "tag" | "folder" | "secure" | "mode" | "delete"
 
 export type ToolsBarType = {
     save: () => void;
     isLoading?: boolean;
     excludeSettings?: ToolsType[];
+    currentNote?: Note;
 };
 
-export default function ToolsBar({ save, isLoading, excludeSettings }: ToolsBarType) {
+export default function ToolsBar({ save, isLoading, excludeSettings, currentNote }: ToolsBarType) {
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
 
     return (
         <div className="p-1 w-full bg-white">
             <div className="w-full h-full flex items-center justify-center gap-2 container-custom">
+                {!excludeSettings?.find((s) => s === "delete") && <DeleteNote note={currentNote} />}
                 {!excludeSettings?.find((s) => s === "tag") && <TagNote />}
                 {!excludeSettings?.find((s) => s === "folder") && <FolderNote />}
                 {!excludeSettings?.find((s) => s === "secure") && dataNote.modeWrite !== "habits" && <SecureNote />}

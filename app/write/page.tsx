@@ -101,7 +101,7 @@ export default function Write() {
   const onSaveClick = () => {
     if (!saveBtnRef.current) return;
     saveBtnRef.current.click();
-  }
+  };
 
   return (
     <>
@@ -117,7 +117,7 @@ export default function Write() {
           className="text-2xl flex-1 text-gray-500 font-medium border-none focus:outline-none outline-none bg-transparent"
         />
       </motion.div>
-      <div className="!w-screen overflow-x-hidden">
+      <div className="w-full container-custom overflow-x-hidden">
         <div className="pb-20 min-h-[150vh]">
           <ShowedTags className="my-5" />
           {dataNote.modeWrite === "freetext" && <FreetextModeEditor onSave={saveWrite}>
@@ -131,7 +131,7 @@ export default function Write() {
           </HabitsModeEditor>}
         </div>
         <motion.div animate={{ y: 0, transition: { delay: 0.8 } }} initial={{ y: '100%' }} className="flex justify-center fixed z-40 bottom-0 left-0 w-full">
-          <ToolsBar excludeSettings={dataNote.modeWrite === "habits" ? ["folder"] : undefined} isLoading={saveMutate.isLoading} save={onSaveClick} />
+          <ToolsBar excludeSettings={dataNote.modeWrite === "habits" ? ["folder", "delete"] : ["delete"]} isLoading={saveMutate.isLoading} save={onSaveClick} />
         </motion.div>
       </div>
     </>

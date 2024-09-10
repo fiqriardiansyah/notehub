@@ -8,20 +8,19 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { NoteContext, NoteContextType } from "@/context/note";
+import useSecureNote from "@/hooks/use-secure-note";
 import useSettingList, { NoteSetting } from "@/hooks/use-setting-list";
 import useSidePage from "@/hooks/use-side-page";
-import React from "react";
-import { useMediaQuery } from "react-responsive";
-import { INITIATE_SECURE_NOTE } from "../setting-note-ground/initiate-secure-note";
-import useSecureNote from "@/hooks/use-secure-note";
-import { SECURE_NOTE } from "../setting-note-ground/secure-note";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useStatusBar from "@/hooks/use-status-bar";
 import { CreateNote } from "@/models/note";
 import noteService from "@/service/note";
-import useStatusBar from "@/hooks/use-status-bar";
-import { Bookmark, LockKeyhole, Paperclip } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Bookmark, LockKeyhole } from "lucide-react";
+import React from "react";
+import { useMediaQuery } from "react-responsive";
 import { FOLDER_NOTE_GROUND, FOLDER_NOTE_SAVE } from "../setting-note-ground/folder-note";
-import { pause } from "@/lib/utils";
+import { INITIATE_SECURE_NOTE } from "../setting-note-ground/initiate-secure-note";
+import { SECURE_NOTE } from "../setting-note-ground/secure-note";
 
 export type BottomSheet = {
   refetch?: () => void;
@@ -105,7 +104,7 @@ export default function BottomSheet({ refetch }: BottomSheet) {
               type: "success"
             });
           }
-          await queryClient.refetchQueries({ queryKey: [noteService.getNote.name] });
+          await queryClient.refetchQueries();
           setNote((prev) => ({ ...prev, note: null }));
         });
         return;

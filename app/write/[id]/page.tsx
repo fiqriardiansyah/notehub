@@ -46,7 +46,7 @@ export default function Write() {
         return (await noteService.getOneNote(id as string)).data.data
     }, {
         onSuccess(data) {
-            if (data.type === "habits") {
+            if (data?.type === "habits") {
                 router.replace("/", { scroll: true });
             }
             setTodos(data?.todos || []);
@@ -55,7 +55,7 @@ export default function Write() {
                 isSecure: data?.isSecure,
                 tags: data?.tags,
                 title: data?.title,
-                modeWrite: data.type,
+                modeWrite: data?.type || "freetext",
             }));
         }
     });
@@ -188,12 +188,15 @@ export default function Write() {
                     {(isSecureNoteQuery.data && !dataNote?.authorized) ? (
                         <OpenSecureNote refetch={noteDetailQuery.mutate} />
                     ) : (
-                        <div className="!w-screen overflow-x-hidden">
+                        <div className="w-full overflow-x-hidden">
                             {dataNote.modeWrite === "freetext" && <FreetextModeEditor editorRef={setFreetextEditor} asEdit data={noteDetailQuery.data?.note} />}
                             {dataNote.modeWrite === "todolist" && <TodoListModeEditor todos={todos} onChange={setTodos} />}
 
                             <motion.div animate={{ y: 0, transition: { delay: 0.8 } }} initial={{ y: '100%' }} className="flex justify-center fixed z-40 bottom-0 left-0 w-full">
-                                <ToolsBar excludeSettings={["folder", "mode"]} isLoading={saveMutate.isLoading} save={saveWrite} />
+                                <ToolsBar currentNote={noteDetailQuery.data}
+                                    excludeSettings={["folder", "mode"]}
+                                    isLoading={saveMutate.isLoading}
+                                    save={saveWrite} />
                             </motion.div>
                         </div>
 
