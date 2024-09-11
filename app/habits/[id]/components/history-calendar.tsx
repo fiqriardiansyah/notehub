@@ -69,8 +69,6 @@ export default function HistoryCalendar({ histories = [], currentHabit, isFreeTo
 
                         const historyOrToday = dateHistory?.includes(date) || moment(moment.now()).format(FORMAT_DATE_CALENDAR) === date;
 
-                        console.log(date, dateHistory, historyOrToday);
-
                         if (historyOrToday && !isFreeToday) {
                             const isOnGoing = isOnGoingHabitToday(date);
 
