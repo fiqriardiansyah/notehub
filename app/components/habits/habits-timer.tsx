@@ -12,15 +12,17 @@ import {
     DrawerTitle,
 } from "@/components/ui/drawer";
 import { Label } from "@/components/ui/label";
-import { FORMAT_DATE_SAVE } from "@/lib/utils";
+import { FORMAT_DATE_SAVE, hexToRgba } from "@/lib/utils";
 import { Info, Play, RotateCw } from "lucide-react";
 import moment from "moment";
 import React from "react";
+import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
+import themeColor from "tailwindcss/colors";
 
 export type HabitsTimerProps = {
     todo?: Todo;
     setTimer: (todo: Todo) => void;
-    children: (ctrl: { open: () => void }) => React.ReactNode;
+    children: (ctrl: { open: () => void, isOpen: boolean }) => React.ReactNode;
 }
 
 const defaultTime = { hours: 0, minutes: 0, seconds: 0 };
@@ -46,6 +48,7 @@ export default function HabitsTimer({ children, todo, setTimer }: HabitsTimerPro
         open: () => {
             setIsOpen(true);
         },
+        isOpen,
     }
 
     const disablePlay = !time?.hours && !time?.minutes && !time?.seconds;
@@ -91,6 +94,13 @@ export default function HabitsTimer({ children, todo, setTimer }: HabitsTimerPro
         }
     }
 
+    const onCompleteRender = () => {
+        if (!todo?.timer?.isEnd) {
+            onTimesUp();
+        }
+        return <h1>Times Up!</h1>
+    }
+
     return (
         <>
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
@@ -105,23 +115,17 @@ export default function HabitsTimer({ children, todo, setTimer }: HabitsTimerPro
                     </DrawerHeader>
                     <div className="container-custom flex flex-col gap-4">
                         <div className="h-[250px] flex items-center justify-center overflow-hidden">
-                            {todo?.timer && (
-                                <div key={todo?.id + "countdown"}>
-                                    <Countdown endTime={todo?.timer?.endTime} startTime={todo?.timer?.startTime}>
-                                        {() => {
-                                            if (!todo?.timer?.isEnd) {
-                                                onTimesUp();
-                                            }
-                                            return <h1>Times Up!</h1>
-                                        }}
-                                    </Countdown>
-                                </div>
-                            )}
-                            {!todo?.timer &&
-                                <div key={todo?.id + "timer"} className="w-">
-                                    <Timer onChange={(t) => setTime(t)} />
-                                </div>
-                            }
+                            {todo?.timer && <Countdown endTime={todo?.timer?.endTime} startTime={todo?.timer?.startTime} onCompleteRender={onCompleteRender}>
+                                {({ text, progress }) => (<div className="w-[250px] h-[250px]">
+                                    <CircularProgressbar text={text} value={progress} styles={buildStyles({
+                                        textSize: '14px',
+                                        textColor: hexToRgba("#000000", 0.7),
+                                        backgroundColor: "#00000000",
+                                        pathColor: themeColor.gray[700]
+                                    })} />
+                                </div>)}
+                            </Countdown>}
+                            {!todo?.timer && <Timer onChange={(t) => setTime(t)} />}
                         </div>
                         <div className="flex items-center justify-between w-full my-10 h-[40px]">
                             {todo?.timer?.isEnd && (<div>

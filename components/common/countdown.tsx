@@ -1,16 +1,14 @@
-import { hexToRgba } from '@/lib/utils';
 import moment from 'moment';
-import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import ReactCountdown from 'react-countdown';
-import themeColor from "tailwindcss/colors";
 
 export type CountdownProps = {
     startTime?: any;
     endTime?: any;
-    children?: () => any
+    onCompleteRender?: () => any;
+    children: (dt: { text: string, progress: number }) => any;
 }
 
-export default function Countdown({ startTime, endTime, children }: CountdownProps) {
+export default function Countdown({ startTime, endTime, onCompleteRender, children }: CountdownProps) {
 
     const totalDurationMillis = moment.duration(moment.utc(endTime).diff(moment.utc(startTime))).asMilliseconds();
 
@@ -23,8 +21,8 @@ export default function Countdown({ startTime, endTime, children }: CountdownPro
         <ReactCountdown
             date={endTime}
             renderer={({ hours, minutes, seconds, completed }) => {
-                if (completed && children) {
-                    return children();
+                if (completed && onCompleteRender) {
+                    return onCompleteRender();
                 }
 
                 const currentMilis = hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000;
@@ -33,14 +31,7 @@ export default function Countdown({ startTime, endTime, children }: CountdownPro
 
                 const text = `${hours.toString().padStart(2, "0")} : ${minutes.toString().padStart(2, "0")} : ${seconds.toString().padStart(2, "")}`
 
-                return <div className="w-[250px] h-[250px]">
-                    <CircularProgressbar text={text} value={progress} styles={buildStyles({
-                        textSize: '14px',
-                        textColor: hexToRgba("#000000", 0.7),
-                        backgroundColor: "#00000000",
-                        pathColor: themeColor.gray[700]
-                    })} />
-                </div>
+                return children({ text, progress });
             }}
         />
     )
