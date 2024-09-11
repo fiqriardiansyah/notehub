@@ -114,6 +114,7 @@ export default function HabitDetail() {
                 ...td,
                 isCheck: !td.isCheck,
                 checkedAt: !td.isCheck ? new Date().getTime() : null,
+                timer: null,
             }
         });
         const isDoneIncrease = currentTodos?.filter((t) => t.isCheck).length! > todos?.filter((t) => t.isCheck).length!
@@ -238,6 +239,7 @@ export default function HabitDetail() {
                         )}
                         <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2">
                             {todos?.map((todo) => <ListCardHabit
+                                setTodos={setTodos}
                                 completedHabit={!noteDetailQuery.data?.reschedule || isFreeToday}
                                 progressDoneCheer={progressDoneCheer}
                                 onCheck={onUpdateCheck}
