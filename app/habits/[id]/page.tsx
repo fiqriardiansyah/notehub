@@ -19,7 +19,7 @@ import noteService from "@/service/note";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import parse from 'html-react-parser';
-import { Check, ChevronLeft, PencilRuler } from "lucide-react";
+import { Check, ChevronLeft, PencilRuler, RotateCw, TimerReset } from "lucide-react";
 import moment from "moment";
 import { useRouter } from "next-nprogress-bar";
 import { useParams } from "next/navigation";
@@ -114,6 +114,7 @@ export default function HabitDetail() {
                 ...td,
                 isCheck: !td.isCheck,
                 checkedAt: !td.isCheck ? new Date().getTime() : null,
+                timer: null,
             }
         });
         const isDoneIncrease = currentTodos?.filter((t) => t.isCheck).length! > todos?.filter((t) => t.isCheck).length!
@@ -143,6 +144,17 @@ export default function HabitDetail() {
     const calenderViewMemo = React.useMemo(() => <HistoryCalendar isFreeToday={isFreeToday} histories={historyQuery.data} currentHabit={noteDetailForCalenderView.data} />,
         [noteDetailForCalenderView.data, historyQuery.data, isFreeToday]);
 
+    const resetTodoTimer = useMutation(async (id: string) => {
+        return (await noteService.resetTodosTimer(id)).data.data;
+    });
+
+    const resetTimer = () => {
+        resetTodoTimer.mutateAsync(id as string).then(() => {
+            noteDetailForCalenderView.refetch();
+            noteDetailQuery.refetch();
+        })
+    }
+
     const navbar = React.useMemo(() => (
         <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
             <div className="container-custom flex flex-row items-center justify-between flex-1">
@@ -155,7 +167,20 @@ export default function HabitDetail() {
                         <ResponsiveTagsListed tags={noteDetailQuery.data?.tags} size={14} />
                     </div>
                 </div>
-                <div className="w-fit">
+                <div className="w-fit flex items-center gap-3">
+                    {process.env.NODE_ENV === "development" && (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button loading={resetTodoTimer.isLoading} onClick={resetTimer} size="icon" variant="ghost" className="!w-10 flex-1 text-gray-700">
+                                    <TimerReset size={18} />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                Reset timer
+                            </TooltipContent>
+                        </Tooltip>
+
+                    )}
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button size="icon" variant="ghost" className="!w-10 flex-1 text-gray-700">
@@ -214,6 +239,7 @@ export default function HabitDetail() {
                         )}
                         <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2">
                             {todos?.map((todo) => <ListCardHabit
+                                setTodos={setTodos}
                                 completedHabit={!noteDetailQuery.data?.reschedule || isFreeToday}
                                 progressDoneCheer={progressDoneCheer}
                                 onCheck={onUpdateCheck}

@@ -3,7 +3,7 @@
 import { Todo } from "@/app/write/mode/todolist";
 import { Checkbox } from "@/components/ui/checkbox";
 import useSkipFirstRender from "@/hooks/use-skip-first-render";
-import { easeDefault, progressCheer } from "@/lib/utils";
+import { easeDefault, hexToRgba, progressCheer } from "@/lib/utils";
 import habitsService from "@/service/habits";
 import noteService from "@/service/note";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -14,7 +14,10 @@ import Link from "next/link";
 import React from "react";
 import HabitsCountdown from "./habits-countdown";
 import useHabitComplete, { JSON_ANIMATIONS } from "@/hooks/use-habit-complete";
-
+import HabitsTimer from "./habits-timer";
+import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
+import Countdown from "@/components/common/countdown";
+import themeColor from "tailwindcss/colors";
 
 export type HabitsUrgentProps = HTMLMotionProps<"div"> & {
     onChangeHabit?: () => void;
@@ -87,6 +90,7 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
                     ...td,
                     isCheck,
                     checkedAt: isCheck ? new Date().getTime() : null,
+                    timer: null,
                 }
             });
             const isDoneIncrease = currentTodos?.filter((t) => t.isCheck).length! > todos?.filter((t) => t.isCheck).length!
@@ -120,6 +124,31 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
         if (habit?.schedulerType === "weekly") return { name: inPageHabits ? "This Week" : "Weeks" };
         if (habit?.schedulerType === "monthly") return { name: inPageHabits ? "This Month" : "Months" };
     }
+
+    const onSetTimer = (todo: Todo) => {
+        setTodos((prev) => {
+            return prev.map((td) => {
+                if (td.id !== todo.id) return td;
+                return todo;
+            })
+        })
+    }
+
+    const onCompleteTimer = (todo: Todo) => {
+        if (todo?.timer?.autoComplete) {
+            onSetTimer({
+                ...todo,
+                isCheck: true,
+                checkedAt: new Date().getTime(),
+                timer: {
+                    ...todo?.timer,
+                    isEnd: true,
+                },
+            } as Todo);
+            return;
+        }
+        onSetTimer({ ...todo, timer: null });
+    };
 
     return (
         <div className="flex flex-col gap-1 overflow-hidden" >
@@ -181,9 +210,36 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
                             {todos.map((todo) => (
                                 <div key={todo.id} className="w-full flex items-center justify-between">
                                     <div className="flex gap-2 items-center h-[40px]">
-                                        <button className="bg-gray-100 rounded-md p-1 text-gray-400">
-                                            <Timer />
-                                        </button>
+                                        <HabitsTimer setTimer={onSetTimer} todo={todo}>
+                                            {(ctrl) => {
+                                                if (todo?.timer && !todo?.timer?.isEnd) {
+                                                    return (
+                                                        <Countdown
+                                                            onCompleteRender={ctrl.isOpen ? () => { } : () => onCompleteTimer(todo)}
+                                                            endTime={todo?.timer?.endTime}
+                                                            startTime={todo?.timer?.startTime}>
+                                                            {({ text, progress }) => (
+                                                                <button onClick={todo?.isCheck ? () => { } : ctrl.open} className="w-10 h-10 rounded-full relative">
+                                                                    <CircularProgressbar text="" value={progress} styles={buildStyles({
+                                                                        textSize: '10px',
+                                                                        textColor: hexToRgba("#000000", 0.7),
+                                                                        backgroundColor: "#00000000",
+                                                                        pathColor: themeColor.gray[500],
+                                                                    })} />
+                                                                    <Timer size={16} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                                                                </button>)}
+                                                        </Countdown>
+                                                    )
+                                                }
+                                                return (
+                                                    <button
+                                                        onClick={todo?.isCheck ? () => { } : ctrl.open}
+                                                        className={`w-10 h-10 rounded-full flex items-center justify-center ${todo?.isCheck ? "text-gray-400 pointer-events-none" : ""}`}>
+                                                        <Timer />
+                                                    </button>
+                                                )
+                                            }}
+                                        </HabitsTimer>
                                         <div className="">
                                             <p className="text-sm m-0 capitalize leading-none line-clamp-1">{todo.content}</p>
                                             {todo.isCheck && (

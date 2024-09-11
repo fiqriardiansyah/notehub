@@ -65,6 +65,8 @@ const noteService = {
 
   removeTagNewFlag: (id: string): Promise<AxiosResponse<BaseResponse<Tag>>> => api.patch(`/note/tag/${id}`),
 
+  resetTodosTimer: (id: string): Promise<AxiosResponse<BaseResponse<Note>>> => api.get(`/note/reset-todos-timer/${id}`), // for debugging only
+
 };
 
 export default noteService;

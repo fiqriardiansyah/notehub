@@ -1,22 +1,55 @@
 "use client"
 
+import HabitsTimer from "@/app/components/habits/habits-timer";
 import { Todo } from "@/app/write/mode/todolist";
+import Countdown from "@/components/common/countdown";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { easeDefault, progressCheer } from "@/lib/utils";
+import { easeDefault, hexToRgba, progressCheer } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Timer } from "lucide-react";
 import moment from "moment";
 import React from "react";
+import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
+import themeColor from "tailwindcss/colors";
 
 export type ListCardHabitProps = {
     todo: Todo;
     progressDoneCheer?: { progress: number; todoId: string };
     onCheck?: (todo: Todo) => void;
     completedHabit?: boolean;
+    setTodos?: React.Dispatch<React.SetStateAction<Todo[]>>;
 }
 
-export default function ListCardHabit({ todo, onCheck, progressDoneCheer, completedHabit }: ListCardHabitProps) {
+export default function ListCardHabit({ todo, onCheck, progressDoneCheer, completedHabit, setTodos }: ListCardHabitProps) {
+
+    const onSetTimer = (todo: Todo) => {
+        if (setTodos) {
+            setTodos((prev) => {
+                return prev.map((td) => {
+                    if (td.id !== todo.id) return td;
+                    return todo;
+                })
+            })
+        }
+    }
+
+    const onCompleteTimer = (todo: Todo) => {
+        if (todo?.timer?.autoComplete) {
+            onSetTimer({
+                ...todo,
+                isCheck: true,
+                checkedAt: new Date().getTime(),
+                timer: {
+                    ...todo?.timer,
+                    isEnd: true,
+                },
+            } as Todo);
+            return;
+        }
+        onSetTimer({ ...todo, timer: null });
+    };
+
     return <div className="flex p-2 rounded-2xl flex-col border border-solid border-gray-200 relative overflow-hidden">
         {!completedHabit && (
             <AnimatePresence mode="wait">
@@ -41,16 +74,44 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
         )}
         <div className="flex items-center justify-between">
             {!completedHabit && (
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button size="icon-small" variant="secondary" className="mb-3">
-                            <Timer size={16} />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        Timer
-                    </TooltipContent>
-                </Tooltip>
+                <HabitsTimer setTimer={onSetTimer} todo={todo}>
+                    {(ctrl) => {
+                        if (todo?.timer && !todo?.timer?.isEnd) {
+                            return (
+                                <Countdown
+                                    onCompleteRender={ctrl.isOpen ? () => { } : () => onCompleteTimer(todo)}
+                                    endTime={todo?.timer?.endTime}
+                                    startTime={todo?.timer?.startTime}>
+                                    {({ text, progress }) => (
+                                        <div className="flex items-center gap-2">
+                                            <button onClick={todo?.isCheck ? () => { } : ctrl.open} className="w-9 h-9 rounded-full relative">
+                                                <CircularProgressbar text="" value={progress} styles={buildStyles({
+                                                    textColor: hexToRgba("#000000", 0.7),
+                                                    backgroundColor: "#00000000",
+                                                    pathColor: themeColor.gray[500],
+                                                })} />
+                                                <Timer size={16} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                                            </button>
+                                            <span className="text-[10px] font-medium">{text}</span>
+                                        </div>
+                                    )}
+                                </Countdown>
+                            )
+                        }
+                        return (
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button onClick={todo?.isCheck ? () => { } : ctrl.open} disabled={!!todo?.isCheck} size="icon-small" variant="secondary" className="mb-3">
+                                        <Timer size={16} />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    Timer
+                                </TooltipContent>
+                            </Tooltip>
+                        )
+                    }}
+                </HabitsTimer>
             )}
             {!completedHabit ? (
                 <Button onClick={() => onCheck && onCheck(todo)} size="icon-small" variant={todo?.isCheck ? "default" : "ghost"} className="mb-3">

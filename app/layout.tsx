@@ -7,6 +7,7 @@ import Provider from "./provider";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import Layout from "@/components/layout";
+import 'react-circular-progressbar/dist/styles.css';
 
 const fontSans = FontSans({
   subsets: ["latin"],

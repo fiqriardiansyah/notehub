@@ -51,15 +51,14 @@ export default function ButtonSuccessAnim({ children, className, message, id, ..
     }, []);
 
     return (
-        <div {...props} tabIndex={-1} className={`relative ${className}`}>
+        <div {...props} className={`relative pointer-events-none ${className}`}>
             <AnimatePresence>
                 {show && (
                     <motion.p
-                        tabIndex={-1}
                         animate={{ scale: 1, rotate: '-10deg', opacity: 1, transition: { delay: 0.3 }, y: '-130%' }}
                         exit={{ scale: 0, rotate: '20deg', y: '50%', opacity: 0 }}
                         style={{ position: 'absolute' }}
-                        className="font-semibold text-sm whitespace-nowrap">{message}</motion.p>
+                        className="font-semibold text-sm whitespace-nowrap pointer-events-none">{message}</motion.p>
                 )}
             </AnimatePresence>
             <Lottie
@@ -67,7 +66,7 @@ export default function ButtonSuccessAnim({ children, className, message, id, ..
                 options={defaultOptions}
                 height={120}
                 width={120}
-                style={{ margin: 0, position: 'absolute', zIndex: 0, top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+                style={{ margin: 0, position: 'absolute', zIndex: 0, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', pointerEvents: 'none' }} />
             <Children />
         </div>
     )
