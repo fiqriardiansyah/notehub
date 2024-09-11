@@ -16,12 +16,14 @@ import dayjs from "dayjs";
 import useStatusBar from "@/hooks/use-status-bar";
 import { WriteContext, WriteContextType } from "@/context/write";
 import { Note } from "@/models/note";
+import { Timer } from "@/models/habits";
 
 export type Todo = {
     id: string;
     content: any;
     isCheck: boolean;
     checkedAt: any;
+    timer?: Timer;
 }
 
 export type TodoListModeEditorProps = {

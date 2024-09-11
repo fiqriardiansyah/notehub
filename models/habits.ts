@@ -8,3 +8,12 @@ export type HabitHistory = {
     todos: Todo[]
     completedTime: string
 }
+
+export type Timer = {
+    id: string
+    itemId: string
+    type: string | null
+    endTime: Date | null
+    isEnd: boolean | null
+    autoComplete: boolean | null
+}

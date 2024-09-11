@@ -14,6 +14,7 @@ import Link from "next/link";
 import React from "react";
 import HabitsCountdown from "./habits-countdown";
 import useHabitComplete, { JSON_ANIMATIONS } from "@/hooks/use-habit-complete";
+import HabitsTimer from "./habits-timer";
 
 
 export type HabitsUrgentProps = HTMLMotionProps<"div"> & {
@@ -181,9 +182,15 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
                             {todos.map((todo) => (
                                 <div key={todo.id} className="w-full flex items-center justify-between">
                                     <div className="flex gap-2 items-center h-[40px]">
-                                        <button className="bg-gray-100 rounded-md p-1 text-gray-400">
-                                            <Timer />
-                                        </button>
+                                        <HabitsTimer todo={todo}>
+                                            {(ctrl) => (
+                                                <button
+                                                    onClick={todo?.isCheck ? () => { } : ctrl.open}
+                                                    className={`w-10 h-10 rounded-full flex items-center justify-center ${todo?.isCheck ? "text-gray-400 pointer-events-none" : ""}`}>
+                                                    <Timer />
+                                                </button>
+                                            )}
+                                        </HabitsTimer>
                                         <div className="">
                                             <p className="text-sm m-0 capitalize leading-none line-clamp-1">{todo.content}</p>
                                             {todo.isCheck && (
