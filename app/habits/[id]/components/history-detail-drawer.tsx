@@ -51,8 +51,8 @@ export default function HistoryDetailDrawer({ children, history, schedulerType }
                 <DrawerContent className="z-50">
                     <DrawerHeader>
                         <DrawerTitle className="capitalize">
-                            {schedulerType === "day" && moment(history?.completedTime).format("dddd, DD MMMM YYYY")}
-                            {schedulerType === "weekly" && `${moment(history?.completedTime).startOf("week").format("dddd DD")} - ${moment(history?.completedTime).endOf("week").format("dddd, DD MMM YYYY")}`}
+                            {schedulerType === "day" && moment.utc(history?.completedTime).format("dddd, DD MMMM YYYY")}
+                            {schedulerType === "weekly" && `${moment.utc(history?.completedTime).startOf("week").format("dddd DD")} - ${moment.utc(history?.completedTime).endOf("week").format("dddd, DD MMM YYYY")}`}
                         </DrawerTitle>
                     </DrawerHeader>
                     <div className="container-custom flex flex-col gap-4">

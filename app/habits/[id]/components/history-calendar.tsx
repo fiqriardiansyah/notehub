@@ -34,7 +34,7 @@ export const FORMAT_DATE_CALENDAR = "DD-MM-YYYY"
 export default function HistoryCalendar({ histories = [], currentHabit, isFreeToday }: HistoryCalendarProps) {
     const isOnGoingHabitToday = (date: string) => {
         const today = moment(moment.now()).format(FORMAT_DATE_CALENDAR);
-        const isAlreadyFinish = histories?.find((h) => moment(h.completedTime).format(FORMAT_DATE_CALENDAR) === today);
+        const isAlreadyFinish = histories?.find((h) => moment.utc(h.completedTime).format(FORMAT_DATE_CALENDAR) === today);
         if (isAlreadyFinish) return false;
         if (isFreeToday) return false;
         return currentHabit?.schedulerType === "day" && today === date;
@@ -42,14 +42,14 @@ export default function HistoryCalendar({ histories = [], currentHabit, isFreeTo
 
     const isOnGoingHabitWeek = (weekNumber: number) => {
         const currentWeek = moment().week()
-        const isAlreadyFinish = histories?.find((h) => moment(h.completedTime).week() === currentWeek);
+        const isAlreadyFinish = histories?.find((h) => moment.utc(h.completedTime).week() === currentWeek);
         if (isAlreadyFinish) return false;
         return currentWeek === weekNumber;
     }
 
     const isOnGoingHabitMonthly = (date: Date) => {
         const currentMonth = moment().month();
-        const isAlreadyFinish = histories?.find((h) => moment(h.completedTime).month() === currentMonth);
+        const isAlreadyFinish = histories?.find((h) => moment.utc(h.completedTime).month() === currentMonth);
         if (isAlreadyFinish) return false;
         return currentMonth === moment(date).month();
     }
@@ -65,14 +65,16 @@ export default function HistoryCalendar({ histories = [], currentHabit, isFreeTo
                 components={{
                     DayButton: ({ day, modifiers, ...props }) => {
                         const date = moment(day.date).format(FORMAT_DATE_CALENDAR);
-                        const dateHistory = histories?.map((dt) => moment(dt.completedTime).format(FORMAT_DATE_CALENDAR));
+                        const dateHistory = histories?.map((dt) => moment.utc(dt.completedTime).format(FORMAT_DATE_CALENDAR));
 
                         const historyOrToday = dateHistory?.includes(date) || moment(moment.now()).format(FORMAT_DATE_CALENDAR) === date;
+
+                        console.log(date, dateHistory, historyOrToday);
 
                         if (historyOrToday && !isFreeToday) {
                             const isOnGoing = isOnGoingHabitToday(date);
 
-                            const history = histories?.find((h) => moment(h.completedTime).format(FORMAT_DATE_CALENDAR) === date);
+                            const history = histories?.find((h) => moment.utc(h.completedTime).format(FORMAT_DATE_CALENDAR) === date);
                             const taskDone = history?.todos?.filter((td) => td.isCheck).length;
                             const progress = isOnGoing ? currentProgress : Math.round(taskDone! / (history?.todos.length || 1) * 100);
 
@@ -114,7 +116,7 @@ export default function HistoryCalendar({ histories = [], currentHabit, isFreeTo
                 Week: ({ week, className, children, ...props }) => {
                     const isOnGoing = isOnGoingHabitWeek(week.weekNumber);
 
-                    const history = histories?.find((h) => moment(h.completedTime).week() === week.weekNumber);
+                    const history = histories?.find((h) => moment.utc(h.completedTime).week() === week.weekNumber);
                     const taskDone = history?.todos?.filter((td) => td.isCheck).length;
                     const progress = isOnGoing ? currentProgress : Math.round(taskDone! / (history?.todos.length || 1) * 100);
 
@@ -154,7 +156,7 @@ export default function HistoryCalendar({ histories = [], currentHabit, isFreeTo
                 MonthCaption({ calendarMonth, displayIndex, className, ...props }) {
                     const isOnGoing = isOnGoingHabitMonthly(calendarMonth.date);
 
-                    const history = histories?.find((h) => moment(h.completedTime).month() === moment(calendarMonth.date).month());
+                    const history = histories?.find((h) => moment.utc(h.completedTime).month() === moment(calendarMonth.date).month());
                     const taskDone = history?.todos?.filter((td) => td.isCheck).length;
                     const progress = isOnGoing ? currentProgress : Math.round(taskDone! / (history?.todos?.length || 1) * 100);
 
