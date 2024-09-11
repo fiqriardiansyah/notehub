@@ -23,7 +23,7 @@ export type Todo = {
     content: any;
     isCheck: boolean;
     checkedAt: any;
-    timer?: Timer;
+    timer?: Partial<Timer> | null;
 }
 
 export type TodoListModeEditorProps = {

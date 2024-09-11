@@ -88,6 +88,7 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
                     ...td,
                     isCheck,
                     checkedAt: isCheck ? new Date().getTime() : null,
+                    timer: null,
                 }
             });
             const isDoneIncrease = currentTodos?.filter((t) => t.isCheck).length! > todos?.filter((t) => t.isCheck).length!
@@ -120,6 +121,15 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
         }
         if (habit?.schedulerType === "weekly") return { name: inPageHabits ? "This Week" : "Weeks" };
         if (habit?.schedulerType === "monthly") return { name: inPageHabits ? "This Month" : "Months" };
+    }
+
+    const onSetTimer = (todo: Todo) => {
+        setTodos((prev) => {
+            return prev.map((td) => {
+                if (td.id !== todo.id) return td;
+                return todo;
+            })
+        })
     }
 
     return (
@@ -182,7 +192,7 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
                             {todos.map((todo) => (
                                 <div key={todo.id} className="w-full flex items-center justify-between">
                                     <div className="flex gap-2 items-center h-[40px]">
-                                        <HabitsTimer todo={todo}>
+                                        <HabitsTimer setTimer={onSetTimer} todo={todo}>
                                             {(ctrl) => (
                                                 <button
                                                     onClick={todo?.isCheck ? () => { } : ctrl.open}

@@ -10,7 +10,8 @@ import { twMerge } from "tailwind-merge";
 dayjs.extend(relativeTime);
 dayjs.extend(advancedFormat);
 
-export const ISO_FORMAT = "YYYY-MM-DDTHH:mm:ss.SSSZ"
+export const FORMAT_DATE_RETRIEVE = "YYYY-MM-DDTHH:mm:ss.SSSZ"
+export const FORMAT_DATE_SAVE = "YYYY-MM-DD HH:mm:ss.SSS"
 
 export function formatDate(date: any) {
   const now = dayjs();
@@ -43,8 +44,8 @@ export function remainingTimeInDays(unitOfTime: moment.unitOfTime.StartOf) {
 }
 
 export function remainingTimeInHour(time: { start: any, end: any }) {
-  const time1 = moment(time.start, ISO_FORMAT).format("HH:mm:ss");
-  const time2 = moment(time.end, ISO_FORMAT).format("HH:mm:ss");
+  const time1 = moment(time.start, FORMAT_DATE_SAVE).format("HH:mm:ss");
+  const time2 = moment(time.end, FORMAT_DATE_SAVE).format("HH:mm:ss");
 
   const format = "YYYY-MM-DD HH:mm:ss";
   const startTime = moment(`1970-01-01 ${time1}`, format);

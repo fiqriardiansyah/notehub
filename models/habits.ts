@@ -11,9 +11,10 @@ export type HabitHistory = {
 
 export type Timer = {
     id: string
-    itemId: string
-    type: string | null
-    endTime: Date | null
-    isEnd: boolean | null
-    autoComplete: boolean | null
+    itemId?: string
+    type?: "todo"
+    startTime?: string | null
+    endTime?: string | null
+    isEnd?: boolean | null
+    autoComplete?: boolean | null
 }

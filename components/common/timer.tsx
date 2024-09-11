@@ -9,20 +9,28 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import React from "react";
 
+export type Time = { hours: number; minutes: number; seconds: number; };
+
 export type TimerProps = {
-    children?: (value: { hour: number; minute: number; second: number; }) => any;
-    onChange?: (value: { hour: number; minute: number; second: number; }) => any;
+    children?: (value: Time) => any;
+    onChange?: (value: Time) => any;
 }
 
 export default function Timer({ children, onChange }: TimerProps) {
     const [value, setValue] = React.useState("000000");
 
     const parse = (val: string) => {
-        const hour = parseInt(val.slice(0, 1));
-        const minute = parseInt(val.slice(2, 3));
-        const second = parseInt(val.slice(4, 5));
+        const split = val.split("")
 
-        return { hour, minute, second }
+        const hour = parseInt(split[0] + split[1])
+        const minute = parseInt(split[2] + split[3]);
+        const second = parseInt(split[4] + split[5]);
+
+        return {
+            hours: Number.isNaN(hour) ? 0 : hour,
+            minutes: Number.isNaN(minute) ? 0 : minute,
+            seconds: Number.isNaN(second) ? 0 : second,
+        }
     }
 
     React.useEffect(() => {

@@ -7,7 +7,6 @@ import parse from "html-react-parser";
 import { ChevronRight, icons } from "lucide-react";
 import Link from "next/link";
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
 import themeColor from "tailwindcss/colors";
 
 export type ListCardHabitProps = {
