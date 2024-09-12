@@ -65,9 +65,10 @@ export default function HistoryCalendar({ histories = [], currentHabit }: Histor
                         const date = moment(day.date).format(FORMAT_DATE_CALENDAR);
                         const isOnGoing = isOnGoingHabitToday(date);
                         const dateHistory = histories?.map((dt) => moment.utc(dt.completedTime).format(FORMAT_DATE_CALENDAR));
+
                         const pastOrToday = dateHistory?.includes(date) || moment(moment.now()).format(FORMAT_DATE_CALENDAR) === date;
 
-                        const isFree = currentHabit?.schedulerDays?.includes(moment(date).format("dddd").toLocaleLowerCase());
+                        const isFree = !currentHabit?.schedulerDays?.find((d) => d === moment(day.date).format("dddd").toLocaleLowerCase())
 
                         if (pastOrToday && !isFree) {
                             const history = histories?.find((h) => moment.utc(h.completedTime).format(FORMAT_DATE_CALENDAR) === date);
