@@ -58,6 +58,9 @@ export default function HistoryCalendar({ histories = [], currentHabit }: Histor
     if (currentHabit?.schedulerType === "day") {
         return (
             <Calendar
+                disabled={{
+                    before: new Date(currentHabit?.createdAt)
+                }}
                 mode="multiple"
                 className="rounded-md calendar-history-habit"
                 components={{
@@ -104,51 +107,61 @@ export default function HistoryCalendar({ histories = [], currentHabit }: Histor
 
     if (currentHabit?.schedulerType === "weekly") {
         return (
-            <Calendar className="rounded-md calendar-history-habit" mode="multiple" components={{
-                DayButton({ day, modifiers, ...props }) {
-                    return <button className="h-10 w-10 z-[2] pointer-events-none">
-                        {moment(day.date).format("D")}
-                    </button>
-                },
-                Week: ({ week, className, children, ...props }) => {
-                    const isOnGoing = isOnGoingHabitWeek(week.weekNumber);
+            <Calendar
+                className="rounded-md calendar-history-habit"
+                mode="multiple"
+                disabled={{
+                    before: new Date(currentHabit?.createdAt)
+                }}
+                components={{
+                    DayButton({ day, modifiers, ...props }) {
+                        return <button className="h-10 w-10 z-[2] pointer-events-none">
+                            {moment(day.date).format("D")}
+                        </button>
+                    },
+                    Week: ({ week, className, children, ...props }) => {
+                        const isOnGoing = isOnGoingHabitWeek(week.weekNumber);
 
-                    const history = histories?.find((h) => moment.utc(h.completedTime).week() === week.weekNumber);
-                    const taskDone = history?.todos?.filter((td) => td.isCheck).length;
-                    const progress = isOnGoing ? currentProgress : Math.round(taskDone! / (history?.todos.length || 1) * 100);
+                        const history = histories?.find((h) => moment.utc(h.completedTime).week() === week.weekNumber);
+                        const taskDone = history?.todos?.filter((td) => td.isCheck).length;
+                        const progress = isOnGoing ? currentProgress : Math.round(taskDone! / (history?.todos.length || 1) * 100);
 
-                    const color = () => {
-                        if (isOnGoing) return themeColor.orange[400];
-                        return progress === 100 ? themeColor.green[400] : themeColor.gray[400]
-                    }
+                        const color = () => {
+                            if (isOnGoing) return themeColor.orange[400];
+                            return progress === 100 ? themeColor.green[400] : themeColor.gray[400]
+                        }
 
-                    return <tr {...props} className={`${className} relative`}>
-                        {isOnGoing && <tr className="absolute top-1/2 transform -translate-y-1/2 left-0 z-10">
-                            <Lottie style={{ pointerEvents: 'none' }} options={defaultOptions} height={40} width={40} />
-                        </tr>}
-                        {(history || isOnGoing) && (
-                            <HistoryDetailDrawer history={history} schedulerType="weekly">
-                                {(ctrl) => (
-                                    <td onClick={isOnGoing ? undefined : ctrl.open}
-                                        style={{ borderColor: color() }}
-                                        className="w-full h-full border-2 cursor-pointer border-solid absolute bg-opacity-25 top-0 left-0 z-[1] rounded-full flex justify-start">
-                                        <div style={{ width: progress + "%", background: hexToRgba(color(), 0.2), height: '100%' }}
-                                            className={`duration-200 hover:opacity-70 relative transition rounded-tl-full rounded-bl-full ${progress === 100 ? "rounded-full" : ""}`}>
-                                        </div>
-                                    </td>
-                                )}
-                            </HistoryDetailDrawer>
-                        )}
-                        {children}
-                    </tr>
-                },
-            }} />
+                        return <tr {...props} className={`${className} relative`}>
+                            {isOnGoing && <tr className="absolute top-1/2 transform -translate-y-1/2 left-0 z-10">
+                                <Lottie style={{ pointerEvents: 'none' }} options={defaultOptions} height={40} width={40} />
+                            </tr>}
+                            {(history || isOnGoing) && (
+                                <HistoryDetailDrawer history={history} schedulerType="weekly">
+                                    {(ctrl) => (
+                                        <td onClick={isOnGoing ? undefined : ctrl.open}
+                                            style={{ borderColor: color() }}
+                                            className="w-full h-full border-2 cursor-pointer border-solid absolute bg-opacity-25 top-0 left-0 z-[1] rounded-full flex justify-start">
+                                            <div style={{ width: progress + "%", background: hexToRgba(color(), 0.2), height: '100%' }}
+                                                className={`duration-200 hover:opacity-70 relative transition rounded-tl-full rounded-bl-full ${progress === 100 ? "rounded-full" : ""}`}>
+                                            </div>
+                                        </td>
+                                    )}
+                                </HistoryDetailDrawer>
+                            )}
+                            {children}
+                        </tr>
+                    },
+                }} />
         )
     }
 
     return (
-        <Calendar className="rounded-md calendar-history-habit" mode="multiple"
+        <Calendar
+            className="rounded-md calendar-history-habit" mode="multiple"
             showOutsideDays={false}
+            disabled={{
+                before: new Date(currentHabit?.createdAt!)
+            }}
             components={{
                 MonthCaption({ calendarMonth, displayIndex, className, ...props }) {
                     const isOnGoing = isOnGoingHabitMonthly(calendarMonth.date);
