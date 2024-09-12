@@ -51,7 +51,7 @@ export default function ButtonSuccessAnim({ children, className, message, id, ..
     }, []);
 
     return (
-        <div {...props} className={`relative pointer-events-none ${className}`}>
+        <div {...props} className={`relative ${className}`}>
             <AnimatePresence>
                 {show && (
                     <motion.p

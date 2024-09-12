@@ -141,8 +141,8 @@ export default function HabitDetail() {
     const isFreeToday = noteDetailQuery.data?.schedulerType === "day"
         && !noteDetailQuery.data?.schedulerDays?.includes(moment().format("dddd").toLocaleLowerCase())
 
-    const calenderViewMemo = React.useMemo(() => <HistoryCalendar isFreeToday={isFreeToday} histories={historyQuery.data} currentHabit={noteDetailForCalenderView.data} />,
-        [noteDetailForCalenderView.data, historyQuery.data, isFreeToday]);
+    const calenderViewMemo = React.useMemo(() => <HistoryCalendar histories={historyQuery.data} currentHabit={noteDetailForCalenderView.data} />,
+        [noteDetailForCalenderView.data, historyQuery.data]);
 
     const resetTodoTimer = useMutation(async (id: string) => {
         return (await noteService.resetTodosTimer(id)).data.data;

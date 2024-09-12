@@ -26,17 +26,15 @@ const defaultOptions = {
 export type HistoryCalendarProps = {
     histories?: HabitHistory[];
     currentHabit?: DetailNote;
-    isFreeToday?: boolean;
 }
 
 export const FORMAT_DATE_CALENDAR = "DD-MM-YYYY"
 
-export default function HistoryCalendar({ histories = [], currentHabit, isFreeToday }: HistoryCalendarProps) {
+export default function HistoryCalendar({ histories = [], currentHabit }: HistoryCalendarProps) {
     const isOnGoingHabitToday = (date: string) => {
         const today = moment(moment.now()).format(FORMAT_DATE_CALENDAR);
         const isAlreadyFinish = histories?.find((h) => moment.utc(h.completedTime).format(FORMAT_DATE_CALENDAR) === today);
         if (isAlreadyFinish) return false;
-        if (isFreeToday) return false;
         return currentHabit?.schedulerType === "day" && today === date;
     }
 
@@ -65,13 +63,13 @@ export default function HistoryCalendar({ histories = [], currentHabit, isFreeTo
                 components={{
                     DayButton: ({ day, modifiers, ...props }) => {
                         const date = moment(day.date).format(FORMAT_DATE_CALENDAR);
+                        const isOnGoing = isOnGoingHabitToday(date);
                         const dateHistory = histories?.map((dt) => moment.utc(dt.completedTime).format(FORMAT_DATE_CALENDAR));
+                        const pastOrToday = dateHistory?.includes(date) || moment(moment.now()).format(FORMAT_DATE_CALENDAR) === date;
 
-                        const historyOrToday = dateHistory?.includes(date) || moment(moment.now()).format(FORMAT_DATE_CALENDAR) === date;
+                        const isFree = currentHabit?.schedulerDays?.includes(moment(date).format("dddd").toLocaleLowerCase());
 
-                        if (historyOrToday && !isFreeToday) {
-                            const isOnGoing = isOnGoingHabitToday(date);
-
+                        if (pastOrToday && !isFree) {
                             const history = histories?.find((h) => moment.utc(h.completedTime).format(FORMAT_DATE_CALENDAR) === date);
                             const taskDone = history?.todos?.filter((td) => td.isCheck).length;
                             const progress = isOnGoing ? currentProgress : Math.round(taskDone! / (history?.todos.length || 1) * 100);
