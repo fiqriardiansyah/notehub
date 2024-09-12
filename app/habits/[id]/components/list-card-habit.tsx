@@ -40,7 +40,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
             onSetTimer({
                 ...todo,
                 isCheck: true,
-                checkedAt: new Date().getTime(),
+                checkedAt: todo?.checkedAt || new Date(todo?.timer?.endTime || Date.now()).getTime(),
                 timer: {
                     ...todo?.timer,
                     isEnd: true,

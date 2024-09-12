@@ -144,7 +144,7 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
             onSetTimer({
                 ...todo,
                 isCheck: true,
-                checkedAt: new Date().getTime(),
+                checkedAt: todo?.checkedAt || new Date(todo?.timer?.endTime || Date.now()).getTime(),
                 timer: {
                     ...todo?.timer,
                     isEnd: true,

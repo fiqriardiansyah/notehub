@@ -94,7 +94,7 @@ export default function HabitsTimer({ children, todo, setTimer, anyId }: HabitsT
             setTimer({
                 ...todo,
                 isCheck: true,
-                checkedAt: new Date(todo?.timer?.endTime || Date.now()).getTime(),
+                checkedAt: todo?.checkedAt || new Date(todo?.timer?.endTime || Date.now()).getTime(),
                 timer: {
                     ...todo?.timer,
                     isEnd: true,
