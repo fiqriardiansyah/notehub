@@ -197,7 +197,7 @@ export default function HabitDetail() {
     ), [isNavHide, noteDetailQuery, router]);
 
     return (
-        <div className="w-screen bg-white min-h-[150vh] pb-20">
+        <div className="w-screen bg-white min-h-screen pb-20">
             {navbar}
             <AnimatePresence>
                 {clickToFinish && (

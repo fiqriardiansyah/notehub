@@ -27,7 +27,7 @@ export default function IndexPage() {
   return (
     <>
       {renderTopNav()}
-      <div className="container-custom pb-20 min-h-[150vh]">
+      <div className="container-custom pb-20 min-h-screen">
         <Quotes />
         <HabitsAlert />
         <ToolBar />

@@ -151,63 +151,65 @@ export default function Write() {
     }
 
     return (
-        <div className="container-custom pb-20 min-h-[150vh]">
-            <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
-                <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
-                    <ChevronLeft />
-                </Button>
-                {noteDetailQuery.isLoading ? <p>Getting Detail...</p> : (
-                    <input
-                        value={dataNote?.title}
-                        onChange={onChangeTitle}
-                        autoFocus={true}
-                        ref={titleRef}
-                        type="text"
-                        placeholder="Title ..."
-                        className="text-2xl text-gray-500 flex-1 font-medium border-none focus:outline-none outline-none bg-transparent"
-                    />
-                )}
-            </motion.div>
-            {noteDetailQuery.data?.folderName && (
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <FolderOpen size={18} />
-                        <BreadcrumbItem>
-                            <Link href={`/folder/${noteDetailQuery.data?.folderId}`} passHref>
-                                <BreadcrumbLink>
-                                    {noteDetailQuery.data?.folderName}
-                                </BreadcrumbLink>
-                            </Link>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-            )}
-            <ShowedTags className="my-5" />
-            <StateRender data={noteDetailQuery.data || isSecureNoteQuery.data} isLoading={noteDetailQuery.isLoading || isSecureNoteQuery.isLoading}>
-                <StateRender.Data>
-                    {(isSecureNoteQuery.data && !dataNote?.authorized) ? (
-                        <OpenSecureNote refetch={noteDetailQuery.mutate} />
-                    ) : (
-                        <div className="w-full overflow-x-hidden">
-                            {dataNote.modeWrite === "freetext" && <FreetextModeEditor editorRef={setFreetextEditor} asEdit data={noteDetailQuery.data?.note} />}
-                            {dataNote.modeWrite === "todolist" && <TodoListModeEditor todos={todos} onChange={setTodos} />}
-
-                            <motion.div animate={{ y: 0, transition: { delay: 0.8 } }} initial={{ y: '100%' }} className="flex justify-center fixed z-40 bottom-0 left-0 w-full">
-                                <ToolsBar currentNote={noteDetailQuery.data}
-                                    excludeSettings={["folder", "mode"]}
-                                    isLoading={saveMutate.isLoading}
-                                    save={saveWrite} />
-                            </motion.div>
-                        </div>
-
+        <>
+            <div className="container-custom pb-20 min-h-screen">
+                <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
+                    <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
+                        <ChevronLeft />
+                    </Button>
+                    {noteDetailQuery.isLoading ? <p>Getting Detail...</p> : (
+                        <input
+                            value={dataNote?.title}
+                            onChange={onChangeTitle}
+                            autoFocus={true}
+                            ref={titleRef}
+                            type="text"
+                            placeholder="Title ..."
+                            className="text-2xl text-gray-500 flex-1 font-medium border-none focus:outline-none outline-none bg-transparent"
+                        />
                     )}
-                </StateRender.Data>
-                <StateRender.Loading>
-                    <Skeleton className="w-[300px] h-[50px]" />
-                    <Skeleton className="w-[350px] h-[20px] mt-6" />
-                    <Skeleton className="w-[200px] h-[20px] mt-3" />
-                </StateRender.Loading>
-            </StateRender>
-        </div>
+                </motion.div>
+                {noteDetailQuery.data?.folderName && (
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <FolderOpen size={18} />
+                            <BreadcrumbItem>
+                                <Link href={`/folder/${noteDetailQuery.data?.folderId}`} passHref>
+                                    <BreadcrumbLink>
+                                        {noteDetailQuery.data?.folderName}
+                                    </BreadcrumbLink>
+                                </Link>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                )}
+                <ShowedTags className="my-5" />
+                <StateRender data={noteDetailQuery.data || isSecureNoteQuery.data} isLoading={noteDetailQuery.isLoading || isSecureNoteQuery.isLoading}>
+                    <StateRender.Data>
+                        {(isSecureNoteQuery.data && !dataNote?.authorized) ? (
+                            <OpenSecureNote refetch={noteDetailQuery.mutate} />
+                        ) : (
+                            <div className="w-full overflow-x-hidden">
+                                {dataNote.modeWrite === "freetext" && <FreetextModeEditor editorRef={setFreetextEditor} asEdit data={noteDetailQuery.data?.note} />}
+                                {dataNote.modeWrite === "todolist" && <TodoListModeEditor todos={todos} onChange={setTodos} />}
+                            </div>
+                        )}
+                    </StateRender.Data>
+                    <StateRender.Loading>
+                        <Skeleton className="w-[300px] h-[50px]" />
+                        <Skeleton className="w-[350px] h-[20px] mt-6" />
+                        <Skeleton className="w-[200px] h-[20px] mt-3" />
+                    </StateRender.Loading>
+                </StateRender>
+            </div>
+            {!noteDetailQuery?.isLoading && (
+                <div className="flex justify-center fixed z-40 bottom-0 left-0 w-screen">
+                    <ToolsBar currentNote={noteDetailQuery.data}
+                        excludeSettings={["folder", "mode"]}
+                        isLoading={saveMutate.isLoading}
+                        save={saveWrite} />
+                </div>
+            )}
+        </>
     );
 }

@@ -62,7 +62,7 @@ export default function Habits() {
     }
 
     return (
-        <div className="w-screen bg-white min-h-[150vh] pb-20">
+        <div className="w-screen bg-white min-h-screen pb-20">
             <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
                 <div className="container-custom flex flex-row items-center justify-between">
                     <div className="flex gap-2 items-center">
