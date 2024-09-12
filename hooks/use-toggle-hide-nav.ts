@@ -27,6 +27,10 @@ export default function useToggleHideNav() {
                     setIsNavHide(false);
                     scrollUpDistance = 0; // Reset scroll-up distance after showing the navbar
                 }
+
+                if (currentScrollY < 10) {
+                    setIsNavHide(false);
+                }
             }
 
             lastScrollY = currentScrollY; // Update last scroll position
