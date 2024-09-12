@@ -50,6 +50,10 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
         return (await noteService.changeTodos({ noteId: habit!.id, todos })).data.data;
     });
 
+    const deleteTimerTask = useMutation([habitsService.deleteTimerTask.name], async (data: { noteId: string; itemId: string }) => {
+        return (await habitsService.deleteTimerTask(data)).data.data;
+    });
+
     useSkipFirstRender(() => {
         const update = setTimeout(() => {
             if (!habit?.id) return;
@@ -86,6 +90,7 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
         return (isCheck: boolean) => {
             const currentTodos = todos?.map((td) => {
                 if (td.id !== todo.id) return td;
+                deleteTimerTask.mutate({ itemId: td.id, noteId: habit?.id as string });
                 return {
                     ...td,
                     isCheck,
@@ -208,7 +213,7 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
                     {todos.map((todo) => (
                         <div key={todo.id} className="w-full flex items-center justify-between">
                             <div className="flex gap-2 items-center h-[40px]">
-                                <HabitsTimer setTimer={onSetTimer} todo={todo}>
+                                <HabitsTimer anyId={habit?.id} setTimer={onSetTimer} todo={todo}>
                                     {(ctrl) => {
                                         if (todo?.timer && !todo?.timer?.isEnd) {
                                             return (

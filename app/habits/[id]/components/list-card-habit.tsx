@@ -15,13 +15,14 @@ import themeColor from "tailwindcss/colors";
 
 export type ListCardHabitProps = {
     todo: Todo;
+    noteId?: string;
     progressDoneCheer?: { progress: number; todoId: string };
     onCheck?: (todo: Todo) => void;
     completedHabit?: boolean;
     setTodos?: React.Dispatch<React.SetStateAction<Todo[]>>;
 }
 
-export default function ListCardHabit({ todo, onCheck, progressDoneCheer, completedHabit, setTodos }: ListCardHabitProps) {
+export default function ListCardHabit({ todo, onCheck, progressDoneCheer, completedHabit, setTodos, noteId }: ListCardHabitProps) {
 
     const onSetTimer = (todo: Todo) => {
         if (setTodos) {
@@ -74,7 +75,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
         )}
         <div className="flex items-center justify-between">
             {!completedHabit && (
-                <HabitsTimer setTimer={onSetTimer} todo={todo}>
+                <HabitsTimer anyId={noteId} setTimer={onSetTimer} todo={todo}>
                     {(ctrl) => {
                         if (todo?.timer && !todo?.timer?.isEnd) {
                             return (

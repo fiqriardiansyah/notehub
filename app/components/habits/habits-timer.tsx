@@ -13,6 +13,9 @@ import {
 } from "@/components/ui/drawer";
 import { Label } from "@/components/ui/label";
 import { FORMAT_DATE_SAVE, hexToRgba } from "@/lib/utils";
+import { Timer as TimerType } from "@/models/habits";
+import habitsService from "@/service/habits";
+import { useMutation } from "@tanstack/react-query";
 import { Info, Play, RotateCw } from "lucide-react";
 import moment from "moment";
 import React from "react";
@@ -20,6 +23,7 @@ import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import themeColor from "tailwindcss/colors";
 
 export type HabitsTimerProps = {
+    anyId?: string;
     todo?: Todo;
     setTimer: (todo: Todo) => void;
     children: (ctrl: { open: () => void, isOpen: boolean }) => React.ReactNode;
@@ -27,11 +31,15 @@ export type HabitsTimerProps = {
 
 const defaultTime = { hours: 0, minutes: 0, seconds: 0 };
 
-export default function HabitsTimer({ children, todo, setTimer }: HabitsTimerProps) {
+export default function HabitsTimer({ children, todo, setTimer, anyId }: HabitsTimerProps) {
     const [isOpen, setIsOpen] = React.useState(false);
     const [time, setTime] = React.useState<Time | undefined>(defaultTime);
     const [autoComplete, setAutoComplete] = React.useState<boolean>(false);
     const [isTimesUp, setIsTimesUp] = React.useState(false);
+
+    const setTimerMutate = useMutation([habitsService.setTimerTask.name], async (timer: TimerType) => {
+        return (await habitsService.setTimerTask(timer)).data.data;
+    });
 
     React.useEffect(() => {
         setAutoComplete(Boolean(todo?.timer?.autoComplete));
@@ -53,21 +61,6 @@ export default function HabitsTimer({ children, todo, setTimer }: HabitsTimerPro
 
     const disablePlay = !time?.hours && !time?.minutes && !time?.seconds;
 
-    const onPlay = () => {
-        if (disablePlay) return;
-
-        setTimer({
-            ...todo,
-            timer: {
-                autoComplete,
-                type: "todo",
-                itemId: todo?.id,
-                startTime: moment(moment.now()).format(FORMAT_DATE_SAVE),
-                endTime: moment(moment.now()).add(time).format(FORMAT_DATE_SAVE),
-            }
-        } as Todo);
-    }
-
     const onReset = () => {
         setTimer({
             ...todo,
@@ -75,6 +68,22 @@ export default function HabitsTimer({ children, todo, setTimer }: HabitsTimerPro
         } as Todo);
         setIsTimesUp(false);
         setTime(defaultTime);
+    }
+
+    const onPlay = () => {
+        if (disablePlay) return;
+
+        const timer = {
+            autoComplete,
+            type: "todo",
+            itemId: todo?.id,
+            noteId: anyId,
+            startTime: moment(moment.now()).toISOString(),
+            endTime: moment(moment.now()).add(time).toISOString(),
+        } as TimerType;
+
+        setTimerMutate.mutateAsync(timer);
+        setTimer({ ...todo, timer } as Todo);
     }
 
     const onTimesUp = () => {
@@ -85,7 +94,7 @@ export default function HabitsTimer({ children, todo, setTimer }: HabitsTimerPro
             setTimer({
                 ...todo,
                 isCheck: true,
-                checkedAt: new Date().getTime(),
+                checkedAt: new Date(todo?.timer?.endTime || Date.now()).getTime(),
                 timer: {
                     ...todo?.timer,
                     isEnd: true,

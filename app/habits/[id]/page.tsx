@@ -79,6 +79,10 @@ export default function HabitDetail() {
         return (await habitsService.finishHabits(id)).data.data
     });
 
+    const deleteTimerTask = useMutation([habitsService.deleteTimerTask.name], async (data: { noteId: string; itemId: string }) => {
+        return (await habitsService.deleteTimerTask(data)).data.data;
+    });
+
     useSkipFirstRender(() => {
         const update = setTimeout(() => {
             if (!id) return;
@@ -110,6 +114,7 @@ export default function HabitDetail() {
     const onUpdateCheck = (todo: Todo) => {
         const currentTodos = todos?.map((td) => {
             if (td.id !== todo.id) return td;
+            deleteTimerTask.mutate({ itemId: td.id, noteId: noteDetailQuery.data?.id as string });
             return {
                 ...td,
                 isCheck: !td.isCheck,
@@ -239,6 +244,7 @@ export default function HabitDetail() {
                         )}
                         <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2">
                             {todos?.map((todo) => <ListCardHabit
+                                noteId={noteDetailQuery?.data?.id}
                                 setTodos={setTodos}
                                 completedHabit={!noteDetailQuery.data?.reschedule || isFreeToday}
                                 progressDoneCheer={progressDoneCheer}

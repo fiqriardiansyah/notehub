@@ -12,6 +12,7 @@ export type HabitHistory = {
 export type Timer = {
     id: string
     itemId?: string
+    noteId?: string
     type?: "todo"
     startTime?: string | null
     endTime?: string | null
