@@ -51,7 +51,11 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
         onSetTimer({ ...todo, timer: null });
     };
 
-    return <div className="flex p-2 rounded-2xl flex-col border border-solid border-gray-200 relative overflow-hidden">
+    const onClickTimer = (e: any) => {
+        e.stopPropagation();
+    }
+
+    return <button onClick={() => onCheck && onCheck(todo)} className="flex p-2 rounded-2xl flex-col border border-solid border-gray-200 relative overflow-hidden">
         {!completedHabit && (
             <AnimatePresence mode="wait">
                 {progressCheer.map((pc) => {
@@ -73,7 +77,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
                 })}
             </AnimatePresence>
         )}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between w-full">
             {!completedHabit && (
                 <HabitsTimer anyId={noteId} setTimer={onSetTimer} todo={todo}>
                     {(ctrl) => {
@@ -85,7 +89,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
                                     startTime={todo?.timer?.startTime}>
                                     {({ text, progress }) => (
                                         <div className="flex items-center gap-2">
-                                            <button onClick={todo?.isCheck ? () => { } : ctrl.open} className="w-9 h-9 rounded-full relative">
+                                            <button onClick={todo?.isCheck ? (e) => e.stopPropagation() : (e) => { e.stopPropagation(); ctrl.open() }} className="w-9 h-9 rounded-full relative">
                                                 <CircularProgressbar text="" value={progress} styles={buildStyles({
                                                     textColor: hexToRgba("#000000", 0.7),
                                                     backgroundColor: "#00000000",
@@ -102,7 +106,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
                         return (
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button onClick={todo?.isCheck ? () => { } : ctrl.open} disabled={!!todo?.isCheck} size="icon-small" variant="secondary" className="mb-3">
+                                    <Button onClick={todo?.isCheck ? (e) => e.stopPropagation() : (e) => { e.stopPropagation(); ctrl.open() }} disabled={!!todo?.isCheck} size="icon-small" variant="secondary" className="mb-3">
                                         <Timer size={16} />
                                     </Button>
                                 </TooltipTrigger>
@@ -115,7 +119,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
                 </HabitsTimer>
             )}
             {!completedHabit ? (
-                <Button onClick={() => onCheck && onCheck(todo)} size="icon-small" variant={todo?.isCheck ? "default" : "ghost"} className="mb-3">
+                <Button size="icon-small" variant={todo?.isCheck ? "default" : "ghost"} className="mb-3 pointer-events-none">
                     <Check size={16} />
                 </Button>
             ) : <>
@@ -124,5 +128,5 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
         </div>
         <p className="m-0 capitalize font-medium">{todo.content}</p>
         {todo.checkedAt && <span className="m-0 text-xs leading-[10px] text-gray-400">Done at {moment(todo.checkedAt).format("DD MMM, HH:mm")}</span>}
-    </div>
+    </button>
 }
