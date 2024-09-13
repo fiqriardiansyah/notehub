@@ -7,26 +7,34 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/co
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
-import { WriteContext, WriteContextType } from "@/context/write";
+import { WriteContext, WriteContextType, WriteStateType } from "@/context/write";
 import useStatusBar from "@/hooks/use-status-bar";
+import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { shortCut } from "@/lib/shortcut";
+import { easeDefault } from "@/lib/utils";
 import { CreateNote } from "@/models/note";
 import ShowedTags from "@/module/tags/showed-tags";
 import noteService from "@/service/note";
 import validation from "@/validation";
 import { noteValidation } from "@/validation/note";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { ChevronLeft, FolderOpen } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useRef } from "react";
 import ToolsBar from "../components/tool-bar";
-import FreetextModeEditor from "../mode/freetext";
 import TodoListModeEditor, { Todo } from "../mode/todolist";
-import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
-import { easeDefault } from "@/lib/utils";
+
+const FreetextModeEditor = dynamic(() => import("../mode/freetext").then((mod) => mod.default),
+    { ssr: false }
+)
+
+const HabitsModeEditor = dynamic(() => import("../mode/habits").then((mod) => mod.default),
+    { ssr: false }
+)
 
 export default function Write() {
     const router = useRouter();
@@ -36,19 +44,15 @@ export default function Write() {
     const [_, setStatusBar] = useStatusBar();
     const { dataNote, setDataNote } = React.useContext(WriteContext) as WriteContextType;
     const isNavHide = useToggleHideNav();
-
-    const [freetextEditor, setFreetextEditor] = React.useState<any>(null)
+    const saveBtnRef = React.useRef<HTMLButtonElement>(null);
     const [todos, setTodos] = React.useState<Todo[]>([]);
-
     const { toast } = useToast();
+    const queryClient = useQueryClient();
 
     const noteDetailQuery = useMutation(["get-note", id], async () => {
         return (await noteService.getOneNote(id as string)).data.data
     }, {
         onSuccess(data) {
-            if (data?.type === "habits") {
-                router.replace("/", { scroll: true });
-            }
             setTodos(data?.todos || []);
             setDataNote((prev) => ({
                 ...prev,
@@ -56,6 +60,12 @@ export default function Write() {
                 tags: data?.tags,
                 title: data?.title,
                 modeWrite: data?.type || "freetext",
+                scheduler: data?.type === "habits" ? {
+                    type: data?.schedulerType,
+                    days: data?.schedulerDays,
+                    startTime: data?.schedulerStartTime,
+                    endTime: data?.schedulerEndTime,
+                } as WriteStateType["scheduler"] : undefined,
             }));
         }
     });
@@ -92,40 +102,21 @@ export default function Write() {
         }
     );
 
-    const saveWrite = async () => {
-        const data = {
+    const saveWrite = async (restData: any) => {
+        let data = {
             title: titleRef.current?.value,
             type: dataNote.modeWrite,
             isSecure: dataNote?.isSecure,
             tags: dataNote?.tags,
+            ...restData,
         } as CreateNote;
-
-        if (dataNote.modeWrite === "freetext") {
-            if (!freetextEditor) return;
-            const note = await freetextEditor?.save();
-            data.note = note;
-        };
-
-        if (dataNote.modeWrite === "todolist") {
-            if (!todos.length) {
-                setStatusBar({
-                    type: "danger",
-                    show: true,
-                    message: "At least make one todo task",
-                });
-                return;
-            }
-            data.todos = todos;
-        }
 
         try {
             validation(noteValidation.CREATE, data as any);
             saveMutate.mutateAsync(data as CreateNote).then(() => {
-                setDataNote({
-                    authorized: true,
-                    modeWrite: dataNote.modeWrite
-                });
-                window.dispatchEvent(new CustomEvent(BUTTON_SUCCESS_ANIMATION_TRIGGER + "button-save-write"))
+                setDataNote({ modeWrite: dataNote.modeWrite });
+                window.dispatchEvent(new CustomEvent(BUTTON_SUCCESS_ANIMATION_TRIGGER + "button-save-write"));
+                queryClient.refetchQueries({ exact: true, queryKey: [noteService.getAllItems.name] });
             });
         } catch (e: any) {
             setStatusBar({
@@ -149,6 +140,11 @@ export default function Write() {
     const onClickBack = () => {
         router.back();
     }
+
+    const onSaveClick = () => {
+        if (!saveBtnRef.current) return;
+        saveBtnRef.current.click();
+    };
 
     return (
         <>
@@ -190,8 +186,15 @@ export default function Write() {
                             <OpenSecureNote refetch={noteDetailQuery.mutate} />
                         ) : (
                             <div className="w-full overflow-x-hidden">
-                                {dataNote.modeWrite === "freetext" && <FreetextModeEditor editorRef={setFreetextEditor} asEdit data={noteDetailQuery.data?.note} />}
-                                {dataNote.modeWrite === "todolist" && <TodoListModeEditor todos={todos} onChange={setTodos} />}
+                                {dataNote.modeWrite === "freetext" && <FreetextModeEditor data={noteDetailQuery.data?.note} asEdit onSave={saveWrite}>
+                                    <button ref={saveBtnRef} type="submit">submit</button>
+                                </FreetextModeEditor>}
+                                {dataNote.modeWrite === "todolist" && <TodoListModeEditor todos={todos} onSave={saveWrite}>
+                                    <button ref={saveBtnRef} type="submit">submit</button>
+                                </TodoListModeEditor>}
+                                {dataNote.modeWrite === "habits" && <HabitsModeEditor note={noteDetailQuery.data} asEdit onSave={saveWrite}>
+                                    <button ref={saveBtnRef} type="submit">submit</button>
+                                </HabitsModeEditor>}
                             </div>
                         )}
                     </StateRender.Data>
@@ -207,7 +210,7 @@ export default function Write() {
                     <ToolsBar currentNote={noteDetailQuery.data}
                         excludeSettings={["folder", "mode"]}
                         isLoading={saveMutate.isLoading}
-                        save={saveWrite} />
+                        save={onSaveClick} />
                 </div>
             )}
         </>

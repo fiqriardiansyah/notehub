@@ -13,17 +13,18 @@ const Editor = dynamic(() => import("@/components/editor/index").then((mod) => m
 )
 
 export type HabitsModeEditorProps = {
-    children: React.ReactElement
+    asEdit?: boolean;
+    note?: Note;
+    children: React.ReactElement;
     onSave: (data: Partial<Note>) => void;
 }
 
-export default function HabitsModeEditor({ children, onSave }: HabitsModeEditorProps) {
+export default function HabitsModeEditor({ children, onSave, asEdit, note }: HabitsModeEditorProps) {
     const [_, setStatusBar, resetBar] = useStatusBar();
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
     const [freetextEditor, setFreetextEditor] = React.useState<any>(null);
     const [todos, setTodos] = React.useState<Todo[]>([]);
     const [showInfo, setShowInfo] = React.useState(true);
-
 
     const onSubmit = async (e: any) => {
         e.preventDefault();
@@ -58,9 +59,9 @@ export default function HabitsModeEditor({ children, onSave }: HabitsModeEditorP
     return (
         <>
             <div className="flex w-full flex-col gap-2">
-                <Editor placeholder="Description" editorRef={setFreetextEditor} />
+                <Editor asEdit={asEdit} data={asEdit ? note?.description : undefined} placeholder="Description" editorRef={setFreetextEditor} />
                 <hr />
-                <TodoListModeEditor onChange={setTodos} showInfoDefault={false} />
+                <TodoListModeEditor todos={note?.todos} onChange={setTodos} showInfoDefault={false} />
             </div>
             <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
                 {children}

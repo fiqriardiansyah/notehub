@@ -188,7 +188,7 @@ export default function HabitDetail() {
                     )}
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button size="icon" variant="ghost" className="!w-10 flex-1 text-gray-700">
+                            <Button onClick={() => router.push(`/write/${id}`)} size="icon" variant="ghost" className="!w-10 flex-1 text-gray-700">
                                 <PencilRuler size={18} />
                             </Button>
                         </TooltipTrigger>

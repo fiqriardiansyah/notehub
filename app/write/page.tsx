@@ -5,23 +5,23 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { WriteContext, WriteContextType } from "@/context/write";
 import useStatusBar from "@/hooks/use-status-bar";
+import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { shortCut } from "@/lib/shortcut";
+import { easeDefault } from "@/lib/utils";
 import { CreateNote, ModeNote } from "@/models/note";
 import ShowedTags from "@/module/tags/showed-tags";
 import noteService from "@/service/note";
 import validation from "@/validation";
 import { noteValidation } from "@/validation/note";
-import { useMutation } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
+import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import React, { useRef } from "react";
 import ToolsBar from "./components/tool-bar";
-import dynamic from "next/dynamic";
 import TodoListModeEditor from "./mode/todolist/index";
-import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
-import { easeDefault } from "@/lib/utils";
-import { useSearchParams } from "next/navigation";
 
 const FreetextModeEditor = dynamic(() => import("./mode/freetext").then((mod) => mod.default),
   { ssr: false }
@@ -41,6 +41,7 @@ export default function Write() {
   const { toast } = useToast();
   const isNavHide = useToggleHideNav();
   const typeDefault = searchParams.get("type") as ModeNote;
+  const queryClient = useQueryClient();
 
   React.useEffect(() => {
     if (!typeDefault) return;
@@ -85,7 +86,8 @@ export default function Write() {
       validation(noteValidation.CREATE, data as any);
       saveMutate.mutateAsync(data as CreateNote).then(() => {
         setDataNote({ modeWrite: dataNote.modeWrite });
-        window.dispatchEvent(new CustomEvent(BUTTON_SUCCESS_ANIMATION_TRIGGER + "button-save-write"))
+        window.dispatchEvent(new CustomEvent(BUTTON_SUCCESS_ANIMATION_TRIGGER + "button-save-write"));
+        queryClient.refetchQueries();
       });
     } catch (e: any) {
       setStatusBar({
