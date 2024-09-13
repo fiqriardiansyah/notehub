@@ -51,11 +51,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
         onSetTimer({ ...todo, timer: null });
     };
 
-    const onClickTimer = (e: any) => {
-        e.stopPropagation();
-    }
-
-    return <button onClick={() => onCheck && onCheck(todo)} className="flex p-2 rounded-2xl flex-col border border-solid border-gray-200 relative overflow-hidden">
+    return <div className="flex p-2 rounded-2xl flex-col border border-solid border-gray-200 relative overflow-hidden">
         {!completedHabit && (
             <AnimatePresence mode="wait">
                 {progressCheer.map((pc) => {
@@ -68,7 +64,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
                                 exit={{ y: '100%' }}
                                 transition={{ ease: easeDefault }}
                                 style={{ background: pc.bgColor }}
-                                className="z-20 absolute top-0 left-0 w-full h-full text-xl font-medium text-white flex items-center justify-center p-2">
+                                className="z-20 absolute top-0 left-0 text-center w-full h-full text-xl font-medium text-white flex items-center justify-center p-2">
                                 {pc.content}
                             </motion.div>
                         )
@@ -77,7 +73,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
                 })}
             </AnimatePresence>
         )}
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-between">
             {!completedHabit && (
                 <HabitsTimer anyId={noteId} setTimer={onSetTimer} todo={todo}>
                     {(ctrl) => {
@@ -89,7 +85,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
                                     startTime={todo?.timer?.startTime}>
                                     {({ text, progress }) => (
                                         <div className="flex items-center gap-2">
-                                            <button onClick={todo?.isCheck ? (e) => e.stopPropagation() : (e) => { e.stopPropagation(); ctrl.open() }} className="w-9 h-9 rounded-full relative">
+                                            <button onClick={todo?.isCheck ? () => { } : ctrl.open} className="w-9 h-9 rounded-full relative">
                                                 <CircularProgressbar text="" value={progress} styles={buildStyles({
                                                     textColor: hexToRgba("#000000", 0.7),
                                                     backgroundColor: "#00000000",
@@ -106,7 +102,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
                         return (
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button onClick={todo?.isCheck ? (e) => e.stopPropagation() : (e) => { e.stopPropagation(); ctrl.open() }} disabled={!!todo?.isCheck} size="icon-small" variant="secondary" className="mb-3">
+                                    <Button onClick={todo?.isCheck ? () => { } : ctrl.open} disabled={!!todo?.isCheck} size="icon-small" variant="secondary" className="mb-3">
                                         <Timer size={16} />
                                     </Button>
                                 </TooltipTrigger>
@@ -119,14 +115,14 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
                 </HabitsTimer>
             )}
             {!completedHabit ? (
-                <Button size="icon-small" variant={todo?.isCheck ? "default" : "ghost"} className="mb-3 pointer-events-none">
+                <Button onClick={() => onCheck && onCheck(todo)} size="icon-small" variant={todo?.isCheck ? "default" : "ghost"} className="mb-3">
                     <Check size={16} />
                 </Button>
             ) : <>
                 {todo?.isCheck ? <Check size={16} className="mb-3" /> : null}
             </>}
         </div>
-        <p className="m-0 capitalize font-medium">{todo.content}</p>
-        {todo.checkedAt && <span className="m-0 text-xs leading-[10px] text-gray-400">Done at {moment(todo.checkedAt).format("DD MMM, HH:mm")}</span>}
-    </button>
+        <p onClick={() => onCheck && onCheck(todo)} className="m-0 capitalize font-medium cursor-pointer">{todo.content}</p>
+        {todo.checkedAt && <span onClick={() => onCheck && onCheck(todo)} className="m-0 text-xs cursor-pointer leading-[10px] text-gray-400">Done at {moment(todo.checkedAt).format("DD MMM, HH:mm")}</span>}
+    </div>
 }
