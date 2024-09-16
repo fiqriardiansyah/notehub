@@ -15,9 +15,10 @@ const Editor = dynamic(() => import("@/components/editor/index").then((mod) => m
 export type FreetextModeEditorProps = EditorProps & {
     children?: React.ReactElement
     onSave?: (data: Partial<Note>) => void;
+    asView?: boolean;
 }
 
-export default function FreetextModeEditor({ onSave, children, ...props }: FreetextModeEditorProps) {
+export default function FreetextModeEditor({ onSave, children, asView, ...props }: FreetextModeEditorProps) {
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
     const [_, setStatusBar, reset] = useStatusBar();
     const [freetextEditor, setFreetextEditor] = React.useState<any>(null);
@@ -57,14 +58,16 @@ export default function FreetextModeEditor({ onSave, children, ...props }: Freet
             <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
                 {children}
             </form>
-            <div className="w-full flex justify-center my-10">
-                {showInfo && (
-                    <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">
-                        <Info className="mr-2" size={14} />
-                        Freetext mode
-                    </p>
-                )}
-            </div>
+            {!asView && (
+                <div className="w-full flex justify-center my-10">
+                    {showInfo && (
+                        <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">
+                            <Info className="mr-2" size={14} />
+                            Freetext mode
+                        </p>
+                    )}
+                </div>
+            )}
         </>
     )
 }

@@ -24,6 +24,7 @@ export type Todo = {
     isCheck: boolean;
     checkedAt: any;
     timer?: Partial<Timer> | null;
+    attach?: Pick<Note, "id" | "title">[];
 }
 
 export type TodoListModeEditorProps = {
@@ -32,9 +33,12 @@ export type TodoListModeEditorProps = {
     children?: React.ReactElement
     onSave?: (data: Partial<Note>) => void;
     showInfoDefault?: boolean;
+    asView?: boolean;
 }
 
-export default function TodoListModeEditor({ onChange, todos = [], children, onSave, showInfoDefault = true }: TodoListModeEditorProps) {
+export default function TodoListModeEditor({
+    onChange, todos = [], children, onSave, showInfoDefault = true, asView,
+}: TodoListModeEditorProps) {
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
     const [_, setStatusBar] = useStatusBar();
     const [list, setList] = React.useState<Todo[]>(() => todos);
@@ -115,44 +119,50 @@ export default function TodoListModeEditor({ onChange, todos = [], children, onS
                                     {item.checkedAt && <span className="text-xs font-medium text-gray-400">done at {dayjs(item.checkedAt).format("DD MMM, HH:mm")}</span>}
                                 </div>
                             </label>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button onClick={onDeleteItem(item)} className="text-red-400">
-                                        <Trash size={18} />
-                                    </button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    Delete
-                                </TooltipContent>
-                            </Tooltip>
+                            {!asView && (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <button onClick={onDeleteItem(item)} className="text-red-400">
+                                            <Trash size={18} />
+                                        </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        Delete
+                                    </TooltipContent>
+                                </Tooltip>
+                            )}
                         </motion.div>
                     ))}
                 </AnimatePresence>
-                <form onSubmit={onAddTodo} className="flex items-center gap-4">
-                    <Input value={str} onChange={onChangeStr} name="content" placeholder="Type anything here..." className="border-none bg-transparent focus-visible:!ring-0 focus-visible:!ring-offset-0 outline-none" />
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <button type="submit" className="">
-                                <Plus />
-                            </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            Add todo
-                        </TooltipContent>
-                    </Tooltip>
-                </form>
+                {!asView && (
+                    <form onSubmit={onAddTodo} className="flex items-center gap-4">
+                        <Input value={str} onChange={onChangeStr} name="content" placeholder="Type anything here..." className="border-none bg-transparent focus-visible:!ring-0 focus-visible:!ring-offset-0 outline-none" />
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button type="submit" className="">
+                                    <Plus />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                Add todo
+                            </TooltipContent>
+                        </Tooltip>
+                    </form>
+                )}
             </div>
             <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
                 {children}
             </form>
-            <div className="w-full flex justify-center my-10">
-                {showInfo && showInfoDefault && (
-                    <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">
-                        <Info className="mr-2" size={14} />
-                        Todo list mode
-                    </p>
-                )}
-            </div>
+            {!asView && (
+                <div className="w-full flex justify-center my-10">
+                    {showInfo && showInfoDefault && (
+                        <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">
+                            <Info className="mr-2" size={14} />
+                            Todo list mode
+                        </p>
+                    )}
+                </div>
+            )}
         </>
     )
 }
