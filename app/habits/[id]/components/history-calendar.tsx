@@ -191,7 +191,9 @@ export default function HistoryCalendar({ histories = [], currentHabit }: Histor
                     [...histories, currentHabit]?.forEach((history) => {
                         history?.todos?.forEach((todo) => {
                             if (moment(todo.checkedAt).format(FORMAT_DATE_CALENDAR) === date) {
-                                dayMarksTodos.push(todo);
+                                if (!dayMarksTodos.find((t) => t.id === todo.id)) {
+                                    dayMarksTodos.push(todo);
+                                }
                             }
                         })
                     });
