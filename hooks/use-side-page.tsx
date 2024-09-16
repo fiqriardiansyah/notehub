@@ -2,10 +2,14 @@ import { CommonContext, CommonContextType } from "@/context/common";
 import { pause } from "@/lib/utils";
 import React from "react";
 
-export default function useSidePage() {
-    const { setCommon, common } = React.useContext(CommonContext) as CommonContextType;
+export default function useSidePage<T = any>() {
+    const { setCommon, common, triggerCallbackPayload } = React.useContext(CommonContext) as CommonContextType<T>;
 
-    const setContent = (type: string) => {
+    const setContent = (type: string, payload?: T) => {
+        if (payload) {
+            triggerCallbackPayload(type, payload);
+            return;
+        }
         setCommon((prev) => ({
             ...prev,
             sidePageOpen: true,
@@ -21,5 +25,5 @@ export default function useSidePage() {
 
     const isOpen = common?.sidePageOpen;
 
-    return [setContent, reset, isOpen] as [(type: string) => void, () => void, boolean]
+    return [setContent, reset, isOpen] as [(type: string, payload?: any) => void, () => void, boolean]
 }

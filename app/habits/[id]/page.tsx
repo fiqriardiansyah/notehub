@@ -28,6 +28,8 @@ import 'react-circular-progressbar/dist/styles.css';
 import Lottie from "react-lottie";
 import HistoryCalendar from "./components/history-calendar";
 import ListCardHabit from "./components/list-card-habit";
+import { emitterPickNotes, PICK_NOTES_SUBMIT } from "@/app/components/pick-notes";
+import { Note } from "@/models/note";
 
 const defaultOptions = {
     loop: true,
