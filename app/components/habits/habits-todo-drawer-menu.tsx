@@ -14,6 +14,7 @@ import { Note } from "@/models/note";
 import { Check, Paperclip, StickyNote, Timer } from "lucide-react";
 import React from "react";
 import { PICK_NOTES } from "../pick-notes";
+import UnderDevelopBlocker from "@/components/common/under-develop-blocker";
 
 export type HabitsTodoDrawerMenuProps = {
     todo?: Todo
@@ -81,9 +82,11 @@ export default function HabitsTodoDrawerMenu({ children, todo, onClickTimer, onA
                         <Button onClick={onClickAttachNote} variant="ghost" className="w-full" title="Attach note">
                             <Paperclip className="mr-2" /> Attach note
                         </Button>
-                        <Button variant="ghost" className="w-full" title="Scratch note">
-                            <StickyNote className="mr-2" /> Scratch note
-                        </Button>
+                        <UnderDevelopBlocker>
+                            <Button variant="ghost" className="w-full" title="Scratch note">
+                                <StickyNote className="mr-2" /> Scratch note
+                            </Button>
+                        </UnderDevelopBlocker>
                     </div>
                 </DrawerContent>
             </Drawer>

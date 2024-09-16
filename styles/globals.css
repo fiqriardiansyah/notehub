@@ -187,3 +187,7 @@
 .calendar-history-habit .rdp-tbody > tr {
   justify-content: space-evenly;
 }
+
+#editor-js {
+  padding: 0 !important;
+}
