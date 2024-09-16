@@ -127,8 +127,6 @@ export default function Write() {
         }
     };
 
-    shortCut.saveWrite(saveWrite);
-
     const onChangeTitle = (e: any) => {
         const text = e.target.value;
         setDataNote((prev) => ({
@@ -145,6 +143,8 @@ export default function Write() {
         if (!saveBtnRef.current) return;
         saveBtnRef.current.click();
     };
+
+    shortCut.saveWrite(onSaveClick);
 
     return (
         <>

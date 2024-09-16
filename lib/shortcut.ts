@@ -16,7 +16,7 @@ class ShortCut {
     this.mouseTrap.bind(this.logoutKey, () => callback(this.logoutKey));
   }
 
-  saveWriteKey = "ctrl+s";
+  saveWriteKey = "ctrl+shift+s";
   saveWrite(callback: (str?: string) => void) {
     if (!this.mouseTrap?.bind) return;
     this.mouseTrap.bind(this.saveWriteKey, () => callback(this.saveWriteKey));

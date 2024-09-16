@@ -98,12 +98,12 @@ export default function Write() {
     }
   };
 
-  shortCut.saveWrite(saveWrite);
-
   const onSaveClick = () => {
     if (!saveBtnRef.current) return;
     saveBtnRef.current.click();
   };
+
+  shortCut.saveWrite(onSaveClick);
 
   return (
     <>
