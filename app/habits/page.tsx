@@ -92,19 +92,8 @@ export default function Habits() {
             <StateRender data={allHabit.data} isLoading={allHabit.isLoading}>
                 <StateRender.Data>
                     {allHabit.data?.length ? (
-                        <div className="container-custom flex flex-col mt-2 mb-16">
-                            <HabitsUrgent
-                                inPageHabits
-                                onChangeHabit={habitsToday.refetch}
-                                renderWhenComplete={(anim) => {
-                                    if (allHabit.isLoading) return <p>Getting Data...</p>
-                                    if (!allHabit.data?.length) return null;
-                                    return (
-                                        <div className="my-7">
-                                            <CompleteAllHabit anim={anim} />
-                                        </div>
-                                    )
-                                }} />
+                        <div className={`container-custom flex flex-col ${habitsToday.data?.length ? "mt-2 mb-16" : ""}`}>
+                            <HabitsUrgent inPageHabits onChangeHabit={habitsToday.refetch} />
                             {habitsToday.data?.length ? <p className="text-2xl my-3 mt-5">Should Do! 💪</p> : null}
                             <div className="flex flex-col gap-3" >
                                 {habitsToday.data?.map((habit, i) => (

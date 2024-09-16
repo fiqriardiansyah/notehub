@@ -3,7 +3,7 @@
 import { Todo } from "@/app/write/mode/todolist";
 import Countdown from "@/components/common/countdown";
 import { Checkbox } from "@/components/ui/checkbox";
-import useHabitComplete, { JSON_ANIMATIONS } from "@/hooks/use-habit-complete";
+import useHabitComplete from "@/hooks/use-habit-complete";
 import useSkipFirstRender from "@/hooks/use-skip-first-render";
 import { easeDefault, hexToRgba, progressCheer } from "@/lib/utils";
 import habitsService from "@/service/habits";
@@ -22,10 +22,9 @@ import HabitsTimer from "./habits-timer";
 export type HabitsUrgentProps = React.HTMLProps<HTMLDivElement> & {
     onChangeHabit?: () => void;
     inPageHabits?: boolean;
-    renderWhenComplete?: (randomAnim: any) => any;
 }
 
-export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPageHabits, className, ...props }: HabitsUrgentProps) {
+export default function HabitsUrgent({ onChangeHabit, inPageHabits, className, ...props }: HabitsUrgentProps) {
     const [todos, setTodos] = React.useState<Todo[]>([]);
     const prevProgressDoneCheer = React.useRef<number>();
     const [progressDoneCheer, setProgressDoneCheer] = React.useState<number>();
@@ -155,6 +154,8 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
         onSetTimer({ ...todo, timer: null });
     };
 
+    if (!habit) return null;
+
     return (
         <div className="flex flex-col gap-1 overflow-hidden" >
             {habit && <div className="flex w-full justify-end">
@@ -270,7 +271,6 @@ export default function HabitsUrgent({ onChangeHabit, renderWhenComplete, inPage
                         transition={{ ease: easeDefault, delay: 0.4, duration: 0.8 }} className="transition duration-200 bg-[#d3d3ff] w-full"></motion.div>
                 </div>
             </div>
-            {!habit && renderWhenComplete && renderWhenComplete(JSON_ANIMATIONS[Math.floor(Math.random() * JSON_ANIMATIONS.length)])}
             {habit?.id && <HabitsCountdown noteHabits={habit || undefined} />}
         </div>
     )
