@@ -11,28 +11,33 @@ import { ModeNote } from "@/models/note";
 import { AnimatePresence, motion } from "framer-motion";
 import { FileType, ListTodo, Trophy } from "lucide-react";
 import React from "react";
+import themeColor from "tailwindcss/colors";
 
 export type ModeWriteType = {
     mode: ModeNote;
     icon: any;
     description: string;
+    color?: string;
 }
 
 export const MODE_WRITE: ModeWriteType[] = [
     {
         mode: "freetext",
         icon: FileType,
-        description: "Freetext note"
+        description: "Freetext note",
+        color: themeColor.gray[300],
     },
     {
         mode: "todolist",
         icon: ListTodo,
-        description: "Todo list"
+        description: "Todo list",
+        color: themeColor.gray[300],
     },
     {
         mode: "habits",
         icon: Trophy,
-        description: "Build your habits"
+        description: "Build your habits",
+        color: themeColor.yellow[300]
     }
 ]
 

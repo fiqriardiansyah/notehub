@@ -20,6 +20,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { easeDefault } from "@/lib/utils";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
+import SearchGlobal from "../search-global";
 
 export default function TopBar() {
   const { data } = useSession();
@@ -43,7 +44,7 @@ export default function TopBar() {
               <h1 className="text-gray-700 font-semibold text-xl">NoteHub</h1>
             </Link>
             <div className="block md:hidden">
-              <SearchBar />
+              <SearchGlobal />
             </div>
           </div>
           {session?.sessionToken && (
