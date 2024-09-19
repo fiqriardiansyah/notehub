@@ -1,6 +1,7 @@
 "use client";
 
 import PickNotesProvider, { PICK_NOTES } from "@/app/components/pick-notes";
+import CollabsNoteGround, { COLLABS_NOTE_GROUND } from "@/app/components/setting-note-ground/collabs";
 import DialogDeleteGround, { REMOVE_NOTE_EVENT } from "@/app/components/setting-note-ground/delete";
 import DialogDeleteFolderGround, { REMOVE_FOLDER_EVENT } from "@/app/components/setting-note-ground/delete-folder";
 import FolderNoteGround, { FOLDER_NOTE_GROUND } from "@/app/components/setting-note-ground/folder-note";
@@ -27,6 +28,7 @@ export default function SidePage() {
                 {common?.groundOpen === SCHEDULER && <Scheduler key={SCHEDULER} />}
                 <ViewAttachNote key={VIEW_ATTACH_NOTE} />
                 <PickNotesProvider key={PICK_NOTES} />
+                <CollabsNoteGround key={COLLABS_NOTE_GROUND} />
             </AnimatePresence>
         </motion.div>
     );

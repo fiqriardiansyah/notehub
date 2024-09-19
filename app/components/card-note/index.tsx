@@ -13,6 +13,9 @@ import FreeTextCardNote from "./freetext";
 import Secure from "./secure";
 import TodolistCardNote from "./todolist";
 import ResponsiveTagsListed from "@/components/common/tag-listed";
+import collabService from "@/service/collab";
+import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 
 export type CardNoteType = Note;
 
@@ -31,6 +34,12 @@ export default function CardNote({ title, updatedAt, ...props }: CardNoteType) {
     if (props.type === "todolist") return <TodolistCardNote note={props} />
     return ""
   }
+
+  const collabAcountQuery = useQuery([collabService.collabAccount.name, props.id], async () => {
+    return (await collabService.collabAccount(props.id)).data.data
+  }, {
+    enabled: !!props.id
+  });
 
   return (
     <motion.div
@@ -55,6 +64,16 @@ export default function CardNote({ title, updatedAt, ...props }: CardNoteType) {
         <span className="caption">{formatDate(updatedAt)}</span>
         {props?.isHang && <Bookmark className="text-black" size={16} />}
       </div>
+      {collabAcountQuery.data?.length ? (
+        <div className="flex w-full gap-1 items-center">
+          {collabAcountQuery.data?.map((account) => (
+            <Image
+              title={account?.name || ""}
+              key={account.email} height={25} width={25} alt={account?.image || ""}
+              src={account?.image || ""} className="rounded-full object-cover bg-gray-200" />
+          ))}
+        </div>
+      ) : null}
     </motion.div>
   );
 }

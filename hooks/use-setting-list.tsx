@@ -1,13 +1,24 @@
 import { REMOVE_NOTE_EVENT } from "@/app/components/setting-note-ground/delete";
 import { Note } from "@/models/note";
-import { Bookmark, BookmarkX, FolderOutput, FolderPlus, LockKeyhole, Paperclip, Trash } from "lucide-react";
+import { Bookmark, BookmarkX, FolderOutput, FolderPlus, LockKeyhole, Blocks, Trash } from "lucide-react";
+import Lottie from "react-lottie";
+import starAnim from "@/asset/animation/star.json";
+
+const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice'
+    }
+};
 
 export type NoteSetting = {
     icon: any;
     text: string;
     func: (val?: any) => void;
     danger?: boolean;
-    type: "hang_note" | "unhang_note" | "secure_note" | "add_folder" | "remove_folder" | "delete";
+    type: "hang_note" | "unhang_note" | "secure_note" | "add_folder" | "remove_folder" | "delete" | "collabs";
+    rightElement?: any;
 };
 
 const hangNoteSetting: NoteSetting = {
@@ -43,6 +54,20 @@ const removeFromFolderSetting: NoteSetting = {
     text: "Remove from folder",
     func: () => { },
     type: "remove_folder"
+}
+
+const collabsSetting: NoteSetting = {
+    icon: Blocks,
+    text: "Collabs",
+    func: () => { },
+    type: "collabs",
+    rightElement: (
+        <Lottie
+            style={{ pointerEvents: 'none' }}
+            options={{ ...defaultOptions, animationData: starAnim }}
+            height={40}
+            width={40} />
+    )
 }
 
 const deleteSetting: NoteSetting = {
@@ -82,6 +107,10 @@ export default function useSettingList(note?: Note | null) {
 
     if (!settings.find((s) => s.type === "secure_note") && !note?.isSecure) {
         settings.push(secureNoteSetting);
+    }
+
+    if (!settings.find((s) => s.type === "collabs") && !note?.isSecure) {
+        settings.push(collabsSetting);
     }
 
     if (!settings.find((s) => s.type === "delete") && !note?.isSecure) {

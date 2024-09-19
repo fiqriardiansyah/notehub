@@ -33,6 +33,8 @@ export default function ResponsiveTagsListed({ tags = [], size = 16 }: Responsiv
 
     const countRest = (tags.length + 1) - itemCount
 
+    if (!tags.length) return null;
+
     return (
         <div ref={containerRef} className="w-full flex gap-1 flex-1 overflow-hidden">
             {[...tags]?.slice(0, itemCount - 1).map((tag) => {

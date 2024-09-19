@@ -15,12 +15,13 @@ import useStatusBar from "@/hooks/use-status-bar";
 import { CreateNote } from "@/models/note";
 import noteService from "@/service/note";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bookmark, LockKeyhole } from "lucide-react";
+import { Bookmark, ChevronRight, LockKeyhole } from "lucide-react";
 import React from "react";
 import { useMediaQuery } from "react-responsive";
 import { FOLDER_NOTE_GROUND, FOLDER_NOTE_SAVE } from "../setting-note-ground/folder-note";
 import { INITIATE_SECURE_NOTE } from "../setting-note-ground/initiate-secure-note";
 import { SECURE_NOTE } from "../setting-note-ground/secure-note";
+import { COLLABS_NOTE_GROUND } from "../setting-note-ground/collabs";
 
 export type BottomSheet = {
   refetch?: () => void;
@@ -146,6 +147,9 @@ export default function BottomSheet({ refetch }: BottomSheet) {
           setNote((prev) => ({ ...prev, note: null }));
         });
       }
+      if (setting.type === "collabs") {
+        setSidePage(COLLABS_NOTE_GROUND, note?.note);
+      }
 
       setting.func();
     };
@@ -171,11 +175,14 @@ export default function BottomSheet({ refetch }: BottomSheet) {
               loading={isLoading(Setting)}
               key={Setting.text}
               onClick={handleClickSetting(Setting)}
-              className="flex items-center gap-3"
+              className="flex items-center gap-3 justify-between"
               variant={Setting.danger ? "destructive" : "ghost"}
             >
-              <Setting.icon />
-              {Setting.text}
+              <div className="flex items-center gap-3 flex-1">
+                <Setting.icon />
+                {Setting.text}
+              </div>
+              {Setting?.rightElement ? Setting?.rightElement : <ChevronRight />}
             </Button>
           ))}
         </div>
