@@ -88,6 +88,7 @@ export default function Write() {
         setDataNote({ modeWrite: dataNote.modeWrite });
         window.dispatchEvent(new CustomEvent(BUTTON_SUCCESS_ANIMATION_TRIGGER + "button-save-write"));
         queryClient.refetchQueries();
+        router.push("/");
       });
     } catch (e: any) {
       setStatusBar({
@@ -134,7 +135,10 @@ export default function Write() {
         </div>
       </div>
       <div className="flex justify-center fixed z-40 bottom-0 left-0 w-screen">
-        <ToolsBar excludeSettings={dataNote.modeWrite === "habits" ? ["folder", "delete"] : ["delete"]} isLoading={saveMutate.isLoading} save={onSaveClick} />
+        <ToolsBar
+          excludeSettings={dataNote.modeWrite === "habits" ? ["folder", "delete", "collabs"] : ["delete", "collabs"]}
+          isLoading={saveMutate.isLoading}
+          save={onSaveClick} />
       </div>
     </>
   );

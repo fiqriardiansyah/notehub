@@ -12,12 +12,11 @@ import collabService from '@/service/collab';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import ListAccountInvited from './list-account-invited';
 import ListAccountCollab from './list-account-collab';
+import ListAccountInvited from './list-account-invited';
 
 export const COLLABS_NOTE_GROUND = "collabsNoteGround";
 
@@ -52,6 +51,10 @@ export default function CollabsNoteGround() {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         if (!payload?.id) return;
+        if (values.role !== "viewer" && values.role !== "editor") {
+            form.setError("role", { message: "Required" }, { shouldFocus: true });
+            return;
+        }
         sendInviteMutate.mutateAsync({
             email: values.email,
             role: values.role,
@@ -61,7 +64,7 @@ export default function CollabsNoteGround() {
             // [important] notif success
             form.reset();
             form.setValue("email", "");
-            form.setValue("role", "viewer");
+            form.setValue("role", "");
             getInvitationsQuery.refetch();
         }).catch((e: any) => {
             // [important] notif failed
@@ -106,7 +109,7 @@ export default function CollabsNoteGround() {
                                 name="role"
                                 render={({ field }) => (
                                     <FormItem className='w-full'>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={field.onChange} value={field.value}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select role" />

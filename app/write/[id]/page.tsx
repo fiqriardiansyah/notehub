@@ -27,6 +27,10 @@ import { useParams } from "next/navigation";
 import React, { useRef } from "react";
 import ToolsBar from "../components/tool-bar";
 import TodoListModeEditor, { Todo } from "../mode/todolist";
+import collabService from "@/service/collab";
+import CollabsList from "@/components/common/collabs-list";
+import useSidePage from "@/hooks/use-side-page";
+import { COLLABS_NOTE_GROUND } from "@/app/components/setting-note-ground/collabs";
 
 const FreetextModeEditor = dynamic(() => import("../mode/freetext").then((mod) => mod.default),
     { ssr: false }
@@ -48,6 +52,7 @@ export default function Write() {
     const [todos, setTodos] = React.useState<Todo[]>([]);
     const { toast } = useToast();
     const queryClient = useQueryClient();
+    const [setSidePage] = useSidePage();
 
     const noteDetailQuery = useMutation(["get-note", id], async () => {
         return (await noteService.getOneNote(id as string)).data.data
@@ -143,6 +148,10 @@ export default function Write() {
         if (!saveBtnRef.current) return;
         saveBtnRef.current.click();
     };
+
+    const onClickListCollabAccount = () => {
+        setSidePage(COLLABS_NOTE_GROUND, noteDetailQuery.data);
+    }
 
     shortCut.saveWrite(onSaveClick);
 

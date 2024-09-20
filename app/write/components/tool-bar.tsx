@@ -11,8 +11,9 @@ import React from "react";
 import Scheduler from "./scheduler";
 import { Note } from "@/models/note";
 import DeleteNote from "./delete-note";
+import CollabNote from "./collab-note";
 
-export type ToolsType = "tag" | "folder" | "secure" | "mode" | "delete"
+export type ToolsType = "tag" | "folder" | "secure" | "mode" | "delete" | "collabs"
 
 export type ToolsBarType = {
     save: () => void;
@@ -26,7 +27,7 @@ export default function ToolsBar({ save, isLoading, excludeSettings, currentNote
 
     return (
         <div className="w-full bg-white p-1 h-full flex items-center justify-center gap-2 container-custom">
-            {!excludeSettings?.find((s) => s === "delete") && <DeleteNote note={currentNote} />}
+            {!excludeSettings?.find((s) => s === "collabs") && <CollabNote note={currentNote} />}
             {!excludeSettings?.find((s) => s === "tag") && <TagNote />}
             {!excludeSettings?.find((s) => s === "folder") && <FolderNote />}
             {!excludeSettings?.find((s) => s === "secure") && dataNote.modeWrite !== "habits" && <SecureNote />}
@@ -47,6 +48,7 @@ export default function ToolsBar({ save, isLoading, excludeSettings, currentNote
                     <ModeWrite />
                 </>
             )}
+            {!excludeSettings?.find((s) => s === "delete") && <DeleteNote note={currentNote} />}
         </div>
     );
 }

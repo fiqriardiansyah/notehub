@@ -19,7 +19,7 @@ const SearchBar = React.forwardRef<HTMLInputElement, SearchBarProps>(({ classNam
         type="text"
         placeholder="Search Notes"
         {...props}
-        className={`flex-1 border-b border-gray-400 bg-transparent pl-8 py-2 focus:outline-none ${className}`}
+        className={`flex-1 bg-transparent pl-8 py-2 focus:outline-none ${className}`}
       />
     </label>
   )
