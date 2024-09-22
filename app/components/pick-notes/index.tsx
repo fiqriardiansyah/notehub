@@ -70,7 +70,9 @@ export const PickNotes = () => {
             <StateRender data={notesQuery.data} isLoading={notesQuery.isLoading}>
                 <StateRender.Data>
                     <div className="w-full flex-1 h-full overflow-y-auto mt-5">
-                        <LayoutGrid notes={notes} render={renderNote} />
+                        <LayoutGrid items={notes}>
+                            {renderNote}
+                        </LayoutGrid>
                         {!notes?.length && (
                             <div className='font-medium text-center self-center flex w-full flex-col items-center justify-center h-full'>There is no note available <br />
                                 <Link href='/write' className='text-blue-500'>Make one +</Link> </div>

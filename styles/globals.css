@@ -61,7 +61,7 @@
 
 @layer {
   body {
-    @apply w-screen overflow-x-hidden bg-slate-50;
+    @apply w-screen overflow-x-hidden;
   }
 
   .container-custom {

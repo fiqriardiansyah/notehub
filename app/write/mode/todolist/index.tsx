@@ -17,6 +17,7 @@ import useStatusBar from "@/hooks/use-status-bar";
 import { WriteContext, WriteContextType } from "@/context/write";
 import { Note } from "@/models/note";
 import { Timer } from "@/models/habits";
+import AsView from "./as-view";
 
 export type Todo = {
     id: string;
@@ -33,12 +34,12 @@ export type TodoListModeEditorProps = {
     children?: React.ReactElement
     onSave?: (data: Partial<Note>) => void;
     showInfoDefault?: boolean;
-    asView?: boolean;
+    onlyCanCheck?: boolean;
 }
 
-export default function TodoListModeEditor({
-    onChange, todos = [], children, onSave, showInfoDefault = true, asView,
-}: TodoListModeEditorProps) {
+const TodoListModeEditor = ({
+    onChange, todos = [], children, onSave, showInfoDefault = true, onlyCanCheck,
+}: TodoListModeEditorProps) => {
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
     const [_, setStatusBar] = useStatusBar();
     const [list, setList] = React.useState<Todo[]>(() => todos);
@@ -119,7 +120,7 @@ export default function TodoListModeEditor({
                                     {item.checkedAt && <span className="text-xs font-medium text-gray-400">done at {dayjs(item.checkedAt).format("DD MMM, HH:mm")}</span>}
                                 </div>
                             </label>
-                            {!asView && (
+                            {!onlyCanCheck && (
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <button onClick={onDeleteItem(item)} className="text-red-400">
@@ -134,7 +135,7 @@ export default function TodoListModeEditor({
                         </motion.div>
                     ))}
                 </AnimatePresence>
-                {!asView && (
+                {!onlyCanCheck && (
                     <form onSubmit={onAddTodo} className="flex items-center gap-4">
                         <Input value={str} onChange={onChangeStr} name="content" placeholder="Type anything here..." className="border-none bg-transparent focus-visible:!ring-0 focus-visible:!ring-offset-0 outline-none" />
                         <Tooltip>
@@ -153,7 +154,7 @@ export default function TodoListModeEditor({
             <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
                 {children}
             </form>
-            {!asView && (
+            {!onlyCanCheck && (
                 <div className="w-full flex justify-center my-10">
                     {showInfo && showInfoDefault && (
                         <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">
@@ -166,3 +167,7 @@ export default function TodoListModeEditor({
         </>
     )
 }
+
+TodoListModeEditor.AsView = AsView
+
+export default TodoListModeEditor;

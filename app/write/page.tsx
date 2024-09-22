@@ -108,7 +108,7 @@ export default function Write() {
 
   return (
     <>
-      <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center container-custom z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
+      <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center container-custom z-10 justify gap-3 py-1 sticky top-0 left-0 bg-white">
         <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
           <ChevronLeft />
         </Button>

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/drawer";
 import { NoteContext, NoteContextType } from "@/context/note";
 import useSecureNote from "@/hooks/use-secure-note";
-import useSettingList, { NoteSetting } from "@/hooks/use-setting-list";
+import useMenuNoteList, { NoteSetting } from "@/hooks/use-menu-note-list";
 import useSidePage from "@/hooks/use-side-page";
 import useStatusBar from "@/hooks/use-status-bar";
 import { CreateNote } from "@/models/note";
@@ -30,7 +30,7 @@ export type BottomSheet = {
 export default function BottomSheet({ refetch }: BottomSheet) {
   const { note, setNote } = React.useContext(NoteContext) as NoteContextType;
   const isBigScreen = useMediaQuery({ query: "(max-width: 600px)" });
-  const settings = useSettingList(note?.note);
+  const settings = useMenuNoteList(note?.note);
   const [setSidePage, resetSidePage, isSidePageOpen] = useSidePage();
   const queryClient = useQueryClient();
   const [_, setStatusBar] = useStatusBar();

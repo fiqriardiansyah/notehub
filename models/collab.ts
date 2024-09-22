@@ -1,4 +1,5 @@
 import { User } from "next-auth";
+import { Note } from "./note";
 
 export type InvitationData = {
     email: string;
@@ -20,3 +21,10 @@ export type Invitation = {
 }
 
 export type CollabAccount = Pick<User, "id" | "name" | "email" | "image"> & Pick<InvitationData, "role">
+
+export type CollaborateProject = Pick<Note, "id" | "title" | "note" | "type" | "todos" | "isHang" | "tags" | "updatedAt"> &
+    Pick<InvitationData, "role"> & {
+        ownerId: string;
+        ownerName: string;
+        ownerImage: string;
+    }

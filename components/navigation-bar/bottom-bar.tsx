@@ -2,7 +2,6 @@
 
 import habitsService from "@/service/habits";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
 import { Blocks, House, PanelsTopLeft, Plus, Trophy } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,10 +15,10 @@ export default function BottomBar() {
     });
 
     return (
-        <motion.div animate={{ y: 0, transition: { delay: 0.8 } }} initial={{ y: '100%' }} className="fixed bottom-0 left-0 right-0 w-screen container-custom z-50 bg-white">
+        <div className="fixed bottom-0 left-0 right-0 w-screen container-custom z-50 bg-white">
             <div className="w-full flex items-center justify-around py-3">
                 <Link style={{ color: pathname === "/" ? themeColor.gray[700] : themeColor.gray[400] }} href="/"><House /></Link>
-                <Link style={{ color: themeColor.gray[400] }} href="/social"><Blocks /></Link>
+                <Link style={{ color: pathname.includes("/collaborate") ? themeColor.gray[700] : themeColor.gray[400] }} href="/collaborate"><Blocks /></Link>
                 <Link style={{ color: pathname.includes("/write") ? themeColor.gray[700] : themeColor.gray[400] }} href="/write"><Plus /></Link>
                 <Link style={{ color: pathname.includes("/habits") ? themeColor.gray[700] : themeColor.gray[400] }} className="relative" href="/habits">
                     {(!habitsToday.isLoading
@@ -31,6 +30,6 @@ export default function BottomBar() {
                 </Link>
                 <Link style={{ color: themeColor.gray[400] }} href="#"><PanelsTopLeft /></Link>
             </div>
-        </motion.div>
+        </div>
     )
 }

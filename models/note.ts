@@ -44,6 +44,7 @@ export interface Note {
 
 export interface DetailNote extends Note {
   folderName?: string;
+  role?: "editor" | "viewer";
 }
 
 export interface Folder {

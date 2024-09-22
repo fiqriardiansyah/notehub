@@ -1,17 +1,14 @@
 "use client"
 
-import { Folder, Note } from "@/models/note"
-import { useMediaQuery } from "react-responsive"
-import CardFolder from "./card-folder"
-import CardNote from "./card-note"
 import React from "react"
+import { useMediaQuery } from "react-responsive"
 
-export type LayoutGridProps = {
-    notes?: (Note | Folder)[];
-    render?: (item: Note | Folder) => React.ReactNode;
+export type LayoutGridProps<T> = {
+    items?: T[];
+    children?: (item: T) => React.ReactNode;
 }
 
-export default function LayoutGrid({ notes, render }: LayoutGridProps) {
+export default function LayoutGrid<T>({ items, children }: LayoutGridProps<T>) {
     const isDesktop = useMediaQuery({ minWidth: 992 })
     const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 991 })
 
@@ -27,9 +24,9 @@ export default function LayoutGrid({ notes, render }: LayoutGridProps) {
 
     const generateNoteColumn = () => {
         let tempCurrentCol = 0;
-        let tempCol: (Note | Folder)[][] = new Array(column).fill(null);
+        let tempCol: T[][] = new Array(column).fill(null);
 
-        notes?.forEach((note) => {
+        items?.forEach((note) => {
             if (tempCurrentCol >= column) {
                 tempCurrentCol = 0;
             }
@@ -47,9 +44,9 @@ export default function LayoutGrid({ notes, render }: LayoutGridProps) {
             (
                 <div className="flex flex-1 flex-col gap-3" key={i}>
                     {columns?.map((item) => {
-                        if (render) return render(item);
-                        if (item.type === "folder") return <CardFolder {...item} key={item.id} />
-                        return <CardNote {...item} key={item.id} />
+                        if (children) return children(item);
+                        // if (item.type === "folder") return <CardFolder {...item} key={item.id} />
+                        // return <CardNote note={item} key={item.id} />
                     })}
                 </div>
             )

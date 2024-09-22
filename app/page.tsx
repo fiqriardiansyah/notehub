@@ -12,6 +12,9 @@ import SettingNoteDrawer from "./components/setting-note-drawer";
 import ToolBar from "./components/tool-bar";
 import StateRender from "@/components/state-render";
 import ButtonToWrite from "./habits/components/button-make-habit";
+import CardNote from "./components/card-note";
+import { Note } from "@/models/note";
+import CardFolder from "./components/card-folder";
 
 export default function IndexPage() {
   const itemsQuery = useQuery([noteService.getAllItems.name], async () => {
@@ -34,7 +37,14 @@ export default function IndexPage() {
         <StateRender data={itemsQuery.data} isLoading={itemsQuery.isLoading}>
           <StateRender.Data>
             <div className="w-full my-7">
-              {itemsQuery.data?.length ? <LayoutGrid notes={itemsQuery.data} /> : <ButtonToWrite href="/write?type=freetext" title="There is no notes available" />}
+              {itemsQuery.data?.length ?
+                <LayoutGrid items={itemsQuery.data}>
+                  {(item) => {
+                    if (item.type === "folder") return <CardFolder {...item} key={item.id} />
+                    return <CardNote note={item as Note} key={item.id} attachMenu={(note) => <SettingNoteDrawer.Attach note={note} />} />
+                  }}
+                </LayoutGrid> :
+                <ButtonToWrite href="/write?type=freetext" title="There is no notes available" />}
             </div>
           </StateRender.Data>
           <StateRender.Loading>

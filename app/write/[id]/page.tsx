@@ -25,7 +25,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useRef } from "react";
-import ToolsBar from "../components/tool-bar";
+import ToolsBar, { ToolsType } from "../components/tool-bar";
 import TodoListModeEditor, { Todo } from "../mode/todolist";
 import collabService from "@/service/collab";
 import CollabsList from "@/components/common/collabs-list";
@@ -155,15 +155,26 @@ export default function Write() {
 
     shortCut.saveWrite(onSaveClick);
 
+    const excludeTools = () => {
+        const exclude = (noteDetailQuery?.data?.isSecure ? ["folder", "mode", "collabs"] : ["folder", "mode"]) as ToolsType[];
+        if (noteDetailQuery.data?.role === "editor") {
+            return [...exclude, "delete", "secure", "collabs", "tag"] as ToolsType[];
+        }
+        return exclude;
+    }
+
+    const asViewer = noteDetailQuery.data?.role === "viewer";
+
     return (
         <>
             <div className="container-custom pb-20 min-h-screen">
-                <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-primary-foreground">
+                <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-white">
                     <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
                         <ChevronLeft />
                     </Button>
                     {noteDetailQuery.isLoading ? <p>Getting Detail...</p> : (
                         <input
+                            disabled={asViewer}
                             value={dataNote?.title}
                             onChange={onChangeTitle}
                             autoFocus={true}
@@ -195,12 +206,14 @@ export default function Write() {
                             <OpenSecureNote refetch={noteDetailQuery.mutate} />
                         ) : (
                             <div className="w-full overflow-x-hidden">
-                                {dataNote.modeWrite === "freetext" && <FreetextModeEditor data={noteDetailQuery.data?.note} asEdit onSave={saveWrite}>
+                                {dataNote.modeWrite === "freetext" && <FreetextModeEditor asView={asViewer} options={{ readOnly: asViewer }} data={noteDetailQuery.data?.note} asEdit onSave={saveWrite}>
                                     <button ref={saveBtnRef} type="submit">submit</button>
                                 </FreetextModeEditor>}
-                                {dataNote.modeWrite === "todolist" && <TodoListModeEditor todos={todos} onSave={saveWrite}>
-                                    <button ref={saveBtnRef} type="submit">submit</button>
-                                </TodoListModeEditor>}
+                                {dataNote.modeWrite === "todolist" && (asViewer ?
+                                    (<TodoListModeEditor.AsView todos={todos} />) :
+                                    <TodoListModeEditor todos={todos} onSave={saveWrite}>
+                                        <button ref={saveBtnRef} type="submit">submit</button>
+                                    </TodoListModeEditor>)}
                                 {dataNote.modeWrite === "habits" && <HabitsModeEditor note={noteDetailQuery.data} asEdit onSave={saveWrite}>
                                     <button ref={saveBtnRef} type="submit">submit</button>
                                 </HabitsModeEditor>}
@@ -214,10 +227,11 @@ export default function Write() {
                     </StateRender.Loading>
                 </StateRender>
             </div>
-            {!noteDetailQuery?.isLoading && (
+            {!noteDetailQuery?.isLoading && noteDetailQuery.data?.role !== "viewer" && (
                 <div className="flex justify-center fixed z-40 bottom-0 left-0 w-screen">
-                    <ToolsBar currentNote={noteDetailQuery.data}
-                        excludeSettings={["folder", "mode"]}
+                    <ToolsBar
+                        currentNote={noteDetailQuery.data}
+                        excludeSettings={excludeTools()}
                         isLoading={saveMutate.isLoading}
                         save={onSaveClick} />
                 </div>

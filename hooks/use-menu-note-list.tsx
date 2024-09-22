@@ -82,7 +82,7 @@ const deleteSetting: NoteSetting = {
     type: "delete",
 };
 
-export default function useSettingList(note?: Note | null) {
+export default function useMenuNoteList(note?: Note | null) {
     if (!note) return [];
 
     let settings: NoteSetting[] = [];

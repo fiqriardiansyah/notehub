@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NoteContext, NoteContextType } from "@/context/note";
-import useSettingList, { NoteSetting } from "@/hooks/use-setting-list";
+import useMenuNoteList, { NoteSetting } from "@/hooks/use-menu-note-list";
 import useSidePage from "@/hooks/use-side-page";
 import { Note } from "@/models/note";
 import React from "react";
@@ -23,7 +23,7 @@ export type AttachType = {
 export default function Attach({ children, note: currentNote }: AttachType) {
   const { note, setNote } = React.useContext(NoteContext) as NoteContextType;
   const isSmallScreen = useMediaQuery({ query: "(min-width: 600px)" });
-  const settings = useSettingList(currentNote);
+  const settings = useMenuNoteList(currentNote);
   const [setContentSidePage] = useSidePage();
 
   const onOpenChange = (val: boolean) => {

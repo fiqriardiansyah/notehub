@@ -21,6 +21,7 @@ import { easeDefault, pause } from "@/lib/utils";
 import useStatusBar from "@/hooks/use-status-bar";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { REMOVE_FOLDER_EVENT, REMOVE_FOLDER_EVENT_FAILED, REMOVE_FOLDER_EVENT_SUCCESS } from "@/app/components/setting-note-ground/delete-folder";
+import CardNote from "@/app/components/card-note";
 
 export default function FolderPage() {
     const queryClient = useQueryClient();
@@ -148,7 +149,9 @@ export default function FolderPage() {
                 <StateRender data={detailFolderQuery.data} isLoading={detailFolderQuery.isLoading}>
                     <StateRender.Data>
                         <div className="w-full my-7">
-                            <LayoutGrid notes={notes()} />
+                            <LayoutGrid items={notes()}>
+                                {(item) => <CardNote note={item as Note} key={item.id} attachMenu={(note) => <SettingNoteDrawer.Attach note={note} />} />}
+                            </LayoutGrid>
                             {!notes()?.length && (
                                 <div className="min-h-[250px] flex items-center justify-center gap-3">
                                     <div className="text-center text-sm">Ooops, there is no notes in this folder 😴
