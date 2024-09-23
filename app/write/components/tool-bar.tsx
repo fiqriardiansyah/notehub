@@ -26,11 +26,11 @@ export default function ToolsBar({ save, isLoading, excludeSettings, currentNote
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
 
     return (
-        <div className="w-full bg-white p-1 h-full flex items-center justify-center gap-2 container-custom">
+        <div className="w-full bg-white p-1 h-full flex items-center justify-evenly gap-2 container-custom">
             {!excludeSettings?.find((s) => s === "collabs") && <CollabNote note={currentNote} />}
             {!excludeSettings?.find((s) => s === "tag") && <TagNote />}
             {!excludeSettings?.find((s) => s === "folder") && <FolderNote />}
-            {!excludeSettings?.find((s) => s === "secure") && dataNote.modeWrite !== "habits" && <SecureNote />}
+            {!excludeSettings?.find((s) => s === "secure") && <SecureNote note={currentNote} />}
             {dataNote.modeWrite === "habits" && <Scheduler />}
             <ButtonSuccessAnim id="button-save-write" message="Saved ✨">
                 <Button

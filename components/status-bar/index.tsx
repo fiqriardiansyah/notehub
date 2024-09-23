@@ -16,7 +16,7 @@ export default function StatusBar() {
   }, [statusBar?.show]);
 
   return (
-    <div className="z-20 bg-background-primary w-full">
+    <div className="z-20 w-full">
       <div className="container-custom">
         <LoadingStatusBar {...statusBar} />
         <ErrorStatusBar {...statusBar} />

@@ -66,9 +66,9 @@ export default function ViewAttachNote() {
             <StateRender data={noteDetailMutate.data} isLoading={noteDetailMutate.isLoading}>
                 <StateRender.Data>
                     {noteDetailMutate.data?.type === "freetext"
-                        && <FreetextModeEditor asView data={noteDetailMutate.data?.note} asEdit options={{ readOnly: true }} />}
+                        && <FreetextModeEditor showInfoDefault={false} data={noteDetailMutate.data?.note} asEdit options={{ readOnly: true }} />}
                     {noteDetailMutate.data?.type === "todolist"
-                        && <TodoListModeEditor onChange={onChangeTodoList} onlyCanCheck todos={noteDetailMutate.data?.todos} />}
+                        && <TodoListModeEditor showInfoDefault={false} onChange={onChangeTodoList} onlyCanCheck todos={noteDetailMutate.data?.todos} />}
                 </StateRender.Data>
                 <StateRender.Loading>
                     <Skeleton className="w-[200px] h-[20px]" />

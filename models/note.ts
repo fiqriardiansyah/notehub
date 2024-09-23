@@ -34,6 +34,7 @@ export interface Note {
   newFolder?: {
     title?: string;
   };
+  updatedBy?: string;
   todos?: Todo[];
   schedulerType?: "day" | "weekly" | "monthly";
   schedulerDays?: string[];

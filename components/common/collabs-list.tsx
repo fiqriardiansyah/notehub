@@ -19,7 +19,7 @@ export default function CollabsList({ noteId, children, containerProps }: Collab
         enabled: !!noteId
     });
 
-    if (children && collabAcountQuery.data?.length) {
+    if (children) {
         return children(collabAcountQuery.data);
     }
 

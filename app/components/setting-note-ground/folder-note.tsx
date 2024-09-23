@@ -72,6 +72,10 @@ export default function FolderNoteGround() {
     }
 
     const onClickSubmit = () => {
+        setDataNote((prev) => ({
+            ...prev,
+            folder: {},
+        }));
         window.dispatchEvent(new CustomEvent(FOLDER_NOTE_SAVE, { detail: { folder: dataNote.folder } }));
     }
 

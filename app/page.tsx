@@ -15,10 +15,13 @@ import ButtonToWrite from "./habits/components/button-make-habit";
 import CardNote from "./components/card-note";
 import { Note } from "@/models/note";
 import CardFolder from "./components/card-folder";
+import React from "react";
 
 export default function IndexPage() {
-  const itemsQuery = useQuery([noteService.getAllItems.name], async () => {
-    return (await noteService.getAllItems()).data.data;
+  const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
+
+  const itemsQuery = useQuery([noteService.getAllItems.name, orderList], async () => {
+    return (await noteService.getAllItems(orderList)).data.data;
   }, {
     refetchOnWindowFocus: true,
   });
@@ -27,13 +30,17 @@ export default function IndexPage() {
     return typeof document !== "undefined" && document.querySelector("#top-nav") && ReactDom.createPortal(<TopBar />, document.querySelector("#top-nav")!)
   }
 
+  const onClickModified = () => {
+    setOrderList((prev) => prev === "desc" ? "asc" : "desc");
+  }
+
   return (
     <>
       {renderTopNav()}
       <div className="container-custom pb-20 min-h-screen">
         <Quotes />
         <HabitsAlert />
-        <ToolBar />
+        <ToolBar order={orderList} onClickModified={onClickModified} />
         <StateRender data={itemsQuery.data} isLoading={itemsQuery.isLoading}>
           <StateRender.Data>
             <div className="w-full my-7">

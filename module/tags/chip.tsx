@@ -34,7 +34,7 @@ export default function Chip({ tag, pick, deleteable, onClickDelete, ...props }:
             <TooltipTrigger asChild>
                 <div className="flex items-center gap-1">
                     <WithBorderAnim withBorder={tag.isNew}>
-                        <Button {...props} variant={pick ? "default" : "outline"} size="chip" className="flex items-center gap-1">
+                        <Button {...props} variant={pick ? "secondary" : "outline"} size="chip" className="flex items-center gap-1">
                             <Icon size={15} />
                             {tag.text}
                         </Button>

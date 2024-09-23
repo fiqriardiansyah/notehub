@@ -11,11 +11,16 @@ import {
 import { WriteContext, WriteContextType } from "@/context/write";
 import useSecureNote from "@/hooks/use-secure-note";
 import useSidePage from "@/hooks/use-side-page";
+import { Note } from "@/models/note";
 import { motion } from "framer-motion";
 import { LockKeyhole, LockKeyholeOpen } from "lucide-react";
 import React from "react";
 
-export default function SecureNote() {
+export type SecureNoteProps = {
+  note?: Note;
+}
+
+export default function SecureNote({ note }: SecureNoteProps) {
   const { dataNote, setDataNote } = React.useContext(
     WriteContext
   ) as WriteContextType;

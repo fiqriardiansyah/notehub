@@ -23,7 +23,7 @@ export default function OpenSecureNote({ refetch }: OpenSecureNoteProps) {
     }
 
     return (
-        <div className="w-full h-full fixed top-0 left-0 right-0 bottom-0 z-10 bg-white flex flex-col items-center justify-center gap-5 container-custom">
+        <div className="w-full h-full fixed top-0 left-0 right-0 bottom-0 z-50 bg-white flex flex-col items-center justify-center gap-5 container-custom">
             <LockKeyhole className="" size={100} />
             <div className="w-[300px]">
                 <ConfirmSecure onFinish={onFinish} />

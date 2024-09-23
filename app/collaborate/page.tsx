@@ -10,22 +10,28 @@ import CardNoteCollab from "../components/card-note-collab";
 import LayoutGrid from "../components/layout-grid";
 import SettingNoteDrawer from "../components/setting-note-drawer";
 import ToolBar from "../components/tool-bar";
+import React from "react";
 
 export default function CollaboratePage() {
+    const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
 
-    const projectsQuery = useQuery([collabService.getMyCollaborateProject.name], async () => {
-        return (await collabService.getMyCollaborateProject()).data.data;
+    const projectsQuery = useQuery([collabService.getMyCollaborateProject.name, orderList], async () => {
+        return (await collabService.getMyCollaborateProject(orderList)).data.data;
     });
 
     const renderTopNav = () => {
         return typeof document !== "undefined" && document.querySelector("#top-nav") && ReactDom.createPortal(<TopBar />, document.querySelector("#top-nav")!)
     }
 
+    const onClickModified = () => {
+        setOrderList((prev) => prev === "desc" ? "asc" : "desc");
+    }
+
     return (
         <>
             {renderTopNav()}
             <div className="container-custom pb-20 min-h-screen">
-                <ToolBar />
+                <ToolBar order={orderList} onClickModified={onClickModified} />
                 <StateRender data={projectsQuery.data} isLoading={projectsQuery.isLoading}>
                     <StateRender.Data>
                         <LayoutGrid items={projectsQuery.data}>

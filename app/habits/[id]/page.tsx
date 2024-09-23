@@ -238,10 +238,12 @@ export default function HabitDetail() {
                                     <span className="text-green-600 text-xs flex items-center">Complete!
                                         <Lottie style={{ pointerEvents: 'none' }} options={{ ...defaultOptions, animationData: fireAnim }} height={30} width={30} />
                                     </span>}
-                                <div className="flex-1 flex gap-2 items-center max-w-[400px]">
-                                    <Progress className="h-[5px]" value={progress} />
-                                    <p className="m-0 text-xs text-gray-500 text-end">{`${taskDone}/${todos?.length}`}</p>
-                                </div>
+                                {!habitCompleted && (
+                                    <div className="flex-1 flex gap-2 items-center max-w-[400px]">
+                                        <Progress className="h-[5px]" value={progress} />
+                                        <p className="m-0 text-xs text-gray-500 text-end">{`${taskDone}/${todos?.length}`}</p>
+                                    </div>
+                                )}
                             </div>
                         )}
                         <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2">

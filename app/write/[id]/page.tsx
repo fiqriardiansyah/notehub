@@ -11,7 +11,7 @@ import { WriteContext, WriteContextType, WriteStateType } from "@/context/write"
 import useStatusBar from "@/hooks/use-status-bar";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { shortCut } from "@/lib/shortcut";
-import { easeDefault } from "@/lib/utils";
+import { easeDefault, formatDate } from "@/lib/utils";
 import { CreateNote } from "@/models/note";
 import ShowedTags from "@/module/tags/showed-tags";
 import noteService from "@/service/note";
@@ -31,6 +31,7 @@ import collabService from "@/service/collab";
 import CollabsList from "@/components/common/collabs-list";
 import useSidePage from "@/hooks/use-side-page";
 import { COLLABS_NOTE_GROUND } from "@/app/components/setting-note-ground/collabs";
+import ResponsiveTagsListed from "@/components/common/tag-listed";
 
 const FreetextModeEditor = dynamic(() => import("../mode/freetext").then((mod) => mod.default),
     { ssr: false }
@@ -156,19 +157,24 @@ export default function Write() {
     shortCut.saveWrite(onSaveClick);
 
     const excludeTools = () => {
-        const exclude = (noteDetailQuery?.data?.isSecure ? ["folder", "mode", "collabs"] : ["folder", "mode"]) as ToolsType[];
-        if (noteDetailQuery.data?.role === "editor") {
-            return [...exclude, "delete", "secure", "collabs", "tag"] as ToolsType[];
+        let excludesSetting = ["folder", "mode"];
+        if (noteDetailQuery.data?.type === 'habits') {
+            excludesSetting.push("secure");
         }
-        return exclude;
+        if (noteDetailQuery.data?.role === "editor") {
+            excludesSetting = [...excludesSetting, "delete", "secure", "collabs", "tag"] as ToolsType[];
+        }
+
+        return excludesSetting as ToolsType[];
     }
 
     const asViewer = noteDetailQuery.data?.role === "viewer";
+    const isOwner = !noteDetailQuery.data?.role;
 
     return (
         <>
             <div className="container-custom pb-20 min-h-screen">
-                <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
+                <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-20">
                     <div className="flex flex-row items-center flex-1">
                         <div className="mr-3">
                             <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
@@ -189,7 +195,7 @@ export default function Write() {
                         )}
                     </div>
                 </motion.div>
-                {noteDetailQuery.data?.folderName && (
+                {noteDetailQuery.data?.folderName && isOwner && (
                     <Breadcrumb>
                         <BreadcrumbList>
                             <FolderOpen size={18} />
@@ -203,24 +209,37 @@ export default function Write() {
                         </BreadcrumbList>
                     </Breadcrumb>
                 )}
-                <ShowedTags className="my-5" />
+                {isOwner ? <ShowedTags className="my-5" /> : <div className="my-4"><ResponsiveTagsListed tags={noteDetailQuery.data?.tags} size={16} /></div>}
                 <StateRender data={noteDetailQuery.data || isSecureNoteQuery.data} isLoading={noteDetailQuery.isLoading || isSecureNoteQuery.isLoading}>
                     <StateRender.Data>
                         {(isSecureNoteQuery.data && !dataNote?.authorized) ? (
                             <OpenSecureNote refetch={noteDetailQuery.mutate} />
                         ) : (
                             <div className="w-full overflow-x-hidden">
-                                {dataNote.modeWrite === "freetext" && <FreetextModeEditor asView={asViewer} options={{ readOnly: asViewer }} data={noteDetailQuery.data?.note} asEdit onSave={saveWrite}>
-                                    <button ref={saveBtnRef} type="submit">submit</button>
-                                </FreetextModeEditor>}
+                                {dataNote.modeWrite === "freetext" &&
+                                    <FreetextModeEditor showInfoDefault={false} options={{ readOnly: asViewer }} data={noteDetailQuery.data?.note} asEdit onSave={saveWrite}>
+                                        <button ref={saveBtnRef} type="submit">submit</button>
+                                    </FreetextModeEditor>}
                                 {dataNote.modeWrite === "todolist" && (asViewer ?
                                     (<TodoListModeEditor.AsView todos={todos} />) :
-                                    <TodoListModeEditor todos={todos} onSave={saveWrite}>
+                                    <TodoListModeEditor showInfoDefault={false} todos={todos} onSave={saveWrite}>
                                         <button ref={saveBtnRef} type="submit">submit</button>
                                     </TodoListModeEditor>)}
-                                {dataNote.modeWrite === "habits" && <HabitsModeEditor note={noteDetailQuery.data} asEdit onSave={saveWrite}>
+                                {/* {dataNote.modeWrite === "habits" && <HabitsModeEditor note={noteDetailQuery.data} asEdit onSave={saveWrite}>
                                     <button ref={saveBtnRef} type="submit">submit</button>
-                                </HabitsModeEditor>}
+                                </HabitsModeEditor>} */}
+                                {dataNote.modeWrite === "habits" && <h1>Habit edit page 🔥</h1>}
+                                <CollabsList noteId={id as string} >
+                                    {(list) => {
+                                        if (isOwner && !list?.length) return null;
+                                        return (
+                                            <span className="caption my-7">
+                                                {`Edited ${formatDate(noteDetailQuery.data?.updatedAt)} By `}
+                                                <span className="font-semibold">{noteDetailQuery.data?.updatedBy}</span>
+                                            </span>
+                                        )
+                                    }}
+                                </CollabsList>
                             </div>
                         )}
                     </StateRender.Data>

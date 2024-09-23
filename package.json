@@ -67,6 +67,7 @@
     "react-icons": "^5.2.1",
     "react-lottie": "^1.2.4",
     "react-responsive": "^10.0.0",
+    "react-simple-snackbar": "^1.1.11",
     "react-visibility-sensor": "^5.1.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",

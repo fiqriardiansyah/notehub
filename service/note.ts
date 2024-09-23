@@ -15,7 +15,7 @@ const noteService = {
 
   getNote: (): Promise<AxiosResponse<BaseResponse<Note[]>>> => api.get("/note"),
 
-  getAllItems: (): Promise<AxiosResponse<BaseResponse<(Note | Folder)[]>>> => api.get("/note/get-all"),
+  getAllItems: (order: any): Promise<AxiosResponse<BaseResponse<(Note | Folder)[]>>> => api.get(`/note/get-all?order=${order}`),
 
   getOneNote: (id: string): Promise<AxiosResponse<BaseResponse<DetailNote>>> => api.get(`/note/${id}`),
 

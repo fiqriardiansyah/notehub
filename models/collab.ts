@@ -22,8 +22,9 @@ export type Invitation = {
 
 export type CollabAccount = Pick<User, "id" | "name" | "email" | "image"> & Pick<InvitationData, "role">
 
-export type CollaborateProject = Pick<Note, "id" | "title" | "note" | "type" | "todos" | "isHang" | "tags" | "updatedAt"> &
-    Pick<InvitationData, "role"> & {
+export type CollaborateProject = Pick<Note, "id" | "title" | "note" | "type" | "todos" | "isHang" | "tags" | "updatedAt" | "isSecure">
+    & Pick<InvitationData, "role">
+    & {
         ownerId: string;
         ownerName: string;
         ownerImage: string;

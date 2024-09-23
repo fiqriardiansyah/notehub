@@ -13,7 +13,7 @@ const collabService = {
     cancelInvitation: (idInvitation: string): Promise<AxiosResponse<BaseResponse<boolean>>> => api.delete(`collab/invite/${idInvitation}`),
     removeCollab: (idCollab: string): Promise<AxiosResponse<BaseResponse<boolean>>> => api.delete(`collab/${idCollab}`),
     changeRoleCollab: (idCollab: string, role: string): Promise<AxiosResponse<BaseResponse<boolean>>> => api.patch(`collab/${idCollab}`, { role }),
-    getMyCollaborateProject: (): Promise<AxiosResponse<BaseResponse<CollaborateProject[]>>> => api.get("collab/all"),
+    getMyCollaborateProject: (order?: string): Promise<AxiosResponse<BaseResponse<CollaborateProject[]>>> => api.get(`collab/all?order=${order}`),
 };
 
 export default collabService;

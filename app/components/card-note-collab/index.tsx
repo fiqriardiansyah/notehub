@@ -7,12 +7,11 @@ import { formatDate } from "@/lib/utils";
 import { CollaborateProject } from "@/models/collab";
 import { motion } from "framer-motion";
 import { Bookmark } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { GoGear } from "react-icons/go";
 import FreeTextCardNote from "../card-note/freetext";
 import TodolistCardNote from "../card-note/todolist";
-import Image from "next/image";
 
 export type CardNoteCollabType<T> = {
     note?: T;
