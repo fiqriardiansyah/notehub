@@ -168,22 +168,26 @@ export default function Write() {
     return (
         <>
             <div className="container-custom pb-20 min-h-screen">
-                <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center z-10 justify gap-3 py-1 sticky top-0 left-0 bg-white">
-                    <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
-                        <ChevronLeft />
-                    </Button>
-                    {noteDetailQuery.isLoading ? <p>Getting Detail...</p> : (
-                        <input
-                            disabled={asViewer}
-                            value={dataNote?.title}
-                            onChange={onChangeTitle}
-                            autoFocus={true}
-                            ref={titleRef}
-                            type="text"
-                            placeholder="Title ..."
-                            className="text-2xl text-gray-500 flex-1 font-medium border-none focus:outline-none outline-none bg-transparent"
-                        />
-                    )}
+                <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
+                    <div className="flex flex-row items-center flex-1">
+                        <div className="mr-3">
+                            <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
+                                <ChevronLeft />
+                            </Button>
+                        </div>
+                        {noteDetailQuery.isLoading ? <p>Getting Detail...</p> : (
+                            <input
+                                disabled={asViewer}
+                                value={dataNote?.title}
+                                onChange={onChangeTitle}
+                                autoFocus={true}
+                                ref={titleRef}
+                                type="text"
+                                placeholder="Title ..."
+                                className="text-2xl text-gray-500 w-full font-medium border-none focus:outline-none outline-none bg-transparent"
+                            />
+                        )}
+                    </div>
                 </motion.div>
                 {noteDetailQuery.data?.folderName && (
                     <Breadcrumb>
