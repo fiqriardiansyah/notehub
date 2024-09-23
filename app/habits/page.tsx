@@ -24,6 +24,7 @@ import ListCardHabit from "./components/list-card-habit";
 import MonthlyHabits from "./components/monthly-habits";
 import WeeklyHabits from "./components/weekly-habits";
 import SearchHabits from "./components/search-habits";
+import RunningTimer from "../components/habits/running-timer";
 
 const tabs = [
     {
@@ -147,6 +148,9 @@ export default function Habits() {
                             {allHabit.data?.length ? (
                                 <div className={`container-custom flex flex-col ${habitsToday.data?.length ? "mt-2 mb-16" : ""}`}>
                                     <HabitsUrgent inPageHabits onChangeHabit={habitsToday.refetch} />
+                                    <div className="my-5">
+                                        <RunningTimer />
+                                    </div>
                                     {habitsToday.data?.length ? <p className="text-2xl my-3 mt-5">Should Do! 💪</p> : null}
                                     <div className="flex flex-col gap-3" >
                                         {habitsToday.data?.map((habit, i) => (

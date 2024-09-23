@@ -8,6 +8,7 @@ import habitsService from '@/service/habits';
 import { useQuery } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next-nprogress-bar';
+import RunningTimer from './running-timer';
 
 const defaultOptions = {
     loop: true,
@@ -25,11 +26,16 @@ export default function HabitsAlert() {
         return (await habitsService.getUrgentHabit()).data.data;
     });
 
+    const runningTimerQuery = useQuery([habitsService.getRunningTimer.name], async () => {
+        return (await habitsService.getRunningTimer()).data.data;
+    });
+
     return (
-        <div className='flex flex-col gap-3'>
+        <div className='flex flex-col gap-4'>
             <HabitsUrgent onChangeHabit={habitsToday.refetch} />
+            <RunningTimer />
             <AnimatePresence>
-                {habitsToday.data?.length && (
+                {habitsToday.data?.length && !runningTimerQuery.data?.length && (
                     <motion.button
                         onClick={() => router.push("/habits")}
                         exit={{ scale: 1, height: 0 }}
