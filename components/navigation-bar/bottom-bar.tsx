@@ -15,8 +15,8 @@ export default function BottomBar() {
     });
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 w-screen container-custom z-50 bg-white">
-            <div className="w-full flex items-center justify-around py-3">
+        <div className="fixed bottom-0 left-0 right-0 w-screen z-50 bg-white">
+            <div className="w-full flex items-center justify-around py-3 container-custom ">
                 <Link style={{ color: pathname === "/" ? themeColor.gray[700] : themeColor.gray[400] }} href="/"><House /></Link>
                 <Link style={{ color: pathname.includes("/collaborate") ? themeColor.gray[700] : themeColor.gray[400] }} href="/collaborate"><Blocks /></Link>
                 <Link style={{ color: pathname.includes("/write") ? themeColor.gray[700] : themeColor.gray[400] }} href="/write"><Plus /></Link>

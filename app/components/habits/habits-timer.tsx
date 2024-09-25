@@ -12,11 +12,12 @@ import {
     DrawerTitle,
 } from "@/components/ui/drawer";
 import { Label } from "@/components/ui/label";
+import { useTimer } from "@/context/timer";
 import { FORMAT_DATE_SAVE, hexToRgba } from "@/lib/utils";
 import { Timer as TimerType } from "@/models/habits";
 import habitsService from "@/service/habits";
 import { useMutation } from "@tanstack/react-query";
-import { Info, Play, RotateCw } from "lucide-react";
+import { Info, Play, RotateCw, Scan } from "lucide-react";
 import moment from "moment";
 import React from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
@@ -32,6 +33,8 @@ export type HabitsTimerProps = {
 const defaultTime = { hours: 0, minutes: 0, seconds: 0 };
 
 export default function HabitsTimer({ children, todo, setTimer, anyId }: HabitsTimerProps) {
+    const timerContext = useTimer();
+
     const [isOpen, setIsOpen] = React.useState(false);
     const [time, setTime] = React.useState<Time | undefined>(defaultTime);
     const [autoComplete, setAutoComplete] = React.useState<boolean>(false);
@@ -110,16 +113,28 @@ export default function HabitsTimer({ children, todo, setTimer, anyId }: HabitsT
         return <h1>Times Up!</h1>
     }
 
+    const onClickZenMode = () => {
+        setIsOpen(false);
+        timerContext.open(todo);
+    }
+
     return (
         <>
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
                 <DrawerContent className="z-50">
                     <DrawerHeader>
                         <DrawerTitle className="capitalize">
-                            <p className="flex items-center w-full text-sm font-light">
-                                <Info size={14} className="mr-2" />
-                                Set timer for <span className="font-semibold ml-2">{todo?.content}</span>
-                            </p>
+                            <div className="flex items-start gap-4 justify-between">
+                                <p className="flex items-center w-full text-sm font-light">
+                                    <Info size={14} className="mr-2" />
+                                    Set timer for <span className="font-semibold ml-2">{todo?.content}</span>
+                                </p>
+                                {todo?.timer && !isTimesUp && (
+                                    <button onClick={onClickZenMode} className="" title="Zen Mode">
+                                        <Scan />
+                                    </button>
+                                )}
+                            </div>
                         </DrawerTitle>
                     </DrawerHeader>
                     <div className="container-custom flex flex-col gap-4">

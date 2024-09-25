@@ -35,7 +35,7 @@ export default function HabitsAlert() {
             <HabitsUrgent onChangeHabit={habitsToday.refetch} />
             <RunningTimer />
             <AnimatePresence>
-                {habitsToday.data?.length && !runningTimerQuery.data?.length && (
+                {habitsToday.data?.length && habitsToday.data?.length > 1 && !runningTimerQuery.data?.length && (
                     <motion.button
                         onClick={() => router.push("/habits")}
                         exit={{ scale: 1, height: 0 }}

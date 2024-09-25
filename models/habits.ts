@@ -18,9 +18,10 @@ export type Timer = {
     endTime?: string | null
     isEnd?: boolean | null
     autoComplete?: boolean | null
+    isZenMode?: boolean
 }
 
-export type RunningTimer = Pick<Timer, "id" | "endTime" | "startTime" | "itemId"> & {
+export type RunningTimer = Pick<Timer, "id" | "endTime" | "startTime" | "itemId" | "isZenMode"> & {
     noteId: string;
     title: string;
     itemTitle: string;

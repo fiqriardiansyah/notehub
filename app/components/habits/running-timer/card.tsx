@@ -46,7 +46,9 @@ export default function RunningTimerCard({ item }: RunningTimerCardProps) {
         </Countdown>
         <div className="flex-1">
             <p className="leading-none m-0 font-semibold text-sm line-clamp-1">{item?.itemTitle}</p>
-            <span className="leading-none text-xs text-gray-500 line-clamp-1 mt-1">{item?.title}</span>
+            <span className="leading-none text-xs text-gray-500 line-clamp-1 mt-1">
+                {item?.isZenMode && <span className="text-[10px] p-1 text-white bg-green-400 rounded-md mr-2">Zen</span>}
+                {item?.title}</span>
         </div>
         <Countdown
             endTime={item?.endTime}

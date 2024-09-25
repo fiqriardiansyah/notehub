@@ -30,6 +30,7 @@ import HistoryCalendar from "./components/history-calendar";
 import ListCardHabit from "./components/list-card-habit";
 import { emitterPickNotes, PICK_NOTES_SUBMIT } from "@/app/components/pick-notes";
 import { Note } from "@/models/note";
+import CardContinueZenMode from "./components/card-continue-zen-mode";
 
 const defaultOptions = {
     loop: true,
@@ -257,6 +258,7 @@ export default function HabitDetail() {
                                 todo={todo} />)}
                         </div>
                         {noteDetailQuery.data?.reschedule && !isFreeToday && <HabitsCountdown noteHabits={noteDetailQuery.data} />}
+                        <CardContinueZenMode note={noteDetailQuery.data} />
                         <span className="text-gray-400 text-xs mt-8 mb-2">Description</span>
                         <div className="text-gray-700 capitalize">{noteDetailQuery.data?.description ? parse(convertEditorDataToText(noteDetailQuery.data.description!)) : "-"}</div>
                         <span className="text-gray-400 text-xs mt-8 mb-2">Scheduler in</span>

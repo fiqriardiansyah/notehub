@@ -12,6 +12,8 @@ const habitsService = {
     setTimerTask: (timer?: Timer): Promise<AxiosResponse<BaseResponse<Timer>>> => api.post(`/habits/timer`, timer),
     deleteTimerTask: (data: { noteId: string; itemId: string }): Promise<AxiosResponse<BaseResponse<Timer>>> => api.delete(`/habits/timer/${data.noteId}/${data.itemId}`),
     getRunningTimer: (): Promise<AxiosResponse<BaseResponse<RunningTimer[]>>> => api.get(`/habits/running-timer`),
+    setZenMode: (id?: string, status?: boolean): Promise<AxiosResponse<BaseResponse<Timer>>> => api.post(`/habits/timer/zen/${id}`, { status }),
+    getTimerZenMode: (): Promise<AxiosResponse<BaseResponse<RunningTimer[]>>> => api.get(`/habits/timer/zen`),
 };
 
 export default habitsService;
