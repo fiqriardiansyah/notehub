@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import BottomBar from "@/components/navigation-bar/bottom-bar";
@@ -11,6 +12,17 @@ import LayoutGrid from "../components/layout-grid";
 import SettingNoteDrawer from "../components/setting-note-drawer";
 import ToolBar from "../components/tool-bar";
 import React from "react";
+import chattingAnim from "@/asset/animation/chatting.json";
+import Lottie from "react-lottie";
+
+const defaultOptions = {
+    animationData: chattingAnim,
+    loop: true,
+    autoplay: true,
+    rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice'
+    }
+};
 
 export default function CollaboratePage() {
     const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
@@ -34,9 +46,15 @@ export default function CollaboratePage() {
                 <ToolBar order={orderList} onClickModified={onClickModified} />
                 <StateRender data={projectsQuery.data} isLoading={projectsQuery.isLoading}>
                     <StateRender.Data>
-                        <LayoutGrid items={projectsQuery.data}>
-                            {(item) => <CardNoteCollab note={item} key={item.id} />}
-                        </LayoutGrid>
+                        {projectsQuery.data?.length ?
+                            <LayoutGrid items={projectsQuery.data}>
+                                {(item) => <CardNoteCollab note={item} key={item.id} />}
+                            </LayoutGrid> :
+                            <div className="min-h-[400px] flex flex-col items-center justify-center">
+                                <Lottie options={defaultOptions} width={250} height={250} style={{ pointerEvents: 'none' }} />
+                                <h3 className="mt-4">Join other people's project as collaborators</h3>
+                            </div>
+                        }
                     </StateRender.Data>
                     <StateRender.Loading>
                         <p>Getting Notes...</p>

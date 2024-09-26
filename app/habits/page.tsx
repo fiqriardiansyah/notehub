@@ -160,9 +160,6 @@ export default function Habits() {
                                 </div>
                             ) : null}
                         </StateRender.Data>
-                        <StateRender.Loading>
-                            <p>Getting habits...</p>
-                        </StateRender.Loading>
                     </StateRender>
                     <Tabs defaultValue={activeTab} className="w-full sticky top-0 left-0 z-20" onValueChange={onTabChange}>
                         <TabsList className="!w-full">

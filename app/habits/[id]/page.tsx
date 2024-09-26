@@ -19,18 +19,16 @@ import noteService from "@/service/note";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import parse from 'html-react-parser';
-import { Check, ChevronLeft, PencilRuler, RotateCw, TimerReset } from "lucide-react";
+import { Check, ChevronLeft, PencilRuler, TimerReset } from "lucide-react";
 import moment from "moment";
 import { useRouter } from "next-nprogress-bar";
 import { useParams } from "next/navigation";
 import React from "react";
 import 'react-circular-progressbar/dist/styles.css';
 import Lottie from "react-lottie";
+import CardContinueZenMode from "./components/card-continue-zen-mode";
 import HistoryCalendar from "./components/history-calendar";
 import ListCardHabit from "./components/list-card-habit";
-import { emitterPickNotes, PICK_NOTES_SUBMIT } from "@/app/components/pick-notes";
-import { Note } from "@/models/note";
-import CardContinueZenMode from "./components/card-continue-zen-mode";
 
 const defaultOptions = {
     loop: true,
