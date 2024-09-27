@@ -8,10 +8,10 @@ import { useTimer } from "@/context/timer";
 import { RunningTimer as RunningTimerType } from "@/models/habits";
 
 export type RunningTimerProps = {
-
+    children?: (data: { runningTimer?: RunningTimerType[]; onClickZenMode: (runningTimer: RunningTimerType) => void }) => any;
 }
 
-export default function RunningTimer({ }: RunningTimerProps) {
+export default function RunningTimer({ children }: RunningTimerProps) {
     const timerContext = useTimer();
 
     const runningTimerQuery = useQuery([habitsService.getRunningTimer.name], async () => {
@@ -19,10 +19,12 @@ export default function RunningTimer({ }: RunningTimerProps) {
     });
 
     const onClickZenMode = (timer: RunningTimerType) => {
-        return () => {
-            const todo = { id: timer.itemId, content: timer.itemTitle, timer: { startTime: timer.startTime, endTime: timer.endTime } };
-            timerContext.open(todo);
-        }
+        const todo = { id: timer.itemId, content: timer.itemTitle, timer: { startTime: timer.startTime, endTime: timer.endTime } };
+        timerContext.open(todo);
+    }
+
+    if (children) {
+        return children({ onClickZenMode, runningTimer: runningTimerQuery.data });
     }
 
     if (!runningTimerQuery.isLoading && runningTimerQuery.data?.length) {
@@ -32,7 +34,7 @@ export default function RunningTimer({ }: RunningTimerProps) {
                 {runningTimerQuery.data?.map((item) => {
                     if (item.isZenMode) {
                         return (
-                            <button key={item.id} onClick={onClickZenMode(item)} className="text-start">
+                            <button key={item.id} onClick={() => onClickZenMode(item)} className="text-start">
                                 <RunningTimerCard item={item} />
                             </button>
                         )

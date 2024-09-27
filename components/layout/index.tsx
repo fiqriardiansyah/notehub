@@ -19,9 +19,7 @@ export default function Layout({ children }: { children: any }) {
     return (
         <>
             <motion.div
-                animate={
-                    common?.sidePageOpen ? { left: "-80vw", scale: 0.9 } : { left: 0, scale: 1 }
-                }
+                animate={common?.sidePageOpen ? { left: "-90vw", scale: 0.9 } : { left: 0, scale: 1 }}
                 className="!w-screen min-h-screen z-[1] relative"
                 transition={{ ease: easeDefault }}
             >
@@ -40,7 +38,7 @@ export default function Layout({ children }: { children: any }) {
                 )}
             </AnimatePresence>
             <motion.div
-                animate={common?.sidePageOpen ? { x: "20vw" } : { x: "100vw" }}
+                animate={common?.sidePageOpen ? { x: "10vw" } : { x: "100vw" }}
                 initial={{ x: "100vw" }}
                 className="z-[3] fixed top-0 left-0 border-l border-solid border-gray-400"
                 transition={{ ease: easeDefault }}

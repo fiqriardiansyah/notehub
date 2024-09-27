@@ -13,16 +13,18 @@ import ViewAttachNote, { VIEW_ATTACH_NOTE } from "@/app/habits/[id]/components/v
 import { CommonContext, CommonContextType } from "@/context/common";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
+import Notifications, { NOTIFICATIONS } from "../notifications";
 
 export default function SidePage() {
     const { common } = React.useContext(CommonContext) as CommonContextType;
     return (
-        <motion.div className="w-[80vw] h-screen bg-white overflow-x-hidden">
+        <motion.div className="w-[90vw] h-screen bg-white overflow-x-hidden">
             <AnimatePresence>
                 {common?.groundOpen === INITIATE_SECURE_NOTE && <InitiateSecureNote key={INITIATE_SECURE_NOTE} />}
                 {common?.groundOpen === SECURE_NOTE && <SecureNote key={SECURE_NOTE} />}
                 {common?.groundOpen === FOLDER_NOTE_GROUND && <FolderNoteGround key={FOLDER_NOTE_GROUND} />}
                 {common?.groundOpen === TAG_NOTE_GROUND && <TagNote key={TAG_NOTE_GROUND} />}
+                {common?.groundOpen === NOTIFICATIONS && <Notifications />}
                 <DialogDeleteGround key={REMOVE_NOTE_EVENT} />
                 <DialogDeleteFolderGround key={REMOVE_FOLDER_EVENT} />
                 {common?.groundOpen === SCHEDULER && <Scheduler key={SCHEDULER} />}
