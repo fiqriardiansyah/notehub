@@ -18,10 +18,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bookmark, ChevronRight, LockKeyhole } from "lucide-react";
 import React from "react";
 import { useMediaQuery } from "react-responsive";
-import { FOLDER_NOTE_GROUND, FOLDER_NOTE_SAVE } from "../setting-note-ground/folder-note";
-import { INITIATE_SECURE_NOTE } from "../setting-note-ground/initiate-secure-note";
-import { SECURE_NOTE } from "../setting-note-ground/secure-note";
-import { COLLABS_NOTE_GROUND } from "../setting-note-ground/collabs";
+import { FOLDER_NOTE_GROUND, FOLDER_NOTE_SAVE } from "@/app/components/card-note/setting/folder-note";
+import { INITIATE_SECURE_NOTE } from "@/app/components/card-note/setting/initiate-secure-note";
+import { SECURE_NOTE } from "@/app/components/card-note/setting/secure-note";
+import { COLLABS_NOTE_GROUND } from "@/app/components/card-note/setting/collabs";
 
 export type BottomSheet = {
   refetch?: () => void;

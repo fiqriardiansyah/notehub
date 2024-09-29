@@ -8,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { WriteProvider } from "@/context/write";
 import Overlay from "@/components/overlay";
 import { TimerProvider } from "@/context/timer";
+import { TriggerProvider } from "@/context/trigger";
 
 const client = new QueryClient();
 
@@ -21,17 +22,19 @@ export default function Provider({ children }: { children: any }) {
         options={{ showSpinner: false }}
         shallowRouting
       />
-      <CommonProvider>
-        <NoteProvider>
-          <WriteProvider>
-            <TimerProvider>
-              <Overlay>
-                <TooltipProvider>{children}</TooltipProvider>
-              </Overlay>
-            </TimerProvider>
-          </WriteProvider>
-        </NoteProvider>
-      </CommonProvider>
+      <TriggerProvider>
+        <CommonProvider>
+          <NoteProvider>
+            <WriteProvider>
+              <TimerProvider>
+                <Overlay>
+                  <TooltipProvider>{children}</TooltipProvider>
+                </Overlay>
+              </TimerProvider>
+            </WriteProvider>
+          </NoteProvider>
+        </CommonProvider>
+      </TriggerProvider>
     </QueryClientProvider>
   );
 }

@@ -21,6 +21,7 @@ export const NOTIFICATIONS = "notifications";
 
 export const NOTIFICATION_TIMER_HABITS = "notification-timer-habits";
 export const NOTIFICATION_INVITE_TO_PROJECT = "notification-invite-to-project";
+export const NOTIFICATION_LEAVE_PROJECT = "notification-leave-project";
 
 export const NOTIFICATIONS_TYPE = [
     {

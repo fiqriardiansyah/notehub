@@ -5,10 +5,11 @@ import notificationService from "@/service/notification";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import React from "react";
-import { getNotificationType, NOTIFICATION_INVITE_TO_PROJECT, NOTIFICATION_TIMER_HABITS } from ".";
+import { getNotificationType, NOTIFICATION_INVITE_TO_PROJECT, NOTIFICATION_LEAVE_PROJECT, NOTIFICATION_TIMER_HABITS } from ".";
 import { Card } from "../ui/card";
 import NotifTimerHabit from "./notif-timer-habit";
 import NotifInvitationProject from "./notif-invitation-project";
+import NotifJoinStatusProject from "./notif-join-status-project";
 
 export type CardNotifProps = {
     notif: Notification;
@@ -48,6 +49,7 @@ export default function CardNotif({ notif }: CardNotifProps) {
         <Card className="flex gap-1">
             {notif.type === NOTIFICATION_TIMER_HABITS && <NotifTimerHabit onClickNotif={onClickNotif} notif={{ ...notif, isRead: notif.isRead ?? isRead }} />}
             {notif.type === NOTIFICATION_INVITE_TO_PROJECT && <NotifInvitationProject onClickNotif={onClickNotif} notif={{ ...notif, isRead: notif.isRead ?? isRead }} />}
+            {notif.type === NOTIFICATION_LEAVE_PROJECT && <NotifJoinStatusProject onClickNotif={onClickNotif} notif={{ ...notif, isRead: notif.isRead ?? isRead }} />}
             <div className="h-full p-2">
                 <button onClick={onClickDelete} className="text-gray-600">
                     <X size={16} />

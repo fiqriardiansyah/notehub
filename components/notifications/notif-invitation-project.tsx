@@ -3,7 +3,7 @@
 import { formatDate } from "@/lib/utils";
 import { Notification } from "@/models/notification";
 import collabService from "@/service/collab";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import HTMLReactParser from "html-react-parser";
 import Image from "next/image";
 import { Button } from "../ui/button";
@@ -23,6 +23,8 @@ type NotifInvitationProjectProps = {
 }
 
 export default function NotifInvitationProject({ notif, onClickNotif }: NotifInvitationProjectProps) {
+    const queryClient = useQueryClient();
+
     const invitateValidate = useMutation(async (status: string) => {
         return (await collabService.validateInvitationFromNotif({ status, notifId: notif.id, invitationId: notif.content.invitationId })).data.data as Notification<ContentNotifHabit>;
     });
@@ -30,6 +32,7 @@ export default function NotifInvitationProject({ notif, onClickNotif }: NotifInv
     const onClick = (status: string) => {
         return () => {
             invitateValidate.mutateAsync(status).then(() => {
+                queryClient.invalidateQueries({ queryKey: [collabService.getMyCollaborateProject.name], exact: false })
                 if (onClickNotif) {
                     onClickNotif(notif);
                 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { FOLDER_NOTE_GROUND } from "@/app/components/setting-note-ground/folder-note";
-import { SCHEDULER } from "@/app/components/setting-note-ground/scheduler";
+import { FOLDER_NOTE_GROUND } from "@/app/components/card-note/setting/folder-note";
+import { SCHEDULER } from "@/app/components/card-note/setting/scheduler";
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,

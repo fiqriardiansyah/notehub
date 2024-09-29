@@ -4,7 +4,7 @@ import CardNote from "@/app/components/card-note";
 import LayoutGrid from "@/app/components/layout-grid";
 import { emitterPickNotes, PICK_NOTES, PICK_NOTES_SUBMIT, usePickNotes } from "@/app/components/pick-notes";
 import SettingNoteDrawer from "@/app/components/setting-note-drawer";
-import { REMOVE_FOLDER_EVENT, REMOVE_FOLDER_EVENT_SUCCESS } from "@/app/components/setting-note-ground/delete-folder";
+import { REMOVE_FOLDER_EVENT, REMOVE_FOLDER_EVENT_SUCCESS } from "@/app/components/card-note/setting/delete-folder";
 import ToolBar from "@/app/components/tool-bar";
 import StateRender from "@/components/state-render";
 import { Button } from "@/components/ui/button";

@@ -1,6 +1,6 @@
 "use client"
 
-import { REMOVE_NOTE_EVENT, REMOVE_NOTE_EVENT_FAILED, REMOVE_NOTE_EVENT_SUCCESS } from "@/app/components/setting-note-ground/delete";
+import { REMOVE_NOTE_EVENT, REMOVE_NOTE_EVENT_FAILED, REMOVE_NOTE_EVENT_SUCCESS } from "@/app/components/card-note/setting/delete";
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,

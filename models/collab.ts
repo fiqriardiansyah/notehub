@@ -25,6 +25,7 @@ export type CollabAccount = Pick<User, "id" | "name" | "email" | "image"> & Pick
 export type CollaborateProject = Pick<Note, "id" | "title" | "note" | "type" | "todos" | "isHang" | "tags" | "updatedAt" | "isSecure">
     & Pick<InvitationData, "role">
     & {
+        collaborateId: string;
         ownerId: string;
         ownerName: string;
         ownerImage: string;

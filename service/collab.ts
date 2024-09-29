@@ -18,6 +18,7 @@ const collabService = {
     validateInvitationFromNotif: (data: { invitationId: string, notifId: string, status: string }):
         Promise<AxiosResponse<BaseResponse<Notification>>> =>
         api.post("collab/invite/validate-from-notif", data),
+    leaveProject: (idCollab: string): Promise<AxiosResponse<BaseResponse<boolean>>> => api.delete(`collab/leave/${idCollab}`),
 };
 
 export default collabService;

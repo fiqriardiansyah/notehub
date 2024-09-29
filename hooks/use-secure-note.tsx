@@ -1,5 +1,5 @@
-import { INITIATE_SECURE_NOTE } from "@/app/components/setting-note-ground/initiate-secure-note";
-import { SECURE_NOTE } from "@/app/components/setting-note-ground/secure-note";
+import { INITIATE_SECURE_NOTE } from "@/app/components/card-note/setting/initiate-secure-note";
+import { SECURE_NOTE } from "@/app/components/card-note/setting/secure-note";
 import { pause } from "@/lib/utils";
 import noteService from "@/service/note";
 import { useMutation } from "@tanstack/react-query";

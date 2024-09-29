@@ -1,6 +1,6 @@
 "use client";
 
-import { FOLDER_NOTE_GROUND } from "@/app/components/setting-note-ground/folder-note";
+import { FOLDER_NOTE_GROUND } from "@/app/components/card-note/setting/folder-note";
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,

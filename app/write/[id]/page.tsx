@@ -30,7 +30,7 @@ import TodoListModeEditor, { Todo } from "../mode/todolist";
 import collabService from "@/service/collab";
 import CollabsList from "@/components/common/collabs-list";
 import useSidePage from "@/hooks/use-side-page";
-import { COLLABS_NOTE_GROUND } from "@/app/components/setting-note-ground/collabs";
+import { COLLABS_NOTE_GROUND } from "@/app/components/card-note/setting/collabs";
 import ResponsiveTagsListed from "@/components/common/tag-listed";
 
 const FreetextModeEditor = dynamic(() => import("../mode/freetext").then((mod) => mod.default),

@@ -1,6 +1,6 @@
 "use client";
 
-import { COLLABS_NOTE_GROUND } from "@/app/components/setting-note-ground/collabs";
+import { COLLABS_NOTE_GROUND } from "@/app/components/card-note/setting/collabs";
 import CollabsList from "@/components/common/collabs-list";
 import { Button } from "@/components/ui/button";
 import {
