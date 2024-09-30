@@ -7,9 +7,10 @@ import useSkipFirstRender from "@/hooks/use-skip-first-render";
 import { progressCheer } from "@/lib/utils";
 import { Note } from "@/models/note";
 import noteService from "@/service/note";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
+import lodash from "lodash";
 
 export type TodolistCardNoteType = React.HTMLProps<HTMLDivElement> & {
     note: Partial<Note>;
@@ -26,9 +27,18 @@ export default function TodolistCardNote({ note, maxItemShow, canInteract = true
         return (await noteService.changeTodos({ noteId: note.id!, todos })).data.data;
     });
 
+    const getOnlyTodos = useQuery([noteService.getOnlyTodos.name], async () => {
+        return (await noteService.getOnlyTodos(note.id as string)).data.data;
+    }, {
+        onSuccess(data) {
+            setTodos(data.todos);
+        },
+    });
+
     useSkipFirstRender(() => {
         const update = setTimeout(() => {
-            changeTodosMutate.mutate(todos || []);
+            if (lodash.isEqual(todos, note.todos)) return;
+            changeTodosMutate.mutateAsync(todos || []);
         }, 1000);
 
         return () => clearTimeout(update);
@@ -70,7 +80,7 @@ export default function TodolistCardNote({ note, maxItemShow, canInteract = true
     }
 
     const taskDone = todos?.filter((td) => td.isCheck).length
-    const progress = Math.round(taskDone! / todos!.length * 100);
+    const progress = Math.round(taskDone! / (todos?.length || 0) * 100);
 
     return (
         <div className="relative">

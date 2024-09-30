@@ -1,19 +1,19 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
+import chattingAnim from "@/asset/animation/chatting.json";
 import BottomBar from "@/components/navigation-bar/bottom-bar";
 import TopBar from "@/components/navigation-bar/top-bar";
 import StateRender from "@/components/state-render";
 import collabService from "@/service/collab";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import React from "react";
 import ReactDom from 'react-dom';
+import Lottie from "react-lottie";
 import CardNoteCollab from "../components/card-note-collab";
 import LayoutGrid from "../components/layout-grid";
 import SettingNoteDrawer from "../components/setting-note-drawer";
 import ToolBar from "../components/tool-bar";
-import React from "react";
-import chattingAnim from "@/asset/animation/chatting.json";
-import Lottie from "react-lottie";
 
 const defaultOptions = {
     animationData: chattingAnim,
@@ -27,9 +27,11 @@ const defaultOptions = {
 export default function CollaboratePage() {
     const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
 
-    const projectsQuery = useQuery([collabService.getMyCollaborateProject.name, orderList], async () => {
+    const projectsQuery = useMutation([collabService.getMyCollaborateProject.name, orderList], async () => {
         return (await collabService.getMyCollaborateProject(orderList)).data.data;
     });
+
+    React.useEffect(() => { projectsQuery.mutate() }, [orderList]);
 
     const renderTopNav = () => {
         return typeof document !== "undefined" && document.querySelector("#top-nav") && ReactDom.createPortal(<TopBar />, document.querySelector("#top-nav")!)
@@ -61,7 +63,7 @@ export default function CollaboratePage() {
                     </StateRender.Loading>
                 </StateRender>
             </div>
-            <SettingNoteDrawer.CollabBottomSheet refetch={projectsQuery.refetch} />
+            <SettingNoteDrawer.CollabBottomSheet refetch={projectsQuery.mutate} />
             <BottomBar />
         </>
     );

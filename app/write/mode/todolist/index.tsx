@@ -31,6 +31,7 @@ export type Todo = {
 export type TodoListModeEditorProps = {
     onChange?: (todo: Todo[]) => void;
     todos?: Todo[];
+    defaultTodos?: Todo[];
     children?: React.ReactElement
     onSave?: (data: Partial<Note>) => void;
     showInfoDefault?: boolean;
@@ -38,7 +39,7 @@ export type TodoListModeEditorProps = {
 }
 
 const TodoListModeEditor = ({
-    onChange, todos = [], children, onSave, showInfoDefault = true, onlyCanCheck,
+    onChange, todos = [], children, onSave, showInfoDefault = true, onlyCanCheck, defaultTodos = [],
 }: TodoListModeEditorProps) => {
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
     const [_, setStatusBar] = useStatusBar();
@@ -47,37 +48,52 @@ const TodoListModeEditor = ({
     const [showInfo, setShowInfo] = React.useState(true);
 
     React.useEffect(() => {
-        if (onChange) onChange(list);
-    }, [list]);
+        if (defaultTodos) {
+            setList(defaultTodos);
+        }
+    }, [defaultTodos.length]);
 
     const onDeleteItem = (todo: Todo) => {
         return () => {
-            setList((prev) => prev.filter((ls) => ls.id !== todo.id));
+            setList((prev) => {
+                const newList = prev.filter((ls) => ls.id !== todo.id);
+                if (onChange) onChange(newList);
+                return newList;
+            });
         }
     }
 
     const onUpdateCheck = (todo: Todo) => {
         return (e: CheckedState) => {
-            setList((prev) => prev.map((ls) => {
-                if (ls.id !== todo.id) return ls;
-                return {
-                    ...ls,
-                    isCheck: e as boolean,
-                    checkedAt: e ? new Date().getTime() : null,
-                }
-            }))
+            setList((prev) => {
+                const newList = prev.map((ls) => {
+                    if (ls.id !== todo.id) return ls;
+                    return {
+                        ...ls,
+                        isCheck: e as boolean,
+                        checkedAt: e ? new Date().getTime() : null,
+                    }
+                });
+                if (onChange) onChange(newList);
+                return newList;
+            })
         }
     }
 
     const onAddTodo = (e: any) => {
         e.preventDefault();
         const value = e.target.elements.content.value;
-        setList((prev) => [...prev, {
-            id: uuid(),
-            content: value,
-            isCheck: false,
-            checkedAt: null,
-        }]);
+        if (!value.trim()) return;
+        setList((prev) => {
+            const newList = [...prev, {
+                id: uuid(),
+                content: value,
+                isCheck: false,
+                checkedAt: null,
+            }];
+            if (onChange) onChange(newList);
+            return newList;
+        });
         setStr("");
     }
 

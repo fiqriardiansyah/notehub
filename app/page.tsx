@@ -3,28 +3,30 @@
 import BottomBar from "@/components/navigation-bar/bottom-bar";
 import TopBar from "@/components/navigation-bar/top-bar";
 import Quotes from "@/components/quotes";
+import StateRender from "@/components/state-render";
+import { NoteContext, NoteContextType } from "@/context/note";
+import { Note } from "@/models/note";
 import noteService from "@/service/note";
 import { useQuery } from "@tanstack/react-query";
+import React from "react";
 import ReactDom from 'react-dom';
+import CardFolder from "./components/card-folder";
+import CardNote from "./components/card-note";
 import HabitsAlert from "./components/habits/habits-alert";
 import LayoutGrid from "./components/layout-grid";
 import SettingNoteDrawer from "./components/setting-note-drawer";
 import ToolBar from "./components/tool-bar";
-import StateRender from "@/components/state-render";
 import ButtonToWrite from "./habits/components/button-make-habit";
-import CardNote from "./components/card-note";
-import { Note } from "@/models/note";
-import CardFolder from "./components/card-folder";
-import React from "react";
 
 export default function IndexPage() {
+  const { note: { changesRandomId } } = React.useContext(NoteContext) as NoteContextType;
   const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
 
-  const itemsQuery = useQuery([noteService.getAllItems.name, orderList], async () => {
+  const itemsQuery = useQuery([noteService.getAllItems.name, orderList, changesRandomId], async () => {
     return (await noteService.getAllItems(orderList)).data.data;
-  }, {
-    refetchOnWindowFocus: true,
   });
+
+  React.useEffect(() => { itemsQuery.refetch() }, []);
 
   const renderTopNav = () => {
     return typeof document !== "undefined" && document.querySelector("#top-nav") && ReactDom.createPortal(<TopBar />, document.querySelector("#top-nav")!)

@@ -54,6 +54,10 @@ export default function HabitDetail() {
         refetchInterval: false,
         refetchOnWindowFocus: false,
         onSuccess(data) {
+            if (!data) {
+                router.back();
+                return;
+            }
             setTodos(data?.todos || []);
         }
     });

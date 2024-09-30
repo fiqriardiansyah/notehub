@@ -30,7 +30,9 @@ export default function CollabsList({ noteId, children, containerProps }: Collab
                     <Image
                         title={account?.name || ""}
                         key={account.email} height={25} width={25} alt={account?.image || ""}
-                        src={account?.image || ""} className="rounded-full object-cover bg-gray-200" />
+                        src={account?.image || ""}
+                        className="rounded-full object-cover bg-gray-200"
+                        style={{ marginRight: collabAcountQuery.data.length >= 4 ? '-12px' : '0' }} />
                 ))}
             </div>
         )

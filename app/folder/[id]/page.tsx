@@ -22,11 +22,14 @@ import { useRouter } from "next-nprogress-bar";
 import { useParams } from "next/navigation";
 import React from "react";
 import FormTitle from "../components/form-title";
+import { NoteContext, NoteContextType } from "@/context/note";
 
 export default function FolderPage() {
-    const queryClient = useQueryClient();
     const { id } = useParams();
     const router = useRouter();
+
+    const { generateChangesId, note: { changesRandomId } } = React.useContext(NoteContext) as NoteContextType;
+
     const [edit, setEdit] = React.useState({
         isEdit: false,
         tempTitle: ""
@@ -35,13 +38,16 @@ export default function FolderPage() {
     const pickNotes = usePickNotes();
     const [_, setStatusBar] = useStatusBar();
     const isNavHide = useToggleHideNav();
-
     const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
 
-    const detailFolderQuery = useQuery([noteService.getFolderAndContent.name, id], async () => {
+    const detailFolderQuery = useQuery([noteService.getFolderAndContent.name, id, changesRandomId], async () => {
         return (await noteService.getFolderAndContent(id as string)).data.data
     }, {
         onSuccess(data) {
+            if (!data) {
+                router.back();
+                return;
+            }
             setEdit((prev) => ({ ...prev, tempTitle: data?.folder?.title }));
         },
     });
@@ -77,7 +83,7 @@ export default function FolderPage() {
                 pickNotes.notesQuery.refetch();
                 pickNotes.resetPickedNotes();
                 pickNotes.hideNotes([]);
-                queryClient.refetchQueries({ queryKey: [noteService.getAllItems.name] })
+                generateChangesId();
             }).catch((e: any) => {
                 pickNotes.hideNotes([]);
                 pickNotes.setPickedNotes(pickedNotes);

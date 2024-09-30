@@ -23,9 +23,10 @@ export type ListCardHabitProps = {
     onCheck?: (todo: Todo) => void;
     completedHabit?: boolean;
     setTodos?: React.Dispatch<React.SetStateAction<Todo[]>>;
+    onClickAttach?: () => void;
 }
 
-export default function ListCardHabit({ todo, onCheck, progressDoneCheer, completedHabit, setTodos, noteId }: ListCardHabitProps) {
+export default function ListCardHabit({ todo, onCheck, progressDoneCheer, completedHabit, setTodos, noteId, onClickAttach }: ListCardHabitProps) {
     const [setSidePage, resetSidePage] = useSidePage();
 
     const onClickCheck = (todo: Todo) => {
@@ -76,8 +77,11 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
         onSetTimer({ ...todo, timer: null });
     };
 
-    const onClickAttach = (attach: Pick<Note, "id" | "title">) => {
+    const onClickAttachNote = (attach: Pick<Note, "id" | "title">) => {
         return () => {
+            if (onClickAttach) {
+                onClickAttach()
+            }
             setSidePage(VIEW_ATTACH_NOTE, attach);
         }
     }
@@ -149,7 +153,7 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
         {todo.checkedAt && <span onClick={onClickCheck(todo)} style={{ cursor: completedHabit ? "" : "pointer" }} className="m-0 text-xs leading-[10px] text-gray-400">Done at {moment(todo.checkedAt).format("DD MMM, HH:mm")}</span>}
         <div className="mt-1 flex flex-col gap-1">
             {todo?.attach?.map((attach) =>
-                <a onClick={onClickAttach(attach)} key={attach.id} className="underline cursor-pointer line-clamp-1 text-[12px] font-medium flex items-center">
+                <a onClick={onClickAttachNote(attach)} key={attach.id} className="underline cursor-pointer line-clamp-1 text-[12px] font-medium flex items-center">
                     <Paperclip size={12} className="mr-1" />
                     {attach?.title}</a>)}
         </div>

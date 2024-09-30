@@ -28,7 +28,7 @@ export type BottomSheet = {
 }
 
 export default function BottomSheet({ refetch }: BottomSheet) {
-  const { note, setNote } = React.useContext(NoteContext) as NoteContextType;
+  const { note, setNote, generateChangesId } = React.useContext(NoteContext) as NoteContextType;
   const isBigScreen = useMediaQuery({ query: "(max-width: 600px)" });
   const settings = useMenuNoteList(note?.note);
   const [setSidePage, resetSidePage, isSidePageOpen] = useSidePage();
@@ -88,7 +88,7 @@ export default function BottomSheet({ refetch }: BottomSheet) {
             setSidePage(INITIATE_SECURE_NOTE);
             return;
           }
-
+          generateChangesId();
           setSidePage(SECURE_NOTE);
         });
         return;
@@ -105,7 +105,7 @@ export default function BottomSheet({ refetch }: BottomSheet) {
               type: "success"
             });
           }
-          await queryClient.refetchQueries();
+          generateChangesId();
           setNote((prev) => ({ ...prev, note: null }));
         });
         return;
@@ -124,7 +124,7 @@ export default function BottomSheet({ refetch }: BottomSheet) {
             type: "loading"
           });
           updateNoteMutate.mutateAsync({ typeProcess: "add_folder", folderId: folder?.id, newFolder: { title: folder?.name } }).then(async () => {
-            if (refetch) refetch();
+            generateChangesId();
             setNote((prev) => ({ ...prev, note: null }));
             setStatusBar({
               autoClose: 5,
@@ -143,12 +143,13 @@ export default function BottomSheet({ refetch }: BottomSheet) {
       }
       if (setting.type === "remove_folder") {
         updateNoteMutate.mutateAsync({ folderId: "remove", typeProcess: "remove_folder" }).then(async () => {
-          if (refetch) refetch();
           setNote((prev) => ({ ...prev, note: null }));
+          generateChangesId();
         });
       }
       if (setting.type === "collabs") {
         setSidePage(COLLABS_NOTE_GROUND, note?.note);
+        generateChangesId();
       }
 
       setting.func();

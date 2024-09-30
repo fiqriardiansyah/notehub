@@ -13,7 +13,7 @@ import ShowedTags from "@/module/tags/showed-tags";
 import noteService from "@/service/note";
 import validation from "@/validation";
 import { noteValidation } from "@/validation/note";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
@@ -22,6 +22,7 @@ import { useSearchParams } from "next/navigation";
 import React, { useRef } from "react";
 import ToolsBar from "./components/tool-bar";
 import TodoListModeEditor from "./mode/todolist/index";
+import { NoteContext, NoteContextType } from "@/context/note";
 
 const FreetextModeEditor = dynamic(() => import("./mode/freetext").then((mod) => mod.default),
   { ssr: false }
@@ -35,13 +36,13 @@ export default function Write() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { dataNote, setDataNote } = React.useContext(WriteContext) as WriteContextType;
+  const { generateChangesId } = React.useContext(NoteContext) as NoteContextType;
   const titleRef = useRef<HTMLInputElement | null>(null);
   const saveBtnRef = React.useRef<HTMLButtonElement>(null);
   const [_, setStatusBar] = useStatusBar();
   const { toast } = useToast();
   const isNavHide = useToggleHideNav();
   const typeDefault = searchParams.get("type") as ModeNote;
-  const queryClient = useQueryClient();
 
   React.useEffect(() => {
     if (!typeDefault) return;
@@ -87,7 +88,7 @@ export default function Write() {
       saveMutate.mutateAsync(data as CreateNote).then(() => {
         setDataNote({ modeWrite: dataNote.modeWrite });
         window.dispatchEvent(new CustomEvent(BUTTON_SUCCESS_ANIMATION_TRIGGER + "button-save-write"));
-        queryClient.refetchQueries();
+        generateChangesId();
         router.push("/");
       });
     } catch (e: any) {
@@ -109,19 +110,24 @@ export default function Write() {
   return (
     <>
       <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center container-custom z-10 justify gap-3 py-1 sticky top-0 left-0 bg-white">
-        <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
-          <ChevronLeft />
-        </Button>
-        <input
-          autoFocus={true}
-          ref={titleRef}
-          type="text"
-          placeholder="Title ..."
-          className="text-2xl flex-1 text-gray-500 font-medium border-none focus:outline-none outline-none bg-transparent"
-        />
+        <div className="flex flex-row items-center flex-1 w-full">
+          <div className="mr-3">
+            <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
+              <ChevronLeft />
+            </Button>
+          </div>
+          <input
+            autoFocus={true}
+            ref={titleRef}
+            type="text"
+            placeholder="Title ..."
+            className="text-2xl flex-1 text-gray-500 font-medium border-none focus:outline-none outline-none bg-transparent"
+          />
+        </div>
+
       </motion.div>
       <div className="w-screen container-custom overflow-x-hidden">
-        <div className="pb-20 min-h-screen">
+        <div className="pb-20 min-h-screen container-custom">
           <ShowedTags className="my-5" />
           {dataNote.modeWrite === "freetext" && <FreetextModeEditor onSave={saveWrite}>
             <button ref={saveBtnRef} type="submit">submit</button>
@@ -136,7 +142,7 @@ export default function Write() {
       </div>
       <div className="flex justify-center fixed z-40 bottom-0 left-0 w-screen">
         <ToolsBar
-          excludeSettings={dataNote.modeWrite === "habits" ? ["folder", "delete", "collabs"] : ["delete", "collabs"]}
+          excludeSettings={dataNote.modeWrite === "habits" ? ["folder", "delete", "collabs", "secure"] : ["delete", "collabs"]}
           isLoading={saveMutate.isLoading}
           save={onSaveClick} />
       </div>

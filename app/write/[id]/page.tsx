@@ -1,13 +1,17 @@
 "use client";
 
+import { COLLABS_NOTE_GROUND } from "@/app/components/card-note/setting/collabs";
 import OpenSecureNote from "@/app/components/open-secure-note";
 import { BUTTON_SUCCESS_ANIMATION_TRIGGER } from "@/components/animation/button-success";
+import CollabsList from "@/components/common/collabs-list";
+import ResponsiveTagsListed from "@/components/common/tag-listed";
 import StateRender from "@/components/state-render";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { WriteContext, WriteContextType, WriteStateType } from "@/context/write";
+import useSidePage from "@/hooks/use-side-page";
 import useStatusBar from "@/hooks/use-status-bar";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { shortCut } from "@/lib/shortcut";
@@ -17,7 +21,7 @@ import ShowedTags from "@/module/tags/showed-tags";
 import noteService from "@/service/note";
 import validation from "@/validation";
 import { noteValidation } from "@/validation/note";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ChevronLeft, FolderOpen } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
@@ -27,11 +31,7 @@ import { useParams } from "next/navigation";
 import React, { useRef } from "react";
 import ToolsBar, { ToolsType } from "../components/tool-bar";
 import TodoListModeEditor, { Todo } from "../mode/todolist";
-import collabService from "@/service/collab";
-import CollabsList from "@/components/common/collabs-list";
-import useSidePage from "@/hooks/use-side-page";
-import { COLLABS_NOTE_GROUND } from "@/app/components/card-note/setting/collabs";
-import ResponsiveTagsListed from "@/components/common/tag-listed";
+import { NoteContext, NoteContextType } from "@/context/note";
 
 const FreetextModeEditor = dynamic(() => import("../mode/freetext").then((mod) => mod.default),
     { ssr: false }
@@ -48,17 +48,21 @@ export default function Write() {
     const titleRef = useRef<HTMLInputElement | null>(null);
     const [_, setStatusBar] = useStatusBar();
     const { dataNote, setDataNote } = React.useContext(WriteContext) as WriteContextType;
+    const { generateChangesId } = React.useContext(NoteContext) as NoteContextType;
     const isNavHide = useToggleHideNav();
     const saveBtnRef = React.useRef<HTMLButtonElement>(null);
     const [todos, setTodos] = React.useState<Todo[]>([]);
     const { toast } = useToast();
-    const queryClient = useQueryClient();
     const [setSidePage] = useSidePage();
 
     const noteDetailQuery = useMutation(["get-note", id], async () => {
         return (await noteService.getOneNote(id as string)).data.data
     }, {
         onSuccess(data) {
+            if (!data) {
+                router.back();
+                return;
+            }
             setTodos(data?.todos || []);
             setDataNote((prev) => ({
                 ...prev,
@@ -122,7 +126,10 @@ export default function Write() {
             saveMutate.mutateAsync(data as CreateNote).then(() => {
                 setDataNote({ modeWrite: dataNote.modeWrite });
                 window.dispatchEvent(new CustomEvent(BUTTON_SUCCESS_ANIMATION_TRIGGER + "button-save-write"));
-                queryClient.refetchQueries({ exact: true, queryKey: [noteService.getAllItems.name] });
+                generateChangesId();
+                setTimeout(() => {
+                    router.back();
+                }, 500);
             });
         } catch (e: any) {
             setStatusBar({
@@ -158,8 +165,11 @@ export default function Write() {
 
     const excludeTools = () => {
         let excludesSetting = ["folder", "mode"];
-        if (noteDetailQuery.data?.type === 'habits') {
-            excludesSetting.push("secure");
+        if (noteDetailQuery.data?.type === 'habits' || dataNote?.modeWrite === "habits") {
+            excludesSetting = [...excludesSetting, "secure", "collabs"];
+        }
+        if (noteDetailQuery.data?.isSecure || dataNote?.isSecure) {
+            excludesSetting.push("collabs");
         }
         if (noteDetailQuery.data?.role === "editor") {
             excludesSetting = [...excludesSetting, "delete", "secure", "collabs", "tag"] as ToolsType[];
@@ -215,25 +225,25 @@ export default function Write() {
                         {(isSecureNoteQuery.data && !dataNote?.authorized) ? (
                             <OpenSecureNote refetch={noteDetailQuery.mutate} />
                         ) : (
-                            <div className="w-full overflow-x-hidden">
+                            <div className="w-full overflow-x-hidden container-custom">
                                 {dataNote.modeWrite === "freetext" &&
                                     <FreetextModeEditor showInfoDefault={false} options={{ readOnly: asViewer }} data={noteDetailQuery.data?.note} asEdit onSave={saveWrite}>
                                         <button ref={saveBtnRef} type="submit">submit</button>
                                     </FreetextModeEditor>}
                                 {dataNote.modeWrite === "todolist" && (asViewer ?
                                     (<TodoListModeEditor.AsView todos={todos} />) :
-                                    <TodoListModeEditor showInfoDefault={false} todos={todos} onSave={saveWrite}>
+                                    <TodoListModeEditor showInfoDefault={false} defaultTodos={todos} todos={todos} onSave={saveWrite}>
                                         <button ref={saveBtnRef} type="submit">submit</button>
                                     </TodoListModeEditor>)}
-                                {/* {dataNote.modeWrite === "habits" && <HabitsModeEditor note={noteDetailQuery.data} asEdit onSave={saveWrite}>
-                                    <button ref={saveBtnRef} type="submit">submit</button>
-                                </HabitsModeEditor>} */}
-                                {dataNote.modeWrite === "habits" && <h1>Habit edit page 🔥</h1>}
+                                {dataNote.modeWrite === "habits" && isOwner &&
+                                    <HabitsModeEditor showInfoDefault={false} note={noteDetailQuery.data} asEdit onSave={saveWrite}>
+                                        <button ref={saveBtnRef} type="submit">submit</button>
+                                    </HabitsModeEditor>}
                                 <CollabsList noteId={id as string} >
                                     {(list) => {
                                         if (isOwner && !list?.length) return null;
                                         return (
-                                            <span className="caption my-7">
+                                            <span className="caption my-10 block">
                                                 {`Edited ${formatDate(noteDetailQuery.data?.updatedAt)} By `}
                                                 <span className="font-semibold">{noteDetailQuery.data?.updatedBy}</span>
                                             </span>

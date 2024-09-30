@@ -80,8 +80,8 @@ export default function HistoryCalendar({ histories = [], currentHabit }: Histor
 
                             return (
                                 <div key={date} className="w-[40px] h-[40px] rounded-full relative">
-                                    {isOnGoing && <div className="absolute top-[-40px] left-1/2 transform -translate-x-1/2 z-10">
-                                        <Lottie style={{ pointerEvents: 'none' }} options={defaultOptions} height={40} width={40} />
+                                    {isOnGoing && <div className="absolute top-[-40px] left-1/2 transform -translate-x-1/2 z-10 pointer-events-none">
+                                        <Lottie options={defaultOptions} height={40} width={40} />
                                     </div>}
                                     <HistoryDetailDrawer history={history} schedulerType="day">
                                         {(ctrl) => (
@@ -132,7 +132,7 @@ export default function HistoryCalendar({ histories = [], currentHabit }: Histor
                         }
 
                         return <tr {...props} className={`${className} relative`}>
-                            {isOnGoing && <tr className="absolute top-1/2 transform -translate-y-1/2 left-0 z-10">
+                            {isOnGoing && <tr className="absolute top-1/2 transform -translate-y-1/2 left-0 z-10 pointer-events-none">
                                 <Lottie style={{ pointerEvents: 'none' }} options={defaultOptions} height={40} width={40} />
                             </tr>}
                             {(history || isOnGoing) && (

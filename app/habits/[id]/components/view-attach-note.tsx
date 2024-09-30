@@ -13,6 +13,17 @@ import { MoveRight } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
 import dynamic from "next/dynamic";
 import React from "react";
+import ghostAnim from "@/asset/animation/ghost.json";
+import Lottie from "react-lottie";
+
+const defaultOptions = {
+    loop: true,
+    animationData: ghostAnim,
+    autoplay: true,
+    rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice'
+    }
+};
 
 const FreetextModeEditor = dynamic(() => import("@/app/write/mode/freetext").then((mod) => mod.default),
     { ssr: false }
@@ -57,24 +68,35 @@ export default function ViewAttachNote() {
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1, transition: { delay: .3 } }}
             className="w-full h-full flex flex-col gap-6 p-5 md:p-0 md:w-[300px]">
-            <div className="w-full flex justify-end">
-                <Button onClick={onClickToNote} size="icon" variant="ghost">
-                    <MoveRight />
-                </Button>
+            <div className="w-full flex justify-between items-start gap-4">
+                <h1 className="capitalize">{payload?.title}</h1>
+                {noteDetailMutate.data && (
+                    <Button onClick={onClickToNote} size="icon" variant="ghost">
+                        <MoveRight />
+                    </Button>
+                )}
             </div>
-            <h1 className="capitalize">{payload?.title}</h1>
-            <StateRender data={noteDetailMutate.data} isLoading={noteDetailMutate.isLoading}>
+            <StateRender data={noteDetailMutate.data} isLoading={noteDetailMutate.isLoading} isEmpty={noteDetailMutate.data === null} >
                 <StateRender.Data>
                     {noteDetailMutate.data?.type === "freetext"
                         && <FreetextModeEditor showInfoDefault={false} data={noteDetailMutate.data?.note} asEdit options={{ readOnly: true }} />}
                     {noteDetailMutate.data?.type === "todolist"
-                        && <TodoListModeEditor showInfoDefault={false} onChange={onChangeTodoList} onlyCanCheck todos={noteDetailMutate.data?.todos} />}
+                        && <TodoListModeEditor showInfoDefault={false} onChange={onChangeTodoList} onlyCanCheck defaultTodos={noteDetailMutate.data?.todos} />}
+
                 </StateRender.Data>
                 <StateRender.Loading>
                     <Skeleton className="w-[200px] h-[20px]" />
                     <Skeleton className="w-[250px] h-[20px]" />
                     <Skeleton className="w-[150px] h-[20px]" />
                 </StateRender.Loading>
+                <StateRender.Empty>
+                    <div className="flex w-full flex-col items-center min-h-[300px] justify-center">
+                        <Lottie options={defaultOptions} height={200} width={200} style={{ pointerEvents: 'none' }} />
+                        <p className="m-0 text-red-400">
+                            Attached note/file not found
+                        </p>
+                    </div>
+                </StateRender.Empty>
             </StateRender>
         </motion.div>
     )

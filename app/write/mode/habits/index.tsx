@@ -17,9 +17,10 @@ export type HabitsModeEditorProps = {
     note?: Note;
     children: React.ReactElement;
     onSave: (data: Partial<Note>) => void;
+    showInfoDefault?: boolean;
 }
 
-export default function HabitsModeEditor({ children, onSave, asEdit, note }: HabitsModeEditorProps) {
+export default function HabitsModeEditor({ children, onSave, asEdit, note, showInfoDefault = true }: HabitsModeEditorProps) {
     const [_, setStatusBar, resetBar] = useStatusBar();
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
     const [freetextEditor, setFreetextEditor] = React.useState<any>(null);
@@ -60,20 +61,20 @@ export default function HabitsModeEditor({ children, onSave, asEdit, note }: Hab
         <>
             <div className="flex w-full flex-col gap-2">
                 <Editor asEdit={asEdit} data={asEdit ? note?.description : undefined} placeholder="Description" editorRef={setFreetextEditor} />
-                <hr />
-                <TodoListModeEditor todos={note?.todos} onChange={setTodos} showInfoDefault={false} />
+                <hr className="my-5" />
+                <TodoListModeEditor todos={todos} defaultTodos={note?.todos} onChange={setTodos} showInfoDefault={false} />
             </div>
             <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
                 {children}
             </form>
-            <div className="w-full flex justify-center my-10">
-                {showInfo && (
+            {showInfo && showInfoDefault && (
+                <div className="w-full flex justify-center my-10">
                     <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">
                         <Info className="mr-2" size={14} />
                         Habits mode
                     </p>
-                )}
-            </div>
+                </div>
+            )}
         </>
     )
 }

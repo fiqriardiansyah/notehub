@@ -45,6 +45,10 @@ export default function HistoryDetailDrawer({ children, history, schedulerType }
     const taskDone = history?.todos?.filter((td) => td.isCheck).length;
     const progress = Math.round(taskDone! / (history?.todos!.length || 1) * 100);
 
+    const onClickAttach = () => {
+        setIsOpen(false);
+    }
+
     return (
         <>
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
@@ -67,7 +71,7 @@ export default function HistoryDetailDrawer({ children, history, schedulerType }
                             </div>
                         </div>
                         <div className="w-full mb-20 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
-                            {history?.todos?.map((todo) => <ListCardHabit completedHabit={true} key={todo.id} todo={todo} />)}
+                            {history?.todos?.map((todo) => <ListCardHabit onClickAttach={onClickAttach} completedHabit={true} key={todo.id} todo={todo} />)}
                         </div>
                     </div>
                 </DrawerContent>

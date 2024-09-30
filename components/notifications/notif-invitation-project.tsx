@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import HTMLReactParser from "html-react-parser";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import themeColor from "tailwindcss/colors";
 
 type ContentNotifHabit = {
     title: string;
@@ -42,13 +43,18 @@ export default function NotifInvitationProject({ notif, onClickNotif }: NotifInv
 
     const message = notif.content?.message || invitateValidate.data?.content?.message;
 
+    const color = (() => {
+        if (message === "accepted") return themeColor.green[200];
+        if (message === "rejected") return themeColor.red[200];
+        return themeColor.gray[200];
+    })()
     return <div className={`text-start flex gap-3 items-start w-full p-3`}>
         <Image src={notif.content.profileImage} alt={notif.content.profileImage} width={30} height={30} className="bg-gray-400 rounded-full object-cover" />
         <div className="flex flex-col">
             <div className="text-xs">{HTMLReactParser(notif.content.title)}</div>
             <span className="text-gray-500 text-xs">{formatDate(notif.createdAt)}</span>
             {message ? (
-                <p className="mt-2 px-2 py-1 rounded-md capitalize bg-gray-100 w-fit text-xs">{message}</p>
+                <p style={{ background: color }} className="mt-2 px-2 py-1 rounded-md capitalize w-fit text-xs">{message}</p>
             ) : (
                 <div className="flex items-center gap-3 mt-3">
                     <Button disabled={invitateValidate.isLoading} onClick={onClick("rejected")} size="sm" variant="ghost">

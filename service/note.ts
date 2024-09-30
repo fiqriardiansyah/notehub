@@ -67,6 +67,7 @@ const noteService = {
 
   resetTodosTimer: (id: string): Promise<AxiosResponse<BaseResponse<Note>>> => api.get(`/note/reset-todos-timer/${id}`), // for debugging only
 
+  getOnlyTodos: (id: string): Promise<AxiosResponse<BaseResponse<Pick<Note, "todos">>>> => api.get(`/note/only-todos/${id}`),
 };
 
 export default noteService;
