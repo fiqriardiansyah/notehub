@@ -1,14 +1,13 @@
 "use client";
 
 import { MODE_WRITE } from "@/app/write/components/mode-write";
-import { Note } from "@/models/note";
 import { SearchReturnType } from "@/service/search";
 import { Blocks } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
 import Image from "next/image";
 
 export type ItemProps = {
-    item?: SearchReturnType & {
+    item?: Partial<SearchReturnType> & {
         isMenu?: boolean;
         href?: string;
         icon?: any;

@@ -11,7 +11,6 @@ const menus: ItemProps["item"][] = [
         href: "/write?type=freetext",
         icon: MODE_WRITE.find((m) => m.mode === "freetext")?.icon,
         title: "Make Freetext Note 📒",
-
     },
     {
         id: uuid(),
