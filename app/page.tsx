@@ -5,7 +5,7 @@ import TopBar from "@/components/navigation-bar/top-bar";
 import Quotes from "@/components/quotes";
 import StateRender from "@/components/state-render";
 import { NoteContext, NoteContextType } from "@/context/note";
-import { Note } from "@/models/note";
+import { Note, Tag } from "@/models/note";
 import noteService from "@/service/note";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
@@ -21,6 +21,7 @@ import ButtonToWrite from "./habits/components/button-make-habit";
 export default function IndexPage() {
   const { note: { changesRandomId } } = React.useContext(NoteContext) as NoteContextType;
   const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
+  const [filterTag, setFilterTag] = React.useState<Tag[]>([]);
 
   const itemsQuery = useQuery([noteService.getAllItems.name, orderList, changesRandomId], async () => {
     return (await noteService.getAllItems(orderList)).data.data;
@@ -36,18 +37,27 @@ export default function IndexPage() {
     setOrderList((prev) => prev === "desc" ? "asc" : "desc");
   }
 
+  const tags = itemsQuery.data?.map((item) => item.type === "folder" ? null : item.tags).filter(Boolean).flat() as Tag[];
+
+  const filteredItems = itemsQuery.data?.filter((i) => {
+    if (!filterTag.length) return true;
+    if (i.type === "folder") return false;
+    return !!i.tags?.find((t) => !!filterTag.find((tag) => tag.id === t.id));
+  });
+
   return (
     <>
       {renderTopNav()}
       <div className="container-custom pb-20 min-h-screen">
         <Quotes />
         <HabitsAlert />
-        <ToolBar order={orderList} onClickModified={onClickModified} />
+        <div className="h-4"></div>
+        <ToolBar filterTag={filterTag} setFilterTag={setFilterTag} tags={tags} order={orderList} onClickModified={onClickModified} />
         <StateRender data={itemsQuery.data} isLoading={itemsQuery.isLoading}>
           <StateRender.Data>
             <div className="w-full my-7">
-              {itemsQuery.data?.length ?
-                <LayoutGrid items={itemsQuery.data}>
+              {filteredItems?.length ?
+                <LayoutGrid items={filteredItems}>
                   {(item) => {
                     if (item.type === "folder") return <CardFolder {...item} key={item.id} />
                     return <CardNote note={item as Note} key={item.id} attachMenu={(note) => <SettingNoteDrawer.Attach note={note} />} />

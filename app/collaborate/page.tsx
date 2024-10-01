@@ -14,6 +14,7 @@ import CardNoteCollab from "../components/card-note-collab";
 import LayoutGrid from "../components/layout-grid";
 import SettingNoteDrawer from "../components/setting-note-drawer";
 import ToolBar from "../components/tool-bar";
+import { Tag } from "@/models/note";
 
 const defaultOptions = {
     animationData: chattingAnim,
@@ -26,6 +27,7 @@ const defaultOptions = {
 
 export default function CollaboratePage() {
     const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
+    const [filterTag, setFilterTag] = React.useState<Tag[]>([]);
 
     const projectsQuery = useMutation([collabService.getMyCollaborateProject.name, orderList], async () => {
         return (await collabService.getMyCollaborateProject(orderList)).data.data;
@@ -41,15 +43,23 @@ export default function CollaboratePage() {
         setOrderList((prev) => prev === "desc" ? "asc" : "desc");
     }
 
+    const tags = projectsQuery.data?.map((item) => item.tags).filter(Boolean).flat() as Tag[];
+
+    const filteredItems = projectsQuery.data?.filter((i) => {
+        if (!filterTag.length) return true;
+        return !!i.tags?.find((t) => !!filterTag.find((tag) => tag.id === t.id));
+    });
+
     return (
         <>
             {renderTopNav()}
             <div className="container-custom pb-20 min-h-screen">
-                <ToolBar order={orderList} onClickModified={onClickModified} />
+                <ToolBar filterTag={filterTag} setFilterTag={setFilterTag} tags={tags} order={orderList} onClickModified={onClickModified} />
+                <div className="h-[20px]"></div>
                 <StateRender data={projectsQuery.data} isLoading={projectsQuery.isLoading}>
                     <StateRender.Data>
-                        {projectsQuery.data?.length ?
-                            <LayoutGrid items={projectsQuery.data}>
+                        {filteredItems?.length ?
+                            <LayoutGrid items={filteredItems}>
                                 {(item) => <CardNoteCollab note={item} key={item.id} />}
                             </LayoutGrid> :
                             <div className="min-h-[400px] flex flex-col items-center justify-center">

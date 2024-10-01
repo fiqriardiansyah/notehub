@@ -13,7 +13,7 @@ import useSidePage from "@/hooks/use-side-page";
 import useStatusBar from "@/hooks/use-status-bar";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { easeDefault, pause } from "@/lib/utils";
-import { DetailFolder, Note } from "@/models/note";
+import { DetailFolder, Note, Tag } from "@/models/note";
 import noteService from "@/service/note";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -39,6 +39,7 @@ export default function FolderPage() {
     const [_, setStatusBar] = useStatusBar();
     const isNavHide = useToggleHideNav();
     const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
+    const [filterTag, setFilterTag] = React.useState<Tag[]>([]);
 
     const detailFolderQuery = useQuery([noteService.getFolderAndContent.name, id, changesRandomId], async () => {
         return (await noteService.getFolderAndContent(id as string)).data.data
@@ -137,6 +138,15 @@ export default function FolderPage() {
         }
     }, []);
 
+    const listNote = notes();
+
+    const tags = listNote?.map((item) => item.tags).filter(Boolean).flat() as Tag[];
+
+    const filteredItems = listNote?.filter((i) => {
+        if (!filterTag.length) return true;
+        return !!i.tags?.find((t) => !!filterTag.find((tag) => tag.id === t.id));
+    });
+
     return (
         <div className="container-custom pb-20 min-h-screen">
             <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center gap-3 py-1 z-20 sticky top-0 left-0">
@@ -150,7 +160,7 @@ export default function FolderPage() {
                 }
             </motion.div>
             <div className={`${edit.isEdit ? "blur-sm pointer-events-none" : ""}`}>
-                <ToolBar order={orderList} onClickModified={onClickModified} rightAddition={() => (
+                <ToolBar filterTag={filterTag} setFilterTag={setFilterTag} tags={tags} order={orderList} onClickModified={onClickModified} rightAddition={() => (
                     <>
                         <button onClick={onClickAddNotes} title="Add Note" className="bg-none cursor-pointer p-2 text-lg">
                             <Plus size={20} strokeWidth={1.25} />
@@ -166,10 +176,10 @@ export default function FolderPage() {
                 <StateRender data={detailFolderQuery.data} isLoading={detailFolderQuery.isLoading}>
                     <StateRender.Data>
                         <div className="w-full my-7">
-                            <LayoutGrid items={notes()}>
+                            <LayoutGrid items={filteredItems}>
                                 {(item) => <CardNote note={item as Note} key={item.id} attachMenu={(note) => <SettingNoteDrawer.Attach note={note} />} />}
                             </LayoutGrid>
-                            {!notes()?.length && (
+                            {!listNote?.length && (
                                 <div className="min-h-[250px] flex items-center justify-center gap-3">
                                     <div className="text-center text-sm">Ooops, there is no notes in this folder 😴
                                         <br />

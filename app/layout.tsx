@@ -8,6 +8,8 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import Layout from "@/components/layout";
 import 'react-circular-progressbar/dist/styles.css';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const fontSans = FontSans({
   subsets: ["latin"],
