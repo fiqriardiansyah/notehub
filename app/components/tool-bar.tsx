@@ -58,7 +58,7 @@ export default function ToolBar({ rightAddition, onClickModified, order, tags, s
   }
 
   return (
-    <div className="flex flex-col gap-1 sticky z-50 top-0 left-0 bg-white">
+    <div className="flex flex-col gap-1 sticky z-10 top-0 left-0 bg-white">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Button onClick={onClick} size="sm" variant="ghost" className="flex items-center gap-2">
@@ -74,17 +74,19 @@ export default function ToolBar({ rightAddition, onClickModified, order, tags, s
           </button>
         </div>
       </div>
-      {removedDuplicateTags?.length ? (
-        <AnimatePresence>
-          <Slider {...settings}>
-            {removedDuplicateTags?.map((tag) => (
-              <motion.div key={tag.id} initial={{ scale: 0.3 }} animate={{ scale: 1 }} exit={{ scale: 0, width: 0 }} className="pr-2 py-2">
-                <Chip onClick={onClickTag(tag)} pick={!!filterTag?.find((t) => t.id === tag.id)} tag={tag} withTooltip={false} />
-              </motion.div>
-            ))}
-          </Slider>
-        </AnimatePresence>
-      ) : null}
+      <div className="w-screen overflow-x-hidden">
+        {removedDuplicateTags?.length ? (
+          <AnimatePresence>
+            <Slider {...settings}>
+              {removedDuplicateTags?.map((tag) => (
+                <motion.div key={tag.id} initial={{ scale: 0.3 }} animate={{ scale: 1 }} exit={{ scale: 0, width: 0 }} className="pr-2 py-2">
+                  <Chip onClick={onClickTag(tag)} pick={!!filterTag?.find((t) => t.id === tag.id)} tag={tag} withTooltip={false} />
+                </motion.div>
+              ))}
+            </Slider>
+          </AnimatePresence>
+        ) : null}
+      </div>
     </div>
   );
 }

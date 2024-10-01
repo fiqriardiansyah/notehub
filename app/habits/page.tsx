@@ -107,7 +107,10 @@ export default function Habits() {
 
     return (
         <div className="w-screen bg-white min-h-screen pb-20">
-            <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky overflow-y-hidden top-0 left-0 py-1 bg-white z-50">
+            <motion.div
+                style={{ pointerEvents: isNavHide ? "none" : "auto" }}
+                animate={{ y: isNavHide ? "-100%" : 0 }}
+                transition={{ ease: easeDefault }} className="sticky overflow-y-hidden top-0 left-0 py-1 bg-white z-50">
                 <div className="container-custom flex flex-row items-center justify-between gap-4">
                     <AnimatePresence mode="popLayout">
                         {search.open ?

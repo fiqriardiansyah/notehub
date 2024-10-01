@@ -29,7 +29,11 @@ export default function TopBar() {
 
   return (
     <>
-      <motion.header animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="fixed top-0 left-0 right-0 w-screen container-custom z-40 bg-white">
+      <motion.header
+        animate={{ y: isNavHide ? "-100%" : 0 }}
+        transition={{ ease: easeDefault }}
+        style={{ pointerEvents: isNavHide ? "none" : "auto" }}
+        className="fixed top-0 left-0 right-0 w-screen container-custom z-50 bg-white">
         <nav className="w-full flex items-center justify-between gap-3 py-1">
           <div className="flex items-center gap-2">
             <Link href="/" className="hidden md:block">

@@ -166,7 +166,7 @@ export default function HabitDetail() {
     }
 
     const navbar = React.useMemo(() => (
-        <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
+        <motion.div style={{ pointerEvents: isNavHide ? "none" : "auto" }} animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-50">
             <div className="container-custom flex flex-row items-center justify-between flex-1">
                 <div className="flex gap-2 items-center flex-1">
                     <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10">

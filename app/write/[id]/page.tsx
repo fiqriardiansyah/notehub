@@ -184,7 +184,7 @@ export default function Write() {
     return (
         <>
             <div className="container-custom pb-20 min-h-screen">
-                <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-20">
+                <motion.div style={{ pointerEvents: isNavHide ? "none" : "auto" }} animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-20">
                     <div className="flex flex-row items-center flex-1">
                         <div className="mr-3">
                             <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">

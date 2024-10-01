@@ -109,7 +109,7 @@ export default function Write() {
 
   return (
     <>
-      <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center container-custom z-10 justify gap-3 py-1 sticky top-0 left-0 bg-white">
+      <motion.div style={{ pointerEvents: isNavHide ? "none" : "auto" }} animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="w-full flex items-center container-custom z-10 justify gap-3 py-1 sticky top-0 left-0 bg-white">
         <div className="flex flex-row items-center flex-1 w-full">
           <div className="mr-3">
             <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
