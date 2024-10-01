@@ -74,7 +74,7 @@ export default function ToolBar({ rightAddition, onClickModified, order, tags, s
           </button>
         </div>
       </div>
-      <div className="w-screen overflow-x-hidden">
+      <div className="overflow-x-hidden">
         {removedDuplicateTags?.length ? (
           <AnimatePresence>
             <Slider {...settings}>
