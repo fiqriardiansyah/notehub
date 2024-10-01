@@ -30,7 +30,7 @@ export default function ToolBar({ rightAddition, onClickModified, order, tags, s
     dots: false,
     infinite: false,
     speed: 500,
-    slidesToScroll: 1,
+    slidesToScroll: 4,
     autoplay: false,
     nextArrow: undefined,
     prevArrow: undefined,
@@ -40,7 +40,7 @@ export default function ToolBar({ rightAddition, onClickModified, order, tags, s
   const removedDuplicateTags = tags?.reduce((tags: Tag[], tag: Tag) => {
     if (tags.find((t) => t.id === tag.id)) return tags;
     return [...tags, tag]
-  }, [] as Tag[]);
+  }, [] as Tag[]).sort((a, b) => a.text.localeCompare(b.text, undefined, { sensitivity: 'base' }))
 
   const onClickTag = (tag: Tag) => {
     return () => {
