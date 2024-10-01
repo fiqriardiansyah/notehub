@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Tag } from "@/models/note";
 import Chip from "@/module/tags/chip";
-import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { motion } from "framer-motion";
 import React from "react";
 import { CiGrid41 } from "react-icons/ci";
 import { GoArrowDown, GoArrowUp } from "react-icons/go";
@@ -76,15 +75,13 @@ export default function ToolBar({ rightAddition, onClickModified, order, tags, s
       </div>
       <div className="overflow-x-hidden">
         {removedDuplicateTags?.length ? (
-          <AnimatePresence>
-            <Slider {...settings}>
-              {removedDuplicateTags?.map((tag) => (
-                <motion.div key={tag.id} initial={{ scale: 0.3 }} animate={{ scale: 1 }} exit={{ scale: 0, width: 0 }} className="pr-2 py-2">
-                  <Chip onClick={onClickTag(tag)} pick={!!filterTag?.find((t) => t.id === tag.id)} tag={tag} withTooltip={false} />
-                </motion.div>
-              ))}
-            </Slider>
-          </AnimatePresence>
+          <Slider {...settings}>
+            {removedDuplicateTags?.map((tag) => (
+              <motion.div key={tag.id + "visible"} animate={{ scale: 1, width: 'auto' }} exit={{ scale: 0, width: 0 }} className="pr-2 py-2">
+                <Chip onClick={onClickTag(tag)} pick={!!filterTag?.find((t) => t.id === tag.id)} tag={tag} withTooltip={false} />
+              </motion.div>
+            ))}
+          </Slider>
         ) : null}
       </div>
     </div>
