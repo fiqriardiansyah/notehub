@@ -10,6 +10,9 @@ import { X } from "lucide-react";
 import React from "react";
 import timesupAnim from "@/asset/animation/timesup.json";
 import Lottie from "react-lottie";
+import { useSession } from "next-auth/react";
+import { withoutSignPath } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 const defaultOptions = {
     animationData: timesupAnim,
@@ -36,6 +39,7 @@ export type TimerContextType<T = any> = {
 export const TimerContext = React.createContext({});
 
 export const TimerProvider = ({ children }: { children: any }) => {
+    const pathname = usePathname();
     const { toast } = useToast();
     const [timer, setTimer] = React.useState<TimerState>();
     const queryClient = useQueryClient();
@@ -44,6 +48,7 @@ export const TimerProvider = ({ children }: { children: any }) => {
         const response = (await habitsService.getTimerZenMode()).data.data;
         return response[0] || null;
     }, {
+        enabled: !withoutSignPath.test(pathname),
         onSuccess(data) {
             if (!timer?.todo && data) {
                 setTimer((prev) => ({

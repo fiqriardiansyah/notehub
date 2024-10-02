@@ -1,7 +1,8 @@
 import { auth } from "@/auth";
+import { withoutSignPath } from "./lib/utils";
 
 export default auth((req) => {
-  if (!req.auth && req.nextUrl.pathname !== "/signin") {
+  if (!req.auth && !withoutSignPath.test(req.nextUrl.pathname)) {
     const newUrl = new URL("/signin", req.nextUrl.origin);
     return Response.redirect(newUrl);
   }

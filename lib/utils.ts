@@ -241,3 +241,5 @@ export const progressCheer = [
     bgColor: "#4ade80 ",
   }
 ];
+
+export const withoutSignPath = /^\/(signin|share\/[^/]+)$/;

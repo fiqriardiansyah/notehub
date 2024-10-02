@@ -183,7 +183,7 @@ export default function Write() {
 
     return (
         <>
-            <div className="container-custom pb-20 min-h-screen">
+            <div className="container-custom pb-20 min-h-screen bg-white">
                 <motion.div style={{ pointerEvents: isNavHide ? "none" : "auto" }} animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-20">
                     <div className="flex flex-row items-center flex-1">
                         <div className="mr-3">

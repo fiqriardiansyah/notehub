@@ -133,7 +133,7 @@ const TodoListModeEditor = ({
                                 <Checkbox id={item.id} checked={item.isCheck} onCheckedChange={onUpdateCheck(item)} />
                                 <div className="flex flex-col">
                                     <span>{item.content}</span>
-                                    {item.checkedAt && <span className="text-xs font-medium text-gray-400">done at {dayjs(item.checkedAt).format("DD MMM, HH:mm")}</span>}
+                                    {item.checkedAt && <span className="text-xs font-medium text-gray-400 capitalize">done at {dayjs(item.checkedAt).format("DD MMM, HH:mm")}</span>}
                                 </div>
                             </label>
                             {!onlyCanCheck && (

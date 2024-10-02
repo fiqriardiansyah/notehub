@@ -126,7 +126,7 @@ export default function Write() {
         </div>
 
       </motion.div>
-      <div className="w-screen container-custom overflow-x-hidden">
+      <div className="w-screen container-custom overflow-x-hidden bg-white">
         <div className="pb-20 min-h-screen container-custom">
           <ShowedTags className="my-5" />
           {dataNote.modeWrite === "freetext" && <FreetextModeEditor onSave={saveWrite}>

@@ -15,13 +15,17 @@ import useStatusBar from "@/hooks/use-status-bar";
 import { CreateNote } from "@/models/note";
 import noteService from "@/service/note";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bookmark, ChevronRight, LockKeyhole } from "lucide-react";
+import { Bookmark, ChevronLeft, ChevronRight, LockKeyhole } from "lucide-react";
 import React from "react";
 import { useMediaQuery } from "react-responsive";
 import { FOLDER_NOTE_GROUND, FOLDER_NOTE_SAVE } from "@/app/components/card-note/setting/folder-note";
 import { INITIATE_SECURE_NOTE } from "@/app/components/card-note/setting/initiate-secure-note";
 import { SECURE_NOTE } from "@/app/components/card-note/setting/secure-note";
 import { COLLABS_NOTE_GROUND } from "@/app/components/card-note/setting/collabs";
+import { AnimatePresence, motion } from "framer-motion";
+import { easeDefault } from "@/lib/utils";
+import useSkipFirstRender from "@/hooks/use-skip-first-render";
+import GetLink from "../card-note/setting/get-link";
 
 export type BottomSheet = {
   refetch?: () => void;
@@ -34,8 +38,15 @@ export default function BottomSheet({ refetch }: BottomSheet) {
   const [setSidePage, resetSidePage, isSidePageOpen] = useSidePage();
   const queryClient = useQueryClient();
   const [_, setStatusBar] = useStatusBar();
+  const [nextPage, setNextPage] = React.useState<NoteSetting | null>(null);
 
   const isOpen = !!note?.note && isBigScreen && !isSidePageOpen;
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      setNextPage(null);
+    }
+  }, [isOpen]);
 
   const updateNoteMutate = useMutation(
     [noteService.updateNote.name],
@@ -78,6 +89,10 @@ export default function BottomSheet({ refetch }: BottomSheet) {
 
   const handleClickSetting = (setting: NoteSetting) => {
     return () => {
+      if (setting.type === "link") {
+        setNextPage(setting);
+        return;
+      }
       if (setting.type === "delete") {
         setting.func(note);
         return;
@@ -164,29 +179,51 @@ export default function BottomSheet({ refetch }: BottomSheet) {
     return false;
   }
 
+  const onClickPrevPage = () => {
+    setNextPage(null);
+  }
+
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerContent className="z-50">
         <DrawerHeader>
           <DrawerTitle className="capitalize">{note?.note?.title}</DrawerTitle>
         </DrawerHeader>
-        <div className="flex flex-col p-4 gap-3">
-          {settings?.map((Setting) => (
-            <Button
-              loading={isLoading(Setting)}
-              key={Setting.text}
-              onClick={handleClickSetting(Setting)}
-              className="flex items-center gap-3 justify-between"
-              variant={Setting.danger ? "destructive" : "ghost"}
-            >
-              <div className="flex items-center gap-3 flex-1">
-                <Setting.icon />
-                {Setting.text}
+        <AnimatePresence mode="popLayout">
+          {nextPage ? (
+            <motion.div key={nextPage.type} className="p-4" exit={{ x: '100%' }} animate={{ x: 0 }} initial={{ x: '100%' }} transition={{ ease: easeDefault }} >
+              <div className="flex flex-row items-center flex-1">
+                <div className="mr-3">
+                  <Button onClick={onClickPrevPage} size="icon" variant="ghost" className="!w-10">
+                    <ChevronLeft />
+                  </Button>
+                </div>
+                <h2>{nextPage.text}</h2>
               </div>
-              {Setting?.rightElement ? Setting?.rightElement : <ChevronRight />}
-            </Button>
-          ))}
-        </div>
+              <div className="min-h-[200px] mt-2 w-full flex items-center justify-center">
+                <GetLink />
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div key="setting" className="flex flex-col p-4 gap-3" exit={{ x: '-100%' }} animate={{ x: 0 }} initial={{ x: '-100%' }} transition={{ ease: easeDefault }}>
+              {settings?.map((Setting) => (
+                <Button
+                  loading={isLoading(Setting)}
+                  key={Setting.text}
+                  onClick={handleClickSetting(Setting)}
+                  className="flex items-center gap-3 justify-between"
+                  variant={Setting.danger ? "destructive" : "ghost"}
+                >
+                  <div className="flex items-center gap-3 flex-1">
+                    <Setting.icon />
+                    {Setting.text}
+                  </div>
+                  {Setting?.rightElement ? Setting?.rightElement : <ChevronRight />}
+                </Button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </DrawerContent>
     </Drawer>
   );

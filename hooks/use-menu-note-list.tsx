@@ -1,6 +1,6 @@
 import { REMOVE_NOTE_EVENT } from "@/app/components/card-note/setting/delete";
 import { Note } from "@/models/note";
-import { Bookmark, BookmarkX, FolderOutput, FolderPlus, LockKeyhole, Blocks, Trash } from "lucide-react";
+import { Bookmark, BookmarkX, FolderOutput, FolderPlus, LockKeyhole, Blocks, Trash, Link2 } from "lucide-react";
 import Lottie from "react-lottie";
 import starAnim from "@/asset/animation/star.json";
 
@@ -17,7 +17,7 @@ export type NoteSetting = {
     text: string;
     func: (val?: any) => void;
     danger?: boolean;
-    type: "hang_note" | "unhang_note" | "secure_note" | "add_folder" | "remove_folder" | "delete" | "collabs";
+    type: "hang_note" | "unhang_note" | "secure_note" | "add_folder" | "remove_folder" | "delete" | "collabs" | "link"
     rightElement?: any;
 };
 
@@ -70,6 +70,13 @@ const collabsSetting: NoteSetting = {
     )
 }
 
+const linkSetting: NoteSetting = {
+    icon: Link2,
+    text: "Get Link",
+    func: () => { },
+    type: "link",
+}
+
 const deleteSetting: NoteSetting = {
     icon: Trash,
     text: "Delete",
@@ -107,6 +114,10 @@ export default function useMenuNoteList(note?: Note | null) {
 
     if (!settings.find((s) => s.type === "secure_note") && !note?.isSecure) {
         settings.push(secureNoteSetting);
+    }
+
+    if (!settings.find((s) => s.type === "link") && !note?.isSecure) {
+        settings.push(linkSetting);
     }
 
     if (!settings.find((s) => s.type === "collabs") && !note?.isSecure) {

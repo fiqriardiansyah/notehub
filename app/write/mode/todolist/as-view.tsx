@@ -21,7 +21,7 @@ export default function AsView({
                             <Checkbox id={item.id} disabled checked={item.isCheck} className="cursor-auto" />
                             <div className="flex flex-col">
                                 <span>{item.content}</span>
-                                {item.checkedAt && <span className="text-xs font-medium text-gray-400">done at {dayjs(item.checkedAt).format("DD MMM, HH:mm")}</span>}
+                                {item.checkedAt && <span className="text-xs font-medium text-gray-400 capitalize">done at {dayjs(item.checkedAt).format("DD MMM, HH:mm")}</span>}
                             </div>
                         </label>
                     </motion.div>

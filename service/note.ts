@@ -1,6 +1,7 @@
 import api from "@/config/axios";
 import { BaseResponse } from "@/models";
 import { ChangeTodosData, CreateNote, DetailFolder, DetailNote, Folder, Note, Tag } from "@/models/note";
+import { NoteShared, ShareLink } from "@/models/share";
 import { AxiosResponse } from "axios";
 
 const noteService = {
@@ -68,6 +69,15 @@ const noteService = {
   resetTodosTimer: (id: string): Promise<AxiosResponse<BaseResponse<Note>>> => api.get(`/note/reset-todos-timer/${id}`), // for debugging only
 
   getOnlyTodos: (id: string): Promise<AxiosResponse<BaseResponse<Pick<Note, "todos">>>> => api.get(`/note/only-todos/${id}`),
+
+  generateShareLink: (noteId: string): Promise<AxiosResponse<BaseResponse<ShareLink>>> => api.post(`/note/share-link`, { noteId }),
+
+  getShareLink: (noteId: string): Promise<AxiosResponse<BaseResponse<ShareLink>>> => api.get(`/note/share-link/${noteId}`),
+
+  deleteShareLink: (id: string): Promise<AxiosResponse<BaseResponse<ShareLink>>> => api.delete(`/note/share-link/${id}`),
+
+  getNoteFromShareLink: (id: string): Promise<AxiosResponse<BaseResponse<NoteShared>>> => api.get(`/note/share/${id}`),
+
 };
 
 export default noteService;

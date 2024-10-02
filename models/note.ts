@@ -1,4 +1,5 @@
 import { Todo } from "@/app/write/mode/todolist";
+import { User } from "next-auth";
 
 export interface Tag {
   id: string;

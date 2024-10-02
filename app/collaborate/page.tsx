@@ -53,7 +53,7 @@ export default function CollaboratePage() {
     return (
         <>
             {renderTopNav()}
-            <div className="container-custom pb-20 min-h-screen">
+            <div className="container-custom pb-20 min-h-screen bg-white">
                 <ToolBar filterTag={filterTag} setFilterTag={setFilterTag} tags={tags} order={orderList} onClickModified={onClickModified} />
                 <div className="h-[20px]"></div>
                 <StateRender data={projectsQuery.data} isLoading={projectsQuery.isLoading}>

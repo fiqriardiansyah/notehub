@@ -1,6 +1,8 @@
+import { withoutSignPath } from "@/lib/utils";
 import { Note } from "@/models/note";
 import noteService from "@/service/note";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { v4 as uuid } from "uuid";
@@ -39,7 +41,7 @@ export const NoteProvider = ({ children }: { children: any }) => {
   const notesQuery = useQuery([noteService.getNote.name, "note-provider"], async () => {
     return (await noteService.getNote()).data.data;
   }, {
-    enabled: !pathname.includes("/signin")
+    enabled: !withoutSignPath.test(pathname)
   });
 
   const toggleNote = React.useCallback((note: Note) => {
