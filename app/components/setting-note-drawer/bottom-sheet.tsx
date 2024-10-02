@@ -1,5 +1,9 @@
 "use client";
 
+import { COLLABS_NOTE_GROUND } from "@/app/components/card-note/setting/collabs";
+import { FOLDER_NOTE_GROUND, FOLDER_NOTE_SAVE } from "@/app/components/card-note/setting/folder-note";
+import { INITIATE_SECURE_NOTE } from "@/app/components/card-note/setting/initiate-secure-note";
+import { SECURE_NOTE } from "@/app/components/card-note/setting/secure-note";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -8,23 +12,18 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { NoteContext, NoteContextType } from "@/context/note";
-import useSecureNote from "@/hooks/use-secure-note";
 import useMenuNoteList, { NoteSetting } from "@/hooks/use-menu-note-list";
+import useSecureNote from "@/hooks/use-secure-note";
 import useSidePage from "@/hooks/use-side-page";
 import useStatusBar from "@/hooks/use-status-bar";
+import { easeDefault } from "@/lib/utils";
 import { CreateNote } from "@/models/note";
 import noteService from "@/service/note";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AnimatePresence, motion } from "framer-motion";
 import { Bookmark, ChevronLeft, ChevronRight, LockKeyhole } from "lucide-react";
 import React from "react";
 import { useMediaQuery } from "react-responsive";
-import { FOLDER_NOTE_GROUND, FOLDER_NOTE_SAVE } from "@/app/components/card-note/setting/folder-note";
-import { INITIATE_SECURE_NOTE } from "@/app/components/card-note/setting/initiate-secure-note";
-import { SECURE_NOTE } from "@/app/components/card-note/setting/secure-note";
-import { COLLABS_NOTE_GROUND } from "@/app/components/card-note/setting/collabs";
-import { AnimatePresence, motion } from "framer-motion";
-import { easeDefault } from "@/lib/utils";
-import useSkipFirstRender from "@/hooks/use-skip-first-render";
 import GetLink from "../card-note/setting/get-link";
 
 export type BottomSheet = {
@@ -201,7 +200,7 @@ export default function BottomSheet({ refetch }: BottomSheet) {
                 <h2>{nextPage.text}</h2>
               </div>
               <div className="min-h-[200px] mt-2 w-full flex items-center justify-center">
-                <GetLink />
+                {nextPage.type === "link" && <GetLink />}
               </div>
             </motion.div>
           ) : (
