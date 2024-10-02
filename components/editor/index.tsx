@@ -83,7 +83,7 @@ export const Editor = ({ tools = undefined, ...props }: EditorProps) => {
 
     return (
         <div className="relative">
-            <div className="container" id="editor-js"></div>
+            <div id="editor-js"></div>
         </div>
     )
 }

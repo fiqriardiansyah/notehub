@@ -78,6 +78,7 @@ const noteService = {
 
   getNoteFromShareLink: (id: string): Promise<AxiosResponse<BaseResponse<NoteShared>>> => api.get(`/note/share/${id}`),
 
+  getIdNoteFromLink: (link: string): Promise<AxiosResponse<BaseResponse<string>>> => api.get(`/note/get-note-id/${link}`),
 };
 
 export default noteService;

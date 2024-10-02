@@ -34,7 +34,7 @@ export default function TopBar() {
         transition={{ ease: easeDefault }}
         style={{ pointerEvents: isNavHide ? "none" : "auto" }}
         className="fixed top-0 left-0 right-0 w-screen container-custom z-50 bg-white">
-        <nav className="w-full flex items-center justify-between gap-3 py-1">
+        <nav className="w-full flex items-center justify-between gap-3 py-2">
           <div className="flex items-center gap-2">
             <Link href="/" className="hidden md:block">
               <h1 className="text-gray-700 font-semibold text-xl">NoteHub</h1>

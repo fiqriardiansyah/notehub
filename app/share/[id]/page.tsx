@@ -4,6 +4,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import Image from "next/image";
 import FreetextView from "./components/freetext";
 import TodoListView from "./components/todo-list";
+import EditButton from "./components/edit-button";
 
 type Props = {
     params: { id: string }
@@ -30,10 +31,14 @@ export async function generateMetadata(
 
 export default async function SharePage({ params }: Props) {
     const content = (await noteService.getNoteFromShareLink(params.id)).data.data;
-    return <div className="container-read text-justify">
-        <h1 className="text-xl mb-3 font-semibold">{content.title}</h1>
-        {content.type === "freetext" && <FreetextView data={content?.note} />}
-        {content.type === "todolist" && <TodoListView todos={content?.todos || []} />}
+    return <div className="container-read text-justify mt-[10vh]">
+        <div className="mih-h-[80vh] w-full">
+            <h1 className="text-2xl font-medium">{content.title}</h1>
+            <EditButton note={content} />
+            <div className="h-5"></div>
+            {content.type === "freetext" && <FreetextView data={content?.note} />}
+            {content.type === "todolist" && <TodoListView todos={content?.todos || []} />}
+        </div>
         <div className="flex items-center gap-3 mt-10">
             <Image src={content.image || ""} alt={content.name!} width={40} height={40} className="rounded-full object-cover bg-gray-400" />
             <div className="flex flex-col gap-2">
