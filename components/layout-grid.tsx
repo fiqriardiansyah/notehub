@@ -1,7 +1,7 @@
 "use client"
 
-import React from "react"
-import { useMediaQuery } from "react-responsive"
+import { useDesktopMediaQuery, useTabletMediaQuery } from "@/hooks/responsive";
+import React from "react";
 
 export type LayoutGridProps<T> = {
     items?: T[];
@@ -9,8 +9,8 @@ export type LayoutGridProps<T> = {
 }
 
 export default function LayoutGrid<T>({ items, children }: LayoutGridProps<T>) {
-    const isDesktop = useMediaQuery({ minWidth: 992 })
-    const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 991 })
+    const isDesktop = useDesktopMediaQuery();
+    const isTablet = useTabletMediaQuery();
 
     let column;
 

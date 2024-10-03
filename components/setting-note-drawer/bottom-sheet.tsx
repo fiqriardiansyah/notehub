@@ -12,6 +12,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { NoteContext, NoteContextType } from "@/context/note";
+import { useMobileMediaQuery } from "@/hooks/responsive";
 import useMenuNoteList, { NoteSetting } from "@/hooks/use-menu-note-list";
 import useSecureNote from "@/hooks/use-secure-note";
 import useSidePage from "@/hooks/use-side-page";
@@ -23,7 +24,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bookmark, ChevronLeft, ChevronRight, LockKeyhole } from "lucide-react";
 import React from "react";
-import { useMediaQuery } from "react-responsive";
 import GetLink from "../card-note/setting/get-link";
 
 export type BottomSheet = {
@@ -32,14 +32,15 @@ export type BottomSheet = {
 
 export default function BottomSheet({ refetch }: BottomSheet) {
   const { note, setNote, generateChangesId } = React.useContext(NoteContext) as NoteContextType;
-  const isBigScreen = useMediaQuery({ query: "(max-width: 600px)" });
   const settings = useMenuNoteList(note?.note);
   const [setSidePage, resetSidePage, isSidePageOpen] = useSidePage();
   const queryClient = useQueryClient();
   const [_, setStatusBar] = useStatusBar();
   const [nextPage, setNextPage] = React.useState<NoteSetting | null>(null);
 
-  const isOpen = !!note?.note && isBigScreen && !isSidePageOpen;
+  const isMobile = useMobileMediaQuery();
+
+  const isOpen = !!note?.note && !isSidePageOpen;
 
   React.useEffect(() => {
     if (!isOpen) {
@@ -182,6 +183,7 @@ export default function BottomSheet({ refetch }: BottomSheet) {
     setNextPage(null);
   }
 
+  if (!isMobile) return null;
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerContent className="z-50">

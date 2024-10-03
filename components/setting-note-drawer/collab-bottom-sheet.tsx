@@ -8,15 +8,15 @@ import {
     DrawerTitle,
 } from "@/components/ui/drawer";
 import { NoteContext, NoteContextType } from "@/context/note";
+import useBridgeTrigger from "@/context/trigger";
+import { useMobileMediaQuery } from "@/hooks/responsive";
 import useMenuNoteCollabList, { CollaborateSetting } from "@/hooks/use-menu-note-collab-list";
 import useSidePage from "@/hooks/use-side-page";
 import { CollaborateProject } from "@/models/collab";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-import { useMediaQuery } from "react-responsive";
 import LeaveProject, { LEAVE_PROJECT } from "../card-note-collab/setting/leave";
-import useBridgeTrigger from "@/context/trigger";
 
 export type CollabBottomSheet = {
     refetch?: () => void;
@@ -28,12 +28,12 @@ export default function CollabBottomSheet({ refetch }: CollabBottomSheet) {
     const { note, setNote } = React.useContext(NoteContext) as NoteContextType;
     const collabNote = note?.note as unknown as CollaborateProject;
 
-    const isBigScreen = useMediaQuery({ query: "(max-width: 600px)" });
+    const isMobile = useMobileMediaQuery();
     const settings = useMenuNoteCollabList(collabNote);
     const { fireBridgeTrigger, onBridgeTrigger } = useBridgeTrigger<CollaborateProject>();
     const [setSidePage, resetSidePage, isSidePageOpen] = useSidePage();
 
-    const isOpen = !!note?.note && isBigScreen && !isSidePageOpen;
+    const isOpen = !!note?.note && !isSidePageOpen;
 
     const onOpenChange = (val: boolean) => {
         if (isSidePageOpen) return;
@@ -60,10 +60,7 @@ export default function CollabBottomSheet({ refetch }: CollabBottomSheet) {
         }
     };
 
-    const isLoading = (setting: CollaborateSetting) => {
-        return false;
-    }
-
+    if (!isMobile) return null;
     return (
         <>
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
@@ -82,7 +79,6 @@ export default function CollabBottomSheet({ refetch }: CollabBottomSheet) {
                         </div>
                         {settings?.map((Setting) => (
                             <Button
-                                loading={isLoading(Setting)}
                                 key={Setting.text}
                                 onClick={handleClickSetting(Setting)}
                                 className="flex items-center gap-3 justify-between"

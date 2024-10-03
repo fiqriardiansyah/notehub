@@ -45,6 +45,7 @@ export default function IndexPage() {
     return !!i.tags?.find((t) => !!filterTag.find((tag) => tag.id === t.id));
   });
 
+
   return (
     <>
       {renderTopNav()}

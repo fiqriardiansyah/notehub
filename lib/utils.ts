@@ -5,6 +5,7 @@ import advancedFormat from "dayjs/plugin/advancedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import moment from "moment";
 import { FaGithub, FaGoogle } from "react-icons/fa";
+import { useMediaQuery } from "react-responsive";
 import { twMerge } from "tailwind-merge";
 
 dayjs.extend(relativeTime);
