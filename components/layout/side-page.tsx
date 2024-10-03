@@ -1,14 +1,14 @@
 "use client";
 
-import PickNotesProvider, { PICK_NOTES } from "@/app/components/pick-notes";
-import CollabsNoteGround, { COLLABS_NOTE_GROUND } from "@/app/components/card-note/setting/collabs";
-import DialogDeleteGround, { REMOVE_NOTE_EVENT } from "@/app/components/card-note/setting/delete";
-import DialogDeleteFolderGround, { REMOVE_FOLDER_EVENT } from "@/app/components/card-note/setting/delete-folder";
-import FolderNoteGround, { FOLDER_NOTE_GROUND } from "@/app/components/card-note/setting/folder-note";
-import InitiateSecureNote, { INITIATE_SECURE_NOTE } from "@/app/components/card-note/setting/initiate-secure-note";
-import Scheduler, { SCHEDULER } from "@/app/components/card-note/setting/scheduler";
-import SecureNote, { SECURE_NOTE } from "@/app/components/card-note/setting/secure-note";
-import TagNote, { TAG_NOTE_GROUND } from "@/app/components/card-note/setting/tag-note";
+import PickNotesProvider, { PICK_NOTES } from "@/components/pick-notes";
+import CollabsNoteGround, { COLLABS_NOTE_GROUND } from "@/components/card-note/setting/collabs";
+import DialogDeleteGround, { REMOVE_NOTE_EVENT } from "@/components/card-note/setting/delete";
+import DialogDeleteFolderGround, { REMOVE_FOLDER_EVENT } from "@/components/card-note/setting/delete-folder";
+import FolderNoteGround, { FOLDER_NOTE_GROUND } from "@/components/card-note/setting/folder-note";
+import InitiateSecureNote, { INITIATE_SECURE_NOTE } from "@/components/card-note/setting/initiate-secure-note";
+import Scheduler, { SCHEDULER } from "@/components/card-note/setting/scheduler";
+import SecureNote, { SECURE_NOTE } from "@/components/card-note/setting/secure-note";
+import TagNote, { TAG_NOTE_GROUND } from "@/components/card-note/setting/tag-note";
 import ViewAttachNote, { VIEW_ATTACH_NOTE } from "@/app/habits/[id]/components/view-attach-note";
 import { CommonContext, CommonContextType } from "@/context/common";
 import { AnimatePresence, motion } from "framer-motion";

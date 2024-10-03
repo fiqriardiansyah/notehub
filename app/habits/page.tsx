@@ -16,15 +16,15 @@ import { useRouter } from "next-nprogress-bar";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import { CiSearch } from "react-icons/ci";
-import HabitsUrgent from "../components/habits/habits-urgent";
-import SearchBar from "../components/search-bar";
+import HabitsUrgent from "@/components/habits/habits-urgent";
+import SearchBar from "@/components/search-bar";
 import AllHabits from "./components/all-habits";
 import DailyHabits from "./components/daily-habits";
 import ListCardHabit from "./components/list-card-habit";
 import MonthlyHabits from "./components/monthly-habits";
 import WeeklyHabits from "./components/weekly-habits";
 import SearchHabits from "./components/search-habits";
-import RunningTimer from "../components/habits/running-timer";
+import RunningTimer from "@/components/habits/running-timer";
 
 const tabs = [
     {

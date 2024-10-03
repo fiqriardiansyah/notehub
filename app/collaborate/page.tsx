@@ -10,10 +10,10 @@ import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import ReactDom from 'react-dom';
 import Lottie from "react-lottie";
-import CardNoteCollab from "../components/card-note-collab";
-import LayoutGrid from "../components/layout-grid";
-import SettingNoteDrawer from "../components/setting-note-drawer";
-import ToolBar from "../components/tool-bar";
+import CardNoteCollab from "@/components/card-note-collab";
+import LayoutGrid from "@/components/layout-grid";
+import SettingNoteDrawer from "@/components/setting-note-drawer";
+import ToolBar from "@/components/tool-bar";
 import { Tag } from "@/models/note";
 
 const defaultOptions = {

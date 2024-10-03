@@ -1,9 +1,9 @@
 "use client";
 
+import ConfirmSecure from "@/app/secure-password/confirm-secure";
 import { WriteContext, WriteContextType } from "@/context/write";
 import { LockKeyhole } from "lucide-react";
 import React from "react";
-import ConfirmSecure from "../secure-password/confirm-secure";
 
 export type OpenSecureNoteProps = {
     refetch?: () => void;

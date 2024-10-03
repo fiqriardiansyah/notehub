@@ -1,6 +1,6 @@
 "use client";
 
-import SearchBar from "@/app/components/search-bar";
+import SearchBar from "@/components/search-bar";
 import { X } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";

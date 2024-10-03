@@ -10,12 +10,12 @@ import noteService from "@/service/note";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import ReactDom from 'react-dom';
-import CardFolder from "./components/card-folder";
-import CardNote from "./components/card-note";
-import HabitsAlert from "./components/habits/habits-alert";
-import LayoutGrid from "./components/layout-grid";
-import SettingNoteDrawer from "./components/setting-note-drawer";
-import ToolBar from "./components/tool-bar";
+import CardFolder from "@/components/card-folder";
+import CardNote from "@/components/card-note";
+import HabitsAlert from "@/components/habits/habits-alert";
+import LayoutGrid from "@/components/layout-grid";
+import SettingNoteDrawer from "@/components/setting-note-drawer";
+import ToolBar from "@/components/tool-bar";
 import ButtonToWrite from "./habits/components/button-make-habit";
 
 export default function IndexPage() {

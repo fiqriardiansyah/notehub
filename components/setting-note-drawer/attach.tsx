@@ -13,7 +13,7 @@ import useSidePage from "@/hooks/use-side-page";
 import { Note } from "@/models/note";
 import React from "react";
 import { useMediaQuery } from "react-responsive";
-import { INITIATE_SECURE_NOTE } from "@/app/components/card-note/setting/initiate-secure-note";
+import { INITIATE_SECURE_NOTE } from "@/components/card-note/setting/initiate-secure-note";
 
 export type AttachType = {
   note?: Note;

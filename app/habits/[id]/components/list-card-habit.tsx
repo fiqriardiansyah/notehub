@@ -1,7 +1,7 @@
 "use client"
 
-import HabitsTimer from "@/app/components/habits/habits-timer";
-import HabitsTodoDrawerMenu from "@/app/components/habits/habits-todo-drawer-menu";
+import HabitsTimer from "@/components/habits/habits-timer";
+import HabitsTodoDrawerMenu from "@/components/habits/habits-todo-drawer-menu";
 import { Todo } from "@/app/write/mode/todolist";
 import Countdown from "@/components/common/countdown";
 import { Button } from "@/components/ui/button";

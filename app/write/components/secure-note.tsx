@@ -1,7 +1,7 @@
 "use client";
 
-import { INITIATE_SECURE_NOTE } from "@/app/components/card-note/setting/initiate-secure-note";
-import { SECURE_NOTE } from "@/app/components/card-note/setting/secure-note";
+import { INITIATE_SECURE_NOTE } from "@/components/card-note/setting/initiate-secure-note";
+import { SECURE_NOTE } from "@/components/card-note/setting/secure-note";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,

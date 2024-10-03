@@ -1,7 +1,7 @@
 "use client";
 
-import { COLLABS_NOTE_GROUND } from "@/app/components/card-note/setting/collabs";
-import OpenSecureNote from "@/app/components/open-secure-note";
+import { COLLABS_NOTE_GROUND } from "@/components/card-note/setting/collabs";
+import OpenSecureNote from "@/components/open-secure-note";
 import { BUTTON_SUCCESS_ANIMATION_TRIGGER } from "@/components/animation/button-success";
 import CollabsList from "@/components/common/collabs-list";
 import ResponsiveTagsListed from "@/components/common/tag-listed";

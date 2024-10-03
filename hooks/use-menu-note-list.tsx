@@ -1,4 +1,4 @@
-import { REMOVE_NOTE_EVENT } from "@/app/components/card-note/setting/delete";
+import { REMOVE_NOTE_EVENT } from "@/components/card-note/setting/delete";
 import { Note } from "@/models/note";
 import { Bookmark, BookmarkX, FolderOutput, FolderPlus, LockKeyhole, Blocks, Trash, Link2 } from "lucide-react";
 import Lottie from "react-lottie";

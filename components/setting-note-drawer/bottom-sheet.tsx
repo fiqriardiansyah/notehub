@@ -1,9 +1,9 @@
 "use client";
 
-import { COLLABS_NOTE_GROUND } from "@/app/components/card-note/setting/collabs";
-import { FOLDER_NOTE_GROUND, FOLDER_NOTE_SAVE } from "@/app/components/card-note/setting/folder-note";
-import { INITIATE_SECURE_NOTE } from "@/app/components/card-note/setting/initiate-secure-note";
-import { SECURE_NOTE } from "@/app/components/card-note/setting/secure-note";
+import { COLLABS_NOTE_GROUND } from "@/components/card-note/setting/collabs";
+import { FOLDER_NOTE_GROUND, FOLDER_NOTE_SAVE } from "@/components/card-note/setting/folder-note";
+import { INITIATE_SECURE_NOTE } from "@/components/card-note/setting/initiate-secure-note";
+import { SECURE_NOTE } from "@/components/card-note/setting/secure-note";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,

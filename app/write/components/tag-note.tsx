@@ -1,6 +1,6 @@
 "use client"
 
-import { TAG_NOTE_GROUND } from "@/app/components/card-note/setting/tag-note";
+import { TAG_NOTE_GROUND } from "@/components/card-note/setting/tag-note";
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,

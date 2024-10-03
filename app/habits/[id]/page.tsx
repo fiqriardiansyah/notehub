@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import HabitsCountdown from "@/app/components/habits/habits-countdown";
+import HabitsCountdown from "@/components/habits/habits-countdown";
 import { Todo } from "@/app/write/mode/todolist";
 import enjoyAnim from "@/asset/animation/enjoy.json";
 import fireAnim from '@/asset/animation/fire.json';
