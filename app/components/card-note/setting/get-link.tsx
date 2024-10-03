@@ -55,7 +55,10 @@ export default function GetLink() {
         if (!shareLink) return;
         if ("clipboard" in navigator) {
             navigator.clipboard.writeText(shareLink).then(function () {
-                console.log('Async: Copying to clipboard was successful!');
+                toast({
+                    description: "Link copied to clipboard!",
+                    variant: "default"
+                })
             }, function (err) {
                 console.error('Async: Could not copy text: ', err);
             });

@@ -19,7 +19,7 @@ export default function Layout({ children }: { children: any }) {
     return (
         <>
             <motion.div
-                animate={common?.sidePageOpen ? { left: "-90vw", scale: 0.9, borderRadius: '20px', overflow: 'hidden', height: '100vh' } : { left: 0, scale: 1 }}
+                animate={common?.sidePageOpen ? { left: "-90vw", scale: 0.9 } : { left: 0, scale: 1 }}
                 className="!w-screen min-h-screen z-[1] relative bg-white"
                 transition={{ ease: easeDefault }}
             >

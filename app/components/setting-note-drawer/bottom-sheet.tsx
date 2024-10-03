@@ -190,7 +190,7 @@ export default function BottomSheet({ refetch }: BottomSheet) {
         </DrawerHeader>
         <AnimatePresence mode="popLayout">
           {nextPage ? (
-            <motion.div key={nextPage.type} className="p-4" exit={{ x: '100%' }} animate={{ x: 0 }} initial={{ x: '100%' }} transition={{ ease: easeDefault }} >
+            <motion.div key={nextPage.type} className="p-4" exit={{ opacity: 0 }} animate={{ opacity: 1 }} initial={{ opacity: 0 }} transition={{ ease: easeDefault }} >
               <div className="flex flex-row items-center flex-1">
                 <div className="mr-3">
                   <Button onClick={onClickPrevPage} size="icon" variant="ghost" className="!w-10">
@@ -204,7 +204,7 @@ export default function BottomSheet({ refetch }: BottomSheet) {
               </div>
             </motion.div>
           ) : (
-            <motion.div key="setting" className="flex flex-col p-4 gap-3" exit={{ x: '-100%' }} animate={{ x: 0 }} initial={{ x: '-100%' }} transition={{ ease: easeDefault }}>
+            <motion.div key="setting" className="flex flex-col p-4 gap-3" exit={{ opacity: 0 }} animate={{ opacity: 1 }} initial={{ opacity: 0 }} transition={{ ease: easeDefault }}>
               {settings?.map((Setting) => (
                 <Button
                   loading={isLoading(Setting)}

@@ -3,6 +3,7 @@ import { Note } from "./note";
 
 export type NoteShared = Pick<Note, "title" | "note" | "updatedAt" | "updatedBy" | "todos" | "type"> & Pick<User, "name" | "image"> & {
     ownerId: string;
+    collaborators: Pick<User, "name" | "image">[];
 };
 
 export type ShareLink = {

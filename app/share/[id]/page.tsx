@@ -5,6 +5,8 @@ import Image from "next/image";
 import FreetextView from "./components/freetext";
 import TodoListView from "./components/todo-list";
 import EditButton from "./components/edit-button";
+import { AnimatedTooltip, AnimatedTooltipItem } from "@/components/ui/animated-tooltip";
+import { v4 as uuid } from "uuid";
 
 type Props = {
     params: { id: string }
@@ -31,6 +33,14 @@ export async function generateMetadata(
 
 export default async function SharePage({ params }: Props) {
     const content = (await noteService.getNoteFromShareLink(params.id)).data.data;
+
+    const collaborators = content?.collaborators?.map((c) => ({
+        id: uuid(),
+        name: c.name!,
+        image: c.image!,
+        designation: "collaborator"
+    })) || [];
+
     return <div className="container-read text-justify mt-[10vh]">
         <div className="mih-h-[80vh] w-full">
             <h1 className="text-2xl font-medium">{content.title}</h1>
@@ -46,5 +56,13 @@ export default async function SharePage({ params }: Props) {
                 <p className="m-0 leading-none text-xs text-gray-500">{`Last update ${formatDate(content.updatedAt)} ${content.updatedBy ? `By ${content.updatedBy}` : ""}`}</p>
             </div>
         </div>
+        {collaborators?.length && (
+            <div className="mt-5">
+                <h2>Collaborators</h2>
+                <div className="flex items-center">
+                    <AnimatedTooltip size={40} items={collaborators as AnimatedTooltipItem[]} />
+                </div>
+            </div>
+        )}
     </div>
 }

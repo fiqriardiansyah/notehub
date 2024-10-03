@@ -61,7 +61,7 @@
 
 @layer {
   body {
-    @apply w-screen overflow-x-hidden bg-gray-500;
+    @apply w-screen overflow-x-hidden;
   }
 
   .container-read {
