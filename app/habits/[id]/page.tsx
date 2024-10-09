@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import HabitsCountdown from "@/components/habits/habits-countdown";
 import { Todo } from "@/app/write/mode/todolist";
 import enjoyAnim from "@/asset/animation/enjoy.json";
 import fireAnim from '@/asset/animation/fire.json';
 import ResponsiveTagsListed from "@/components/common/tag-listed";
+import HabitsCountdown from "@/components/habits/habits-countdown";
+import LayoutGrid from "@/components/layout-grid";
 import StateRender from "@/components/state-render";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -16,7 +17,7 @@ import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { convertEditorDataToText, easeDefault, progressCheer } from "@/lib/utils";
 import habitsService from "@/service/habits";
 import noteService from "@/service/note";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import parse from 'html-react-parser';
 import { Check, ChevronLeft, PencilRuler, TimerReset } from "lucide-react";
@@ -47,8 +48,9 @@ export default function HabitDetail() {
     const [progressDoneCheer, setProgressDoneCheer] = React.useState<{ progress: number; todoId: string }>();
     const habitComplete = useHabitComplete();
     const isNavHide = useToggleHideNav();
+    const queryClient = useQueryClient();
 
-    const noteDetailQuery = useQuery(["get-note", id], async () => {
+    const noteDetailQuery = useQuery([noteService.getOneNote.name, id], async () => {
         return (await noteService.getOneNote(id as string)).data.data
     }, {
         refetchInterval: false,
@@ -93,8 +95,11 @@ export default function HabitDetail() {
             if (!id) return;
             changeTodosMutate.mutateAsync(todos).catch(() => {
                 // why in catch ? only when error refetch the detail
-                noteDetailQuery.refetch()
-            }).finally(noteDetailForCalenderView.refetch);
+                noteDetailQuery.refetch();
+            }).finally(() => {
+                noteDetailForCalenderView.refetch();
+                queryClient.refetchQueries({ queryKey: [habitsService.getUrgentHabit.name], exact: true });
+            });
         }, 1000);
 
         return () => clearTimeout(update);
@@ -207,7 +212,7 @@ export default function HabitDetail() {
     ), [isNavHide, noteDetailQuery, router]);
 
     return (
-        <div className="w-screen bg-white min-h-screen pb-20">
+        <div className="bg-white min-h-screen pb-20">
             {navbar}
             <AnimatePresence>
                 {clickToFinish && (
@@ -249,16 +254,18 @@ export default function HabitDetail() {
                                 )}
                             </div>
                         )}
-                        <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2">
-                            {todos?.map((todo) => <ListCardHabit
-                                noteId={noteDetailQuery?.data?.id}
-                                setTodos={setTodos}
-                                completedHabit={!noteDetailQuery.data?.reschedule || isFreeToday}
-                                progressDoneCheer={progressDoneCheer}
-                                onCheck={onUpdateCheck}
-                                key={todo.id}
-                                todo={todo} />)}
-                        </div>
+                        <LayoutGrid items={todos} className="mb-2">
+                            {(todo) => (
+                                <ListCardHabit
+                                    noteId={noteDetailQuery?.data?.id}
+                                    setTodos={setTodos}
+                                    completedHabit={!noteDetailQuery.data?.reschedule || isFreeToday}
+                                    progressDoneCheer={progressDoneCheer}
+                                    onCheck={onUpdateCheck}
+                                    key={todo.id}
+                                    todo={todo} />
+                            )}
+                        </LayoutGrid>
                         {noteDetailQuery.data?.reschedule && !isFreeToday && <HabitsCountdown noteHabits={noteDetailQuery.data} />}
                         <CardContinueZenMode note={noteDetailQuery.data} />
                         <span className="text-gray-400 text-xs mt-8 mb-2">Description</span>

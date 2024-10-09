@@ -1,3 +1,5 @@
+import { useMobileMediaQuery } from "@/hooks/responsive";
+import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
 import React from "react";
 
@@ -11,6 +13,10 @@ export type CommonState = {
     } | null;
     sidePageOpen?: boolean;
     groundOpen?: string;
+    process?: {
+        id?: string;
+        nameOfProcess?: string;
+    }[]
 };
 
 type CallbackPayload<T = any> = (callback: (nameground: string, payload: T) => void) => void;
@@ -21,13 +27,24 @@ export type CommonContextType<T = any> = {
     callbackPayload: CallbackPayload<T>
     triggerCallbackPayload: (nameground: string, payload: any) => void;
     emptyCallback: () => void;
+    setIsDesktopSidebarCollapsed: React.Dispatch<boolean>;
+    isDesktopSidebarCollapsed: boolean;
+    defaultLayoutResizable: number[];
 };
 
 export const CommonContext = React.createContext({});
 
 export const CommonProvider = ({ children }: { children: any }) => {
+    const layout = Cookies.get("react-resizable-panels:layout:mail")
+    const collapsed = Cookies.get("react-resizable-panels:collapsed")
+
+    const defaultLayoutResizable = layout ? JSON.parse(layout) : [17, 83, 30];
+    const defaultCollapsed = collapsed ? JSON.parse(collapsed) : false;
+
+    const isMobile = useMobileMediaQuery();
     const pathname = usePathname();
     const [common, setCommon] = React.useState<CommonState>();
+    const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = React.useState<boolean>(defaultCollapsed);
 
     let onCallbackPayload: any[] = [];
 
@@ -46,7 +63,7 @@ export const CommonProvider = ({ children }: { children: any }) => {
                 groundOpen: nameground,
             }));
         } else {
-            console.log("No callback payload registerd");
+            console.log("No callback payload [common.tsx] registerd");
         }
     };
 
@@ -55,7 +72,11 @@ export const CommonProvider = ({ children }: { children: any }) => {
     }
 
     React.useEffect(() => {
-        setCommon({});
+        if (isMobile) {
+            setCommon({});
+            return;
+        }
+        setCommon((prev) => ({ ...prev, groundOpen: prev?.groundOpen, sidePageOpen: prev?.sidePageOpen }))
     }, [pathname]);
 
     const value = {
@@ -63,7 +84,10 @@ export const CommonProvider = ({ children }: { children: any }) => {
         setCommon,
         callbackPayload,
         triggerCallbackPayload,
-        emptyCallback
+        emptyCallback,
+        setIsDesktopSidebarCollapsed,
+        isDesktopSidebarCollapsed,
+        defaultLayoutResizable,
     } as CommonContextType;
 
     return (

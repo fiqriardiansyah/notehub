@@ -2,7 +2,6 @@ import { withoutSignPath } from "@/lib/utils";
 import { Note } from "@/models/note";
 import noteService from "@/service/note";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { v4 as uuid } from "uuid";
@@ -22,9 +21,6 @@ export type NoteContextType = {
   hideNotes: (notes: Note[]) => void;
   notes?: Note[];
   setPickedNotes: React.Dispatch<React.SetStateAction<Note[]>>;
-  onClickPick: (callback: (data: { notes: Note[], resetPickedNotes: () => void, payload: any }) => void) => void;
-  triggerClickPick: (payload: any) => void;
-  emptyCallback: () => void;
   generateChangesId: () => void;
 };
 
@@ -37,6 +33,18 @@ export const NoteProvider = ({ children }: { children: any }) => {
   });
   const [pickedNotes, setPickedNotes] = React.useState<Note[]>([]);
   const [tempHideNotes, setTempHideNotes] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    if (note?.note) return;
+
+    const timeout = setTimeout(() => {
+      document.body.style.pointerEvents = '';
+    }, 300);
+
+    return () => {
+      clearTimeout(timeout);
+    }
+  }, [note?.note]);
 
   const notesQuery = useQuery([noteService.getNote.name, "note-provider"], async () => {
     return (await noteService.getNote()).data.data;
@@ -62,26 +70,6 @@ export const NoteProvider = ({ children }: { children: any }) => {
     setTempHideNotes(notes.map((n) => n.id));
   }
 
-  let onClickPickCallback: any[] = [];
-
-  const onClickPick: NoteContextType["onClickPick"] = (callback) => {
-    onClickPickCallback.push(callback);
-  };
-
-  const triggerClickPick = (payload: any) => {
-    if (onClickPickCallback.length > 0) {
-      onClickPickCallback.forEach((callback) => {
-        callback({ notes: pickedNotes, resetPickedNotes, ...payload });
-      });
-    } else {
-      console.log("No callback registered!");
-    }
-  }
-
-  const emptyCallback = () => {
-    onClickPickCallback = [];
-  }
-
   const notes = notesQuery.data?.filter((n) => !tempHideNotes.find((id) => id === n.id));
 
   const generateChangesId = () => {
@@ -94,7 +82,7 @@ export const NoteProvider = ({ children }: { children: any }) => {
   const value = React.useMemo(() =>
   ({
     notesQuery, toggleNote, pickedNotes, resetPickedNotes, hideNotes,
-    notes, note, setNote, setPickedNotes, onClickPick, triggerClickPick, emptyCallback,
+    notes, note, setNote, setPickedNotes,
     generateChangesId,
   }),
     [notesQuery, toggleNote, pickedNotes, notes, note]);

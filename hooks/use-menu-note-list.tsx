@@ -1,8 +1,8 @@
-import { REMOVE_NOTE_EVENT } from "@/components/card-note/setting/delete";
-import { Note } from "@/models/note";
-import { Bookmark, BookmarkX, FolderOutput, FolderPlus, LockKeyhole, Blocks, Trash, Link2 } from "lucide-react";
-import Lottie from "react-lottie";
 import starAnim from "@/asset/animation/star.json";
+import { Note } from "@/models/note";
+import { Blocks, Bookmark, BookmarkX, FolderOutput, FolderPlus, Link2, LockKeyhole, Trash } from "lucide-react";
+import React from "react";
+import Lottie from "react-lottie";
 
 const defaultOptions = {
     loop: true,
@@ -81,52 +81,62 @@ const deleteSetting: NoteSetting = {
     icon: Trash,
     text: "Delete",
     danger: true,
-    func: (note?: Note) => {
-        window.dispatchEvent(
-            new CustomEvent(REMOVE_NOTE_EVENT, { detail: { note } })
-        );
-    },
+    func: () => { },
     type: "delete",
 };
 
 export default function useMenuNoteList(note?: Note | null) {
-    if (!note) return [];
+    const [settings, setSettings] = React.useState<NoteSetting[]>([]);
 
-    let settings: NoteSetting[] = [];
+    React.useEffect(() => {
+        // the delay will return empty list after 0.7 sec, so the attach dropdown will not suddenly disappear
+        if (!note) {
+            const timeout = setTimeout(() => {
+                setSettings([]);
+            }, 700);
 
-    if (!settings.find((s) => s.type === "hang_note")) {
-        settings.push(hangNoteSetting);
-    }
+            return () => clearTimeout(timeout);
+        }
 
-    if (!settings.find((s) => s.type === "unhang_note") && note?.isHang) {
-        settings = settings.filter((s) => s.type !== "hang_note");
-        settings.push(unHangNoteSetting);
-    }
+        let newSettings: NoteSetting[] = [];
 
-    if (!settings.find((s) => s.type === "add_folder")) {
-        settings.push(addToFolderSetting);
-    }
+        if (!newSettings.find((s) => s.type === "hang_note")) {
+            newSettings.push(hangNoteSetting);
+        }
 
-    if (!settings.find((s) => s.type === "remove_folder") && note?.folderId) {
-        settings = settings.filter((s) => s.type !== "add_folder");
-        settings.push(removeFromFolderSetting);
-    }
+        if (!newSettings.find((s) => s.type === "unhang_note") && note?.isHang) {
+            newSettings = newSettings.filter((s) => s.type !== "hang_note");
+            newSettings.push(unHangNoteSetting);
+        }
 
-    if (!settings.find((s) => s.type === "secure_note") && !note?.isSecure) {
-        settings.push(secureNoteSetting);
-    }
+        if (!newSettings.find((s) => s.type === "add_folder")) {
+            newSettings.push(addToFolderSetting);
+        }
 
-    if (!settings.find((s) => s.type === "link") && !note?.isSecure) {
-        settings.push(linkSetting);
-    }
+        if (!newSettings.find((s) => s.type === "remove_folder") && note?.folderId) {
+            newSettings = newSettings.filter((s) => s.type !== "add_folder");
+            newSettings.push(removeFromFolderSetting);
+        }
 
-    if (!settings.find((s) => s.type === "collabs") && !note?.isSecure) {
-        settings.push(collabsSetting);
-    }
+        if (!newSettings.find((s) => s.type === "secure_note") && !note?.isSecure) {
+            newSettings.push(secureNoteSetting);
+        }
 
-    if (!settings.find((s) => s.type === "delete") && !note?.isSecure) {
-        settings.push(deleteSetting);
-    }
+        if (!newSettings.find((s) => s.type === "link") && !note?.isSecure) {
+            newSettings.push(linkSetting);
+        }
 
-    return settings
+        if (!newSettings.find((s) => s.type === "collabs") && !note?.isSecure) {
+            newSettings.push(collabsSetting);
+        }
+
+        if (!newSettings.find((s) => s.type === "delete") && !note?.isSecure) {
+            newSettings.push(deleteSetting);
+        }
+
+        setSettings(newSettings);
+
+    }, [note]);
+
+    return settings;
 }

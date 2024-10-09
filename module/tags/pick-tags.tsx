@@ -16,8 +16,7 @@ export type PickTagsProps = {
 
 export default function PickTags({ onClickTag, tagPicks }: PickTagsProps) {
 
-    const getTagQuery = useQuery(["get-tag"], async () => {
-        await pause(2)
+    const getTagQuery = useQuery([noteService.getTag.name], async () => {
         return (await noteService.getTag()).data.data
     });
 

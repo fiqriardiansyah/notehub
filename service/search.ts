@@ -10,7 +10,7 @@ export type SearchReturnType = Pick<Note, "id" | "title" | "description" | "todo
     }
 
 const searchService = {
-    search: (query?: string): Promise<AxiosResponse<BaseResponse<SearchReturnType[]>>> => api.get(`/search/${query}`),
+    search: (query?: string): Promise<AxiosResponse<BaseResponse<SearchReturnType[]>>> => api.get(`/search?query=${query}`),
 };
 
 export default searchService;

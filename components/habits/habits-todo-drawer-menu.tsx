@@ -1,6 +1,7 @@
 "use client";
 
 import { Todo } from "@/app/write/mode/todolist";
+import UnderDevelopBlocker from "@/components/common/under-develop-blocker";
 import { Button } from "@/components/ui/button";
 import {
     Drawer,
@@ -9,12 +10,12 @@ import {
     DrawerTitle,
 } from "@/components/ui/drawer";
 import { NoteContext, NoteContextType } from "@/context/note";
-import useSidePage from "@/hooks/use-side-page";
+import { fireBridgeEvent, useBridgeEvent } from "@/hooks/use-bridge-event";
 import { Note } from "@/models/note";
 import { Check, Paperclip, StickyNote, Timer } from "lucide-react";
 import React from "react";
-import { PICK_NOTES } from "../pick-notes";
-import UnderDevelopBlocker from "@/components/common/under-develop-blocker";
+import { CLOSE_SIDE_PANEL, OPEN_SIDE_PANEL } from "../layout/side-panel";
+import { PICK_NOTES, PICK_NOTES_RESET, PICK_NOTES_SUBMIT } from "../pick-notes";
 
 export type HabitsTodoDrawerMenuProps = {
     todo?: Todo
@@ -27,14 +28,17 @@ export default function HabitsTodoDrawerMenu({ children, todo, onClickTimer, onA
 
     const noteContext = React.useContext(NoteContext) as NoteContextType;
     const [isOpen, setIsOpen] = React.useState(false);
-    const [setSidePage, resetSidePage] = useSidePage();
 
-    noteContext.onClickPick(({ notes, resetPickedNotes, payload }) => {
-        const todoPayload = payload as Todo;
-        if (onAttachNote) onAttachNote(notes, todoPayload);
-        resetPickedNotes();
-        resetSidePage();
+    useBridgeEvent(PICK_NOTES_SUBMIT + "_" + todo!.id, (payload: { todo: Todo, notes: Note[] }) => {
+        if (onAttachNote) onAttachNote(payload.notes, payload.todo);
+        noteContext.resetPickedNotes();
+        fireBridgeEvent(CLOSE_SIDE_PANEL, null);
     });
+
+    useBridgeEvent(PICK_NOTES_RESET + "_" + todo!.id, (payload: { todo: Todo, notes: Note[] }) => {
+        if (onAttachNote) onAttachNote(payload.notes, payload.todo);
+        fireBridgeEvent(CLOSE_SIDE_PANEL, null);
+    })
 
     const ctrl = {
         open: () => {
@@ -56,7 +60,10 @@ export default function HabitsTodoDrawerMenu({ children, todo, onClickTimer, onA
 
     const onClickAttachNote = () => {
         setIsOpen(false);
-        setSidePage(PICK_NOTES, todo);
+        fireBridgeEvent(OPEN_SIDE_PANEL, {
+            groundOpen: PICK_NOTES,
+            payload: todo,
+        });
         if (todo?.attach?.length) {
             noteContext.setPickedNotes(noteContext.notes?.filter((n) => todo?.attach?.find((t) => t.id === n.id)) || [])
             return;

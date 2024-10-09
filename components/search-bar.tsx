@@ -16,6 +16,8 @@ const SearchBar = React.forwardRef<HTMLInputElement, SearchBarProps>(({ classNam
         ref={ref}
         id="search"
         name="search"
+        autoComplete="off"
+        autoCorrect="off"
         type="text"
         placeholder="Search Notes"
         {...props}

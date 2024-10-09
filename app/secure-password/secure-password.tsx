@@ -116,17 +116,12 @@ const SecurePassword = ({ onFinish }: SecurePasswordProps) => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col gap-4 items-center justify-center">
-      <div className="flex flex-col w-full">
-        <h1 className="text-xl font-semibold">
-          {checkHasPassNote.data
-            ? "Change Secure Password Note"
-            : "Secure Note"}
-        </h1>
-        <span className="text-sm text-gray-400">
-          Make only you can access your secret 🤫
-        </span>
-      </div>
+    <div className="w-full h-full flex flex-col gap-4">
+      <h2 className="font-semibold text-sm">
+        {checkHasPassNote.data
+          ? "Change Secure Password Note"
+          : null}
+      </h2>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

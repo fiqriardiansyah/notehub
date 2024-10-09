@@ -1,56 +1,38 @@
 "use client"
 
-import { useDesktopMediaQuery, useTabletMediaQuery } from "@/hooks/responsive";
 import React from "react";
+import Measure from 'react-measure';
+import Masonry from "react-responsive-masonry";
 
-export type LayoutGridProps<T> = {
+export type LayoutGridProps<T> = Omit<React.HTMLProps<HTMLDivElement>, "children"> & {
     items?: T[];
     children?: (item: T) => React.ReactNode;
+    minWidthItem?: number;
 }
 
-export default function LayoutGrid<T>({ items, children }: LayoutGridProps<T>) {
-    const isDesktop = useDesktopMediaQuery();
-    const isTablet = useTabletMediaQuery();
-
-    let column;
-
-    if (isDesktop) {
-        column = 4;
-    } else if (isTablet) {
-        column = 3;
-    } else {
-        column = 2
-    }
-
-    const generateNoteColumn = () => {
-        let tempCurrentCol = 0;
-        let tempCol: T[][] = new Array(column).fill(null);
-
-        items?.forEach((note) => {
-            if (tempCurrentCol >= column) {
-                tempCurrentCol = 0;
-            }
-
-            tempCol[tempCurrentCol] = tempCol[tempCurrentCol] ? [...tempCol[tempCurrentCol], note] : [note]
-
-            tempCurrentCol = tempCurrentCol + 1;
-        });
-        return tempCol;
-    }
+export default function LayoutGrid<T>({ items, children, minWidthItem = 200, className, ...props }: LayoutGridProps<T>) {
+    const [columns, setColumns] = React.useState(3);
 
     return (
-        <div className="w-full flex gap-3">
-            {generateNoteColumn()?.map((columns, i) =>
-            (
-                <div className="flex flex-1 flex-col gap-3" key={i}>
-                    {columns?.map((item) => {
-                        if (children) return children(item);
-                        // if (item.type === "folder") return <CardFolder {...item} key={item.id} />
-                        // return <CardNote note={item} key={item.id} />
-                    })}
+        <Measure client onResize={(contentRect) => {
+            const width = contentRect.client?.width || 1;
+            setColumns(Math.floor(width / minWidthItem));
+        }}>
+            {({ measureRef }) => (
+                <div ref={measureRef} {...props} className={`w-full ${className}`}>
+                    <Masonry columnsCount={columns} gutter="10px">
+                        {items?.map((item, i) => (
+                            <Measure key={i}>
+                                {({ measureRef }) => (
+                                    <div ref={measureRef}>
+                                        {children && children(item)}
+                                    </div>
+                                )}
+                            </Measure>
+                        ))}
+                    </Masonry>
                 </div>
-            )
             )}
-        </div>
+        </Measure>
     )
 }

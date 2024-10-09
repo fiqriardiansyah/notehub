@@ -21,7 +21,9 @@ api.interceptors.request.use(
       ...config,
     };
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error)
+  }
 );
 
 api.interceptors.response.use(
@@ -30,9 +32,7 @@ api.interceptors.response.use(
   },
   (error) => {
     const baseResponse = error?.response?.data as BaseResponse<any>;
-    return Promise.reject(
-      baseResponse?.error ? Error(baseResponse?.error) : error
-    );
+    return Promise.reject(baseResponse?.error ? Error(baseResponse?.error?.message) : error)
   }
 );
 

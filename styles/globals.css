@@ -61,14 +61,14 @@
 
 @layer {
   body {
-    @apply w-screen overflow-x-hidden;
+    @apply w-screen overflow-x-hidden bg-white;
   }
 
   .container-read {
     @apply mx-auto px-4 sm:px-6 lg:px-8 max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl;
   }
   .container-custom {
-    @apply container mx-auto px-4 md:px-10 lg:px-16 xl:px-20;
+    @apply mx-auto px-4 md:px-10 lg:px-4 xl:px-4 2xl:px-4;
   }
   .title {
     @apply font-semibold text-black text-lg capitalize;

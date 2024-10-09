@@ -30,15 +30,21 @@ const menus: ItemProps["item"][] = [
 
 type OtherItemProps = {
     query?: string;
+    render?: (items: ItemProps["item"][]) => any;
 }
 
-export default function OtherItem({ query }: OtherItemProps) {
+export default function OtherItem({ query, render }: OtherItemProps) {
     const filter = menus.filter((m) => m?.title?.toLocaleLowerCase().includes(query?.toLocaleLowerCase() || ""));
     if (!filter.length) return null;
+
+    if (render) {
+        return render(filter);
+    }
+
     return (
         <>
             <h1 className="mt-7">Other suggestion</h1>
-            <div className="grid mt-2 w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-1 gap-2">
+            <div className="mt-2 w-full flex flex-col p-1 gap-2">
                 {filter.map((menu) => <Item key={menu?.id} item={menu} />)}
             </div>
         </>

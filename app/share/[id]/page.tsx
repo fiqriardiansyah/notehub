@@ -56,13 +56,13 @@ export default async function SharePage({ params }: Props) {
                 <p className="m-0 leading-none text-xs text-gray-500">{`Last update ${formatDate(content.updatedAt)} ${content.updatedBy ? `By ${content.updatedBy}` : ""}`}</p>
             </div>
         </div>
-        {collaborators?.length && (
+        {collaborators?.length ? (
             <div className="mt-5">
                 <h2>Collaborators</h2>
                 <div className="flex items-center">
                     <AnimatedTooltip size={40} items={collaborators as AnimatedTooltipItem[]} />
                 </div>
             </div>
-        )}
+        ) : null}
     </div>
 }

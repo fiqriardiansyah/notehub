@@ -2,6 +2,7 @@
 
 import { INITIATE_SECURE_NOTE } from "@/components/card-note/setting/initiate-secure-note";
 import { SECURE_NOTE } from "@/components/card-note/setting/secure-note";
+import { CLOSE_SIDE_PANEL, OPEN_SIDE_PANEL } from "@/components/layout/side-panel";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -9,8 +10,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { WriteContext, WriteContextType } from "@/context/write";
+import { fireBridgeEvent } from "@/hooks/use-bridge-event";
 import useSecureNote from "@/hooks/use-secure-note";
-import useSidePage from "@/hooks/use-side-page";
 import { Note } from "@/models/note";
 import { motion } from "framer-motion";
 import { LockKeyhole, LockKeyholeOpen } from "lucide-react";
@@ -24,17 +25,16 @@ export default function SecureNote({ note }: SecureNoteProps) {
   const { dataNote, setDataNote } = React.useContext(
     WriteContext
   ) as WriteContextType;
-  const [setSidePage, resetSidePage] = useSidePage();
 
   const { checkHasPassNote } = useSecureNote({
     onInitiateSecure() {
       setDataNote((prev) => ({ ...(prev || {}), isSecure: true }));
-      resetSidePage();
+      fireBridgeEvent(CLOSE_SIDE_PANEL, null);
     },
     onSecure(isPasswordCorrect) {
       if (isPasswordCorrect) {
         setDataNote((prev) => ({ ...(prev || {}), isSecure: true }));
-        resetSidePage();
+        fireBridgeEvent(CLOSE_SIDE_PANEL, null);
       }
     },
   });
@@ -49,11 +49,14 @@ export default function SecureNote({ note }: SecureNoteProps) {
     }
     checkHasPassNote.mutateAsync().then((isHasPassword) => {
       if (!isHasPassword) {
-        setSidePage(INITIATE_SECURE_NOTE);
+        fireBridgeEvent(OPEN_SIDE_PANEL, {
+          groundOpen: INITIATE_SECURE_NOTE
+        });
         return;
       }
-
-      setSidePage(SECURE_NOTE);
+      fireBridgeEvent(OPEN_SIDE_PANEL, {
+        groundOpen: SECURE_NOTE
+      });
     });
   };
 

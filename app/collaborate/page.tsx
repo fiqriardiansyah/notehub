@@ -3,7 +3,7 @@
 
 import chattingAnim from "@/asset/animation/chatting.json";
 import BottomBar from "@/components/navigation-bar/bottom-bar";
-import TopBar from "@/components/navigation-bar/top-bar";
+import TopBar from "@/components/navigation-bar/top-bar/mobile";
 import StateRender from "@/components/state-render";
 import collabService from "@/service/collab";
 import { useMutation } from "@tanstack/react-query";
@@ -53,7 +53,7 @@ export default function CollaboratePage() {
     return (
         <>
             {renderTopNav()}
-            <div className="container-custom pb-20 min-h-screen bg-white">
+            <div className="container-custom pb-20 min-h-screen">
                 <ToolBar filterTag={filterTag} setFilterTag={setFilterTag} tags={tags} order={orderList} onClickModified={onClickModified} />
                 <div className="h-[20px]"></div>
                 <StateRender data={projectsQuery.data} isLoading={projectsQuery.isLoading}>

@@ -1,14 +1,13 @@
 "use client";
-import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { NoteProvider } from "@/context/note";
-import { CommonProvider } from "@/context/common";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { WriteProvider } from "@/context/write";
 import Overlay from "@/components/overlay";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { CommonProvider } from "@/context/common";
+import { NoteProvider } from "@/context/note";
 import { TimerProvider } from "@/context/timer";
-import { TriggerProvider } from "@/context/trigger";
+import { WriteProvider } from "@/context/write";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
 
 const client = new QueryClient();
 
@@ -22,19 +21,17 @@ export default function Provider({ children }: { children: any }) {
         options={{ showSpinner: false }}
         shallowRouting
       />
-      <TriggerProvider>
-        <CommonProvider>
-          <NoteProvider>
-            <WriteProvider>
-              <TimerProvider>
-                <Overlay>
-                  <TooltipProvider>{children}</TooltipProvider>
-                </Overlay>
-              </TimerProvider>
-            </WriteProvider>
-          </NoteProvider>
-        </CommonProvider>
-      </TriggerProvider>
+      <CommonProvider>
+        <NoteProvider>
+          <WriteProvider>
+            <TimerProvider>
+              <Overlay>
+                <TooltipProvider>{children}</TooltipProvider>
+              </Overlay>
+            </TimerProvider>
+          </WriteProvider>
+        </NoteProvider>
+      </CommonProvider>
     </QueryClientProvider>
   );
 }

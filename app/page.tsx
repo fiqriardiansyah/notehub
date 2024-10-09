@@ -1,7 +1,7 @@
 "use client";
 
 import BottomBar from "@/components/navigation-bar/bottom-bar";
-import TopBar from "@/components/navigation-bar/top-bar";
+import TopBar from "@/components/navigation-bar/top-bar/mobile";
 import Quotes from "@/components/quotes";
 import StateRender from "@/components/state-render";
 import { NoteContext, NoteContextType } from "@/context/note";
@@ -17,11 +17,13 @@ import LayoutGrid from "@/components/layout-grid";
 import SettingNoteDrawer from "@/components/setting-note-drawer";
 import ToolBar from "@/components/tool-bar";
 import ButtonToWrite from "./habits/components/button-make-habit";
+import { useMobileMediaQuery } from "@/hooks/responsive";
 
 export default function IndexPage() {
   const { note: { changesRandomId } } = React.useContext(NoteContext) as NoteContextType;
   const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
   const [filterTag, setFilterTag] = React.useState<Tag[]>([]);
+  const isMobile = useMobileMediaQuery();
 
   const itemsQuery = useQuery([noteService.getAllItems.name, orderList, changesRandomId], async () => {
     return (await noteService.getAllItems(orderList)).data.data;
@@ -51,7 +53,7 @@ export default function IndexPage() {
       {renderTopNav()}
       <div className="container-custom pb-20 min-h-screen">
         <Quotes />
-        <HabitsAlert />
+        {isMobile && <HabitsAlert />}
         <div className="h-4"></div>
         <ToolBar filterTag={filterTag} setFilterTag={setFilterTag} tags={tags} order={orderList} onClickModified={onClickModified} />
         <StateRender data={itemsQuery.data} isLoading={itemsQuery.isLoading}>

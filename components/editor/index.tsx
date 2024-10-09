@@ -1,12 +1,17 @@
+"use client"
+
 import Checklist from "@editorjs/checklist";
 import EditorJS, { ToolConstructable, ToolSettings } from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import LinkTool from "@editorjs/link";
 import List from "@editorjs/list";
+import SimpleImage from "@editorjs/image";
 import Quote from "@editorjs/quote";
 import React, { useEffect, useState } from "react";
 
-export const toolsDefault = {
+export type ToolsEditor = { [toolName: string]: ToolConstructable | ToolSettings<any> };
+
+export const toolsDefault: ToolsEditor = {
     header: {
         class: Header as any,
         inlineToolbar: true
@@ -15,9 +20,10 @@ export const toolsDefault = {
         class: List,
         inlineToolbar: true
     },
-    linkTool: {
-        class: LinkTool,
-    },
+    // linkTool: {
+    //     class: LinkTool,
+    //     inlineToolbar: true,
+    // },
     checklist: {
         class: Checklist,
         inlineToolbar: true,
@@ -25,11 +31,15 @@ export const toolsDefault = {
     quote: {
         class: Quote,
         inlineToolbar: true
-    }
+    },
+    // image: {
+    //     inlineToolbar: true,
+    //     class: SimpleImage as any,
+    // },
 }
 
 export type EditorProps = {
-    tools?: { [toolName: string]: ToolConstructable | ToolSettings<any> },
+    tools?: ToolsEditor,
     data?: any;
     editorRef?: any;
     options?: EditorJS.EditorConfig,

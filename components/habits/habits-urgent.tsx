@@ -8,7 +8,7 @@ import useSkipFirstRender from "@/hooks/use-skip-first-render";
 import { easeDefault, hexToRgba, progressCheer } from "@/lib/utils";
 import habitsService from "@/service/habits";
 import noteService from "@/service/note";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { AnimatePresence, motion } from "framer-motion";
 import { Blocks, Check, Timer } from "lucide-react";
@@ -29,6 +29,7 @@ export default function HabitsUrgent({ onChangeHabit, inPageHabits, className, .
     const prevProgressDoneCheer = React.useRef<number>();
     const [progressDoneCheer, setProgressDoneCheer] = React.useState<number>();
     const habitComplete = useHabitComplete();
+    const queryClient = useQueryClient();
 
     const getHabitsUrgent = useQuery([habitsService.getUrgentHabit.name], async () => {
         const list = (await habitsService.getUrgentHabit(1)).data.data;
@@ -58,6 +59,7 @@ export default function HabitsUrgent({ onChangeHabit, inPageHabits, className, .
             if (!habit?.id) return;
             changeTodosMutate.mutateAsync(todos).finally(() => {
                 if (onChangeHabit) onChangeHabit();
+                queryClient.refetchQueries({ queryKey: [noteService.getOneNote.name] })
             });
         }, 1000);
 

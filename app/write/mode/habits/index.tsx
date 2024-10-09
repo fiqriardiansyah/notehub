@@ -7,6 +7,7 @@ import { Note } from "@/models/note";
 import useStatusBar from "@/hooks/use-status-bar";
 import { WriteContext, WriteContextType } from "@/context/write";
 import { Info } from "lucide-react";
+import { useMobileMediaQuery } from "@/hooks/responsive";
 
 const Editor = dynamic(() => import("@/components/editor/index").then((mod) => mod.Editor),
     { ssr: false }
@@ -26,6 +27,7 @@ export default function HabitsModeEditor({ children, onSave, asEdit, note, showI
     const [freetextEditor, setFreetextEditor] = React.useState<any>(null);
     const [todos, setTodos] = React.useState<Todo[]>([]);
     const [showInfo, setShowInfo] = React.useState(true);
+    const isMobile = useMobileMediaQuery();
 
     const onSubmit = async (e: any) => {
         e.preventDefault();
@@ -59,15 +61,15 @@ export default function HabitsModeEditor({ children, onSave, asEdit, note, showI
 
     return (
         <>
-            <div className="flex w-full flex-col gap-2">
-                <Editor asEdit={asEdit} data={asEdit ? note?.description : undefined} placeholder="Description" editorRef={setFreetextEditor} />
-                <hr className="my-5" />
+            <div className="flex w-full flex-col gap-4">
+                <h1 className="text-2xl font-light mb-3 underline w-fit">Description</h1>
+                <Editor asEdit={asEdit} data={asEdit ? note?.description : undefined} placeholder="Habits Description" editorRef={setFreetextEditor} />
                 <TodoListModeEditor todos={todos} defaultTodos={note?.todos} onChange={setTodos} showInfoDefault={false} />
             </div>
             <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
                 {children}
             </form>
-            {showInfo && showInfoDefault && (
+            {showInfo && showInfoDefault && isMobile && (
                 <div className="w-full flex justify-center my-10">
                     <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">
                         <Info className="mr-2" size={14} />

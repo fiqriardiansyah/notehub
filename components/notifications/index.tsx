@@ -7,6 +7,8 @@ import CardNotif from "./card-notif";
 import themeColor from "tailwindcss/colors";
 import emptyAnim from "@/asset/animation/empty.json"
 import Lottie from "react-lottie";
+import React from "react";
+import { CommonContext, CommonContextType } from "@/context/common";
 
 const defaultOptions = {
     animationData: emptyAnim,
@@ -39,13 +41,15 @@ export const getNotificationType = (type: string) => {
 }
 
 export default function Notifications() {
+    const { common } = React.useContext(CommonContext) as CommonContextType;
     const notificationQuery = useQuery([notificationService.getAllNotif.name], async () => {
         return (await notificationService.getAllNotif(1)).data.data;
     });
 
+    if (common?.groundOpen !== NOTIFICATIONS) return null;
     return (
-        <div className="w-full h-full flex flex-col gap-6 p-3">
-            <h1 className="font-semibold">Notifications</h1>
+        <div className="w-full h-full flex flex-col gap-6">
+            <h1 className="font-semibold text-xl capitalize mb-5">Notifications</h1>
             <StateRender data={notificationQuery.data} isLoading={notificationQuery.isLoading} isError={notificationQuery.isError}>
                 <StateRender.Loading>
                     <p>Getting Notif...</p>

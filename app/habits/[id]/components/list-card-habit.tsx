@@ -1,11 +1,12 @@
 "use client"
 
-import HabitsTimer from "@/components/habits/habits-timer";
-import HabitsTodoDrawerMenu from "@/components/habits/habits-todo-drawer-menu";
 import { Todo } from "@/app/write/mode/todolist";
 import Countdown from "@/components/common/countdown";
+import HabitsTimer from "@/components/habits/habits-timer";
+import HabitsTodoDrawerMenu from "@/components/habits/habits-todo-drawer-menu";
+import { OPEN_SIDE_PANEL } from "@/components/layout/side-panel";
 import { Button } from "@/components/ui/button";
-import useSidePage from "@/hooks/use-side-page";
+import { fireBridgeEvent } from "@/hooks/use-bridge-event";
 import { easeDefault, hexToRgba, progressCheer } from "@/lib/utils";
 import { Note } from "@/models/note";
 import { AnimatePresence, motion } from "framer-motion";
@@ -27,8 +28,6 @@ export type ListCardHabitProps = {
 }
 
 export default function ListCardHabit({ todo, onCheck, progressDoneCheer, completedHabit, setTodos, noteId, onClickAttach }: ListCardHabitProps) {
-    const [setSidePage, resetSidePage] = useSidePage();
-
     const onClickCheck = (todo: Todo) => {
         return () => {
             if (completedHabit) return;
@@ -82,7 +81,10 @@ export default function ListCardHabit({ todo, onCheck, progressDoneCheer, comple
             if (onClickAttach) {
                 onClickAttach()
             }
-            setSidePage(VIEW_ATTACH_NOTE, attach);
+            fireBridgeEvent(OPEN_SIDE_PANEL, {
+                groundOpen: VIEW_ATTACH_NOTE,
+                payload: attach,
+            });
         }
     }
 

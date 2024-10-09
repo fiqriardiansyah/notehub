@@ -1,5 +1,6 @@
 "use client";
 
+import { CLOSE_SIDE_PANEL } from '@/components/layout/side-panel';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -10,8 +11,9 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Toggle } from '@/components/ui/toggle';
+import { CommonContext, CommonContextType } from '@/context/common';
 import { WriteContext, WriteContextType } from '@/context/write';
-import useSidePage from '@/hooks/use-side-page';
+import { fireBridgeEvent } from '@/hooks/use-bridge-event';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import moment, { Moment } from 'moment';
@@ -33,6 +35,7 @@ const reschedules = [
 ]
 
 export default function Scheduler() {
+    const { common } = React.useContext(CommonContext) as CommonContextType;
     const { setDataNote, dataNote } = React.useContext(WriteContext) as WriteContextType
 
     const [pickedReschedule, setPickedReschedule] = React.useState<string>();
@@ -41,7 +44,6 @@ export default function Scheduler() {
         start: "",
         end: ""
     });
-    const [, resetSidePage] = useSidePage();
 
     const isEveryDay = pickedDay.length === days.length;
 
@@ -84,7 +86,7 @@ export default function Scheduler() {
                 endTime: pickedReschedule === "day" ? pickedTime.end ? moment(pickedTime.end).format() : undefined : undefined,
             }
         }));
-        resetSidePage();
+        fireBridgeEvent(CLOSE_SIDE_PANEL, null);
     };
 
     const onDeleteSchedule = () => {
@@ -98,11 +100,12 @@ export default function Scheduler() {
 
     const hasSchedule = !!dataNote?.scheduler?.type
 
+    if (common?.groundOpen !== SCHEDULER) return null;
     return (
         <motion.div
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1, transition: { delay: .3 } }}
-            className="w-full h-full flex flex-col gap-6 p-5 md:p-0 md:w-[300px]">
+            className="w-full h-full flex flex-col gap-6">
             <h1 className="font-semibold text-xl capitalize mb-5">Schedule your habits 🔥</h1>
             {hasSchedule ? (
                 <div className="border rounded-lg flex flex-col gap-2 flex-wrap border-solid border-gray-400 w-full p-2">

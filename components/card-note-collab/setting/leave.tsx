@@ -9,7 +9,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import useBridgeTrigger from "@/context/trigger";
+import { fireBridgeEvent, useBridgeEvent } from "@/hooks/use-bridge-event";
 import useStatusBar from "@/hooks/use-status-bar";
 import { CollaborateProject } from "@/models/collab";
 import collabService from "@/service/collab";
@@ -24,18 +24,15 @@ export const LEAVE_PROJECT_FAILED = "leaveProjectFailed";
 export default function LeaveProject() {
     const [open, setOpen] = React.useState(false);
     const [collabProject, setCollabProject] = React.useState<CollaborateProject | null>(null);
-    const { onBridgeTrigger, fireBridgeTrigger } = useBridgeTrigger<CollaborateProject>();
     const [_, setStatusBar, resetStatusBar] = useStatusBar();
 
     const leaveMutate = useMutation(async (id: string) => {
         return (await collabService.leaveProject(id)).data.data;
     })
 
-    onBridgeTrigger((key: string, payload) => {
-        if (key === LEAVE_PROJECT && payload) {
-            setCollabProject(payload);
-            setOpen(true);
-        }
+    useBridgeEvent(LEAVE_PROJECT, (payload) => {
+        setCollabProject(payload);
+        setOpen(true);
     });
 
     const onOpenChange = () => {
@@ -50,7 +47,7 @@ export default function LeaveProject() {
         });
         leaveMutate.mutateAsync(collabProject?.collaborateId as string).finally(() => {
             setOpen(false);
-            fireBridgeTrigger(CLOSE_BOTTOM_SHEET, undefined);
+            fireBridgeEvent(CLOSE_BOTTOM_SHEET, undefined);
             setTimeout(() => {
                 resetStatusBar();
                 setCollabProject(null);

@@ -2,6 +2,7 @@
 
 import { EditorProps, toolsDefault } from "@/components/editor/index";
 import { WriteContext, WriteContextType } from "@/context/write";
+import { useMobileMediaQuery } from "@/hooks/responsive";
 import useStatusBar from "@/hooks/use-status-bar";
 import { Note } from "@/models/note";
 import { Info } from "lucide-react";
@@ -23,6 +24,7 @@ export default function FreetextModeEditor({ onSave, children, showInfoDefault =
     const [_, setStatusBar, reset] = useStatusBar();
     const [freetextEditor, setFreetextEditor] = React.useState<any>(null);
     const [showInfo, setShowInfo] = React.useState(true);
+    const isMobile = useMobileMediaQuery();
 
     const onSubmit = async (e: any) => {
         e.preventDefault();
@@ -54,11 +56,12 @@ export default function FreetextModeEditor({ onSave, children, showInfoDefault =
 
     return (
         <>
+            <h1 className="text-2xl font-light underline mb-2 w-fit">Content</h1>
             <Editor editorRef={setFreetextEditor} tools={toolsDefault} {...props} />
             <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
                 {children}
             </form>
-            {showInfoDefault && (
+            {showInfoDefault && isMobile && (
                 <div className="w-full flex justify-center my-10">
                     {showInfo && (
                         <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">

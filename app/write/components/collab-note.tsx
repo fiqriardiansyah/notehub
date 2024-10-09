@@ -2,13 +2,14 @@
 
 import { COLLABS_NOTE_GROUND } from "@/components/card-note/setting/collabs";
 import CollabsList from "@/components/common/collabs-list";
+import { OPEN_SIDE_PANEL } from "@/components/layout/side-panel";
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import useSidePage from "@/hooks/use-side-page";
+import { fireBridgeEvent } from "@/hooks/use-bridge-event";
 import { Note } from "@/models/note";
 import { Blocks } from "lucide-react";
 
@@ -18,17 +19,18 @@ type CollabNoteProps = {
 
 export default function CollabNote({ note }: CollabNoteProps) {
 
-    const [setSidePage] = useSidePage();
-
-    const onClickLock = () => {
-        setSidePage(COLLABS_NOTE_GROUND, note);
+    const onClick = () => {
+        fireBridgeEvent(OPEN_SIDE_PANEL, {
+            groundOpen: COLLABS_NOTE_GROUND,
+            payload: note,
+        })
     };
 
     return (
         <Tooltip>
             <TooltipTrigger asChild>
                 <Button
-                    onClick={onClickLock}
+                    onClick={onClick}
                     size="icon"
                     variant="ghost"
                     className="relative"

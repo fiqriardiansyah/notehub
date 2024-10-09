@@ -27,7 +27,7 @@ export default function TodolistCardNote({ note, maxItemShow, canInteract = true
         return (await noteService.changeTodos({ noteId: note.id!, todos })).data.data;
     });
 
-    const getOnlyTodos = useQuery([noteService.getOnlyTodos.name], async () => {
+    const getOnlyTodos = useQuery([noteService.getOnlyTodos.name, note?.id], async () => {
         return (await noteService.getOnlyTodos(note.id as string)).data.data;
     }, {
         onSuccess(data) {

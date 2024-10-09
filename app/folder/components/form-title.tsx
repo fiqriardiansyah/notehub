@@ -63,7 +63,7 @@ export default function FormTitle({ onDiscard, title, setEdit, refetch }: FormTi
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input type="text" placeholder="Folder name" {...field} className="focus-visible:ring-0 ring-transparent text-sm border-none bg-transparent" />
+                                <Input type="text" placeholder="Folder name" {...field} className="focus-visible:ring-0 focus:ring-0 focus:outline-none active:ring-0 ring-transparent text-sm border-none bg-transparent" />
                             </FormControl>
                         </FormItem>
                     )}

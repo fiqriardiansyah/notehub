@@ -1,6 +1,5 @@
 "use client";
 
-import { INITIATE_SECURE_NOTE } from "@/components/card-note/setting/initiate-secure-note";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,49 +7,39 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { NoteContext, NoteContextType } from "@/context/note";
-import { useDesktopMediaQuery, useMobileMediaQuery, useTabletMediaQuery } from "@/hooks/responsive";
-import useMenuNoteList, { NoteSetting } from "@/hooks/use-menu-note-list";
-import useSidePage from "@/hooks/use-side-page";
+import { useDesktopMediaQuery, useTabletMediaQuery } from "@/hooks/responsive";
 import { Note } from "@/models/note";
+import { WithFunctionalityHOCProps } from ".";
+import { ChevronRight } from "lucide-react";
+import { CommonContext, CommonContextType } from "@/context/common";
 import React from "react";
 
-export type AttachType = {
+export type AttachType = WithFunctionalityHOCProps & {
   note?: Note;
   children?: any;
 };
 
-export default function Attach({ children, note: currentNote }: AttachType) {
-  const { note, setNote } = React.useContext(NoteContext) as NoteContextType;
-  const settings = useMenuNoteList(currentNote);
-  const [setContentSidePage] = useSidePage();
+export default function Attach({ children, currentNote, note, onOpenChange, settings, handleClickSetting, isLoading }: AttachType) {
+  const { common } = React.useContext(CommonContext) as CommonContextType;
   const isTablet = useTabletMediaQuery();
   const isDesktop = useDesktopMediaQuery();
+  const [blockClick, setBlockClick] = React.useState(false);
 
-  const onOpenChange = (val: boolean) => {
-    if (!val) {
-      setNote((prev) => ({
-        ...prev,
-        note: null,
-      }));
+  React.useEffect(() => {
+    if (common?.sidePageOpen) {
+      setBlockClick(true);
     }
-  };
 
-  const isOpen = !!note?.note && note.note?.id === currentNote?.id;
+    const timeout = setTimeout(() => {
+      if (!common?.sidePageOpen) {
+        setBlockClick(false);
+      }
+    }, 400);
 
-  const handleClickSetting = (setting: NoteSetting) => {
-    return () => {
-      if (setting.type === "delete") {
-        setting.func(currentNote);
-        return;
-      }
-      if (setting.type === "secure_note") {
-        setContentSidePage(INITIATE_SECURE_NOTE);
-        return;
-      }
-      setting.func();
-    };
-  };
+    return () => clearTimeout(timeout);
+  }, [common?.sidePageOpen]);
+
+  const isOpen = !!currentNote && currentNote?.id === note?.id && !common?.sidePageOpen;
 
   if (isTablet || isDesktop) {
     return (
@@ -60,13 +49,22 @@ export default function Attach({ children, note: currentNote }: AttachType) {
           <DropdownMenuGroup>
             {settings?.map((Setting) => (
               <DropdownMenuItem
-                onClick={handleClickSetting(Setting)}
+                onSelect={(e) => {
+                  e.preventDefault();
+                  if (blockClick) return;
+                  handleClickSetting(Setting)();
+                }}
+                disabled={isLoading()}
+                loading={isLoading(Setting)}
                 key={Setting.text}
                 className="cursor-pointer"
                 variant={Setting.danger ? "danger" : null}
               >
-                <Setting.icon className="mr-2 h-4 w-4" />
-                <span>{Setting.text}</span>
+                <div className="flex items-center gap-3 flex-1">
+                  <Setting.icon />
+                  {Setting.text}
+                </div>
+                {Setting?.rightElement ? Setting?.rightElement : <ChevronRight />}
               </DropdownMenuItem>
             ))}
           </DropdownMenuGroup>

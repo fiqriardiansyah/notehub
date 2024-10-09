@@ -18,6 +18,7 @@ import { WriteContext, WriteContextType } from "@/context/write";
 import { Note } from "@/models/note";
 import { Timer } from "@/models/habits";
 import AsView from "./as-view";
+import { useMobileMediaQuery } from "@/hooks/responsive";
 
 export type Todo = {
     id: string;
@@ -46,6 +47,7 @@ const TodoListModeEditor = ({
     const [list, setList] = React.useState<Todo[]>(() => todos);
     const [str, setStr] = React.useState("");
     const [showInfo, setShowInfo] = React.useState(true);
+    const isMobile = useMobileMediaQuery();
 
     React.useEffect(() => {
         if (defaultTodos) {
@@ -125,7 +127,7 @@ const TodoListModeEditor = ({
 
     return (
         <>
-            <div className="container-custom flex flex-col gap-3">
+            <div className="flex flex-col gap-3">
                 <AnimatePresence>
                     {list?.map((item) => (
                         <motion.div animate={{ height: 'auto' }} initial={{ height: 0 }} exit={{ height: 0, opacity: 0 }} key={item.id} className="flex items-start overflow-hidden justify-between">
@@ -153,11 +155,11 @@ const TodoListModeEditor = ({
                 </AnimatePresence>
                 {!onlyCanCheck && (
                     <form onSubmit={onAddTodo} className="flex items-center gap-4">
-                        <Input value={str} onChange={onChangeStr} name="content" placeholder="Type anything here..." className="border-none bg-transparent focus-visible:!ring-0 focus-visible:!ring-offset-0 outline-none" />
+                        <Input value={str} onChange={onChangeStr} name="content" placeholder="Type anything here..." className="border-none bg-transparent !px-0 focus-visible:!ring-0 focus-visible:!ring-offset-0 outline-none" />
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <button type="submit" className="">
-                                    <Plus />
+                                    <Plus size={16} />
                                 </button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -170,7 +172,7 @@ const TodoListModeEditor = ({
             <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
                 {children}
             </form>
-            {!onlyCanCheck && (
+            {!onlyCanCheck && isMobile && (
                 <div className="w-full flex justify-center my-10">
                     {showInfo && showInfoDefault && (
                         <p onClick={() => setShowInfo(false)} className="bg-primary rounded-full p-1 pr-2 text-white w-fit flex items-center text-xs text-center">

@@ -45,7 +45,7 @@ export default function ToolsBar({ save, isLoading, excludeSettings, currentNote
     const showSchedule = dataNote.modeWrite === "habits";
 
     return (
-        <div className="w-full bg-white p-1 h-full flex items-center justify-evenly gap-2 container-custom">
+        <div className="w-full bg-white p-1 h-full flex items-center justify-evenly gap-2 container-custom lg:rounded-full">
             <AnimatePresence mode="popLayout" >
                 {showCollab && (
                     <AnimateItem key="collabs">

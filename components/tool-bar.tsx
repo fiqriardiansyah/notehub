@@ -73,16 +73,16 @@ export default function ToolBar({ rightAddition, onClickModified, order, tags, s
           </button>
         </div>
       </div>
-      <div className="overflow-x-hidden">
-        {removedDuplicateTags?.length ? (
-          <Slider {...settings}>
-            {removedDuplicateTags?.map((tag) => (
-              <motion.div key={tag.id + "visible"} animate={{ scale: 1, width: 'auto' }} exit={{ scale: 0, width: 0 }} className="pr-2 py-2">
-                <Chip onClick={onClickTag(tag)} pick={!!filterTag?.find((t) => t.id === tag.id)} tag={tag} withTooltip={false} />
-              </motion.div>
-            ))}
-          </Slider>
-        ) : null}
+      <div className="overflow-x-auto flex gap-1 flex-nowrap">
+        {/* {removedDuplicateTags?.length ? ( */}
+        {/* <Slider {...settings} className="!w-full"> */}
+        {removedDuplicateTags?.map((tag) => (
+          <motion.div key={tag.id + "visible"} animate={{ scale: 1, width: 'auto' }} exit={{ scale: 0, width: 0 }} className="pr-2 py-2">
+            <Chip onClick={onClickTag(tag)} pick={!!filterTag?.find((t) => t.id === tag.id)} tag={tag} withTooltip={false} />
+          </motion.div>
+        ))}
+        {/* // </Slider>
+        // ) : null} */}
       </div>
     </div>
   );

@@ -1,20 +1,19 @@
 "use client";
 
-import { COLLABS_NOTE_GROUND } from "@/components/card-note/setting/collabs";
-import OpenSecureNote from "@/components/open-secure-note";
 import { BUTTON_SUCCESS_ANIMATION_TRIGGER } from "@/components/animation/button-success";
+import { COLLABS_NOTE_GROUND } from "@/components/card-note/setting/collabs";
 import CollabsList from "@/components/common/collabs-list";
 import ResponsiveTagsListed from "@/components/common/tag-listed";
+import OpenSecureNote from "@/components/open-secure-note";
 import StateRender from "@/components/state-render";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import { NoteContext, NoteContextType } from "@/context/note";
 import { WriteContext, WriteContextType, WriteStateType } from "@/context/write";
-import useSidePage from "@/hooks/use-side-page";
 import useStatusBar from "@/hooks/use-status-bar";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
-import { shortCut } from "@/lib/shortcut";
 import { easeDefault, formatDate } from "@/lib/utils";
 import { CreateNote } from "@/models/note";
 import ShowedTags from "@/module/tags/showed-tags";
@@ -31,7 +30,8 @@ import { useParams } from "next/navigation";
 import React, { useRef } from "react";
 import ToolsBar, { ToolsType } from "../components/tool-bar";
 import TodoListModeEditor, { Todo } from "../mode/todolist";
-import { NoteContext, NoteContextType } from "@/context/note";
+import { OPEN_SIDE_PANEL } from "@/components/layout/side-panel";
+import { fireBridgeEvent } from "@/hooks/use-bridge-event";
 
 const FreetextModeEditor = dynamic(() => import("../mode/freetext").then((mod) => mod.default),
     { ssr: false }
@@ -45,15 +45,13 @@ export default function Write() {
     const router = useRouter();
     const { id } = useParams();
 
-    const titleRef = useRef<HTMLInputElement | null>(null);
-    const [_, setStatusBar] = useStatusBar();
+    const [_, setStatusBar, resetStatusBar] = useStatusBar();
     const { dataNote, setDataNote } = React.useContext(WriteContext) as WriteContextType;
     const { generateChangesId } = React.useContext(NoteContext) as NoteContextType;
     const isNavHide = useToggleHideNav();
     const saveBtnRef = React.useRef<HTMLButtonElement>(null);
     const [todos, setTodos] = React.useState<Todo[]>([]);
     const { toast } = useToast();
-    const [setSidePage] = useSidePage();
 
     const noteDetailQuery = useMutation(["get-note", id], async () => {
         return (await noteService.getOneNote(id as string)).data.data
@@ -114,7 +112,7 @@ export default function Write() {
 
     const saveWrite = async (restData: any) => {
         let data = {
-            title: titleRef.current?.value,
+            title: dataNote?.title,
             type: dataNote.modeWrite,
             isSecure: dataNote?.isSecure,
             tags: dataNote?.tags,
@@ -122,6 +120,7 @@ export default function Write() {
         } as CreateNote;
 
         try {
+            resetStatusBar();
             validation(noteValidation.CREATE, data as any);
             saveMutate.mutateAsync(data as CreateNote).then(() => {
                 setDataNote({ modeWrite: dataNote.modeWrite });
@@ -158,10 +157,11 @@ export default function Write() {
     };
 
     const onClickListCollabAccount = () => {
-        setSidePage(COLLABS_NOTE_GROUND, noteDetailQuery.data);
+        fireBridgeEvent(OPEN_SIDE_PANEL, {
+            groundOpen: COLLABS_NOTE_GROUND,
+            payload: noteDetailQuery.data,
+        });
     }
-
-    shortCut.saveWrite(onSaveClick);
 
     const excludeTools = () => {
         let excludesSetting = ["folder", "mode"];
@@ -180,10 +180,11 @@ export default function Write() {
 
     const asViewer = noteDetailQuery.data?.role === "viewer";
     const isOwner = !noteDetailQuery.data?.role;
+    const isSecure = (isSecureNoteQuery.data && !dataNote?.authorized)
 
     return (
         <>
-            <div className="container-custom pb-20 min-h-screen bg-white">
+            <div className="container-custom pb-20 min-h-screen bg-white relative">
                 <motion.div style={{ pointerEvents: isNavHide ? "none" : "auto" }} animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-20">
                     <div className="flex flex-row items-center flex-1">
                         <div className="mr-3">
@@ -191,18 +192,7 @@ export default function Write() {
                                 <ChevronLeft />
                             </Button>
                         </div>
-                        {noteDetailQuery.isLoading ? <p>Getting Detail...</p> : (
-                            <input
-                                disabled={asViewer}
-                                value={dataNote?.title}
-                                onChange={onChangeTitle}
-                                autoFocus={true}
-                                ref={titleRef}
-                                type="text"
-                                placeholder="Title ..."
-                                className="text-2xl text-gray-500 w-full font-medium border-none focus:outline-none outline-none bg-transparent"
-                            />
-                        )}
+                        <h1>Detail {dataNote?.title}</h1>
                     </div>
                 </motion.div>
                 {noteDetailQuery.data?.folderName && isOwner && (
@@ -219,13 +209,33 @@ export default function Write() {
                         </BreadcrumbList>
                     </Breadcrumb>
                 )}
-                {isOwner ? <ShowedTags className="my-5" /> : <div className="my-4"><ResponsiveTagsListed tags={noteDetailQuery.data?.tags} size={16} /></div>}
                 <StateRender data={noteDetailQuery.data || isSecureNoteQuery.data} isLoading={noteDetailQuery.isLoading || isSecureNoteQuery.isLoading}>
                     <StateRender.Data>
-                        {(isSecureNoteQuery.data && !dataNote?.authorized) ? (
-                            <OpenSecureNote refetch={noteDetailQuery.mutate} />
+                        {isSecure ? (
+                            <div className="flex items-center min-h-[400px] w-full">
+                                <OpenSecureNote refetch={noteDetailQuery.mutate} />
+                            </div>
                         ) : (
-                            <div className="w-full overflow-x-hidden container-custom">
+                            <div className="w-full container-read overflow-x-hidden lg:!px-10">
+                                <input
+                                    disabled={asViewer}
+                                    value={dataNote?.title}
+                                    onChange={onChangeTitle}
+                                    autoFocus={true}
+                                    type="text"
+                                    placeholder="Title ..."
+                                    className="text-2xl w-full font-medium border-none focus:outline-none outline-none bg-transparent mb-8"
+                                />
+                                {dataNote.tags?.length ? (
+                                    <div className="">
+                                        <h1 className="text-2xl font-light mb-3 underline w-fit">Tags</h1>
+                                        {isOwner ?
+                                            <ShowedTags className="my-5 sm:!flex-wrap" /> :
+                                            <div className="my-4">
+                                                <ResponsiveTagsListed tags={noteDetailQuery.data?.tags} size={16} />
+                                            </div>}
+                                    </div>
+                                ) : null}
                                 {dataNote.modeWrite === "freetext" &&
                                     <FreetextModeEditor showInfoDefault={false} options={{ readOnly: asViewer }} data={noteDetailQuery.data?.note} asEdit onSave={saveWrite}>
                                         <button ref={saveBtnRef} type="submit">submit</button>
@@ -254,14 +264,16 @@ export default function Write() {
                         )}
                     </StateRender.Data>
                     <StateRender.Loading>
-                        <Skeleton className="w-[300px] h-[50px]" />
-                        <Skeleton className="w-[350px] h-[20px] mt-6" />
-                        <Skeleton className="w-[200px] h-[20px] mt-3" />
+                        <div className="container-read">
+                            <Skeleton className="w-[300px] h-[50px]" />
+                            <Skeleton className="w-[350px] h-[20px] mt-6" />
+                            <Skeleton className="w-[200px] h-[20px] mt-3" />
+                        </div>
                     </StateRender.Loading>
                 </StateRender>
             </div>
-            {!noteDetailQuery?.isLoading && noteDetailQuery.data?.role !== "viewer" && (
-                <div className="flex justify-center fixed z-40 bottom-0 left-0 w-screen">
+            {!noteDetailQuery?.isLoading && noteDetailQuery.data?.role !== "viewer" && !isSecure && (
+                <div className="flex justify-center fixed sm:absolute z-40 sm:bottom-2 bottom-0 left-0 sm:left-1/2 transform sm:-translate-x-1/2 w-full sm:w-fit sm:bg-white sm:rounded-full sm:shadow-xl">
                     <ToolsBar
                         currentNote={noteDetailQuery.data}
                         excludeSettings={excludeTools()}

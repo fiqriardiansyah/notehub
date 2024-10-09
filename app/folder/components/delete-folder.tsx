@@ -9,7 +9,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
+import { fireBridgeEvent, useBridgeEvent } from "@/hooks/use-bridge-event";
 import useStatusBar from "@/hooks/use-status-bar";
 import { pause } from "@/lib/utils";
 import { DetailFolder } from "@/models/note";
@@ -17,7 +17,7 @@ import noteService from "@/service/note";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 
-export const REMOVE_FOLDER_EVENT = "removeFolderEvent";
+export const REMOVE_FOLDER_EVENT_DIALOG = "removeFolderEvent";
 export const REMOVE_FOLDER_EVENT_SUCCESS = "removeFolderEventSuccess";
 export const REMOVE_FOLDER_EVENT_FAILED = "removeFolderEventFailed";
 
@@ -28,63 +28,42 @@ export default function DialogDeleteFolderGround() {
     const [_, setStatusBar, resetStatusBar] = useStatusBar();
     const queryClient = useQueryClient();
 
-    const deleteMutate = useMutation(
-        async (id: any) => {
-            await pause(4);
-            return (await noteService.deleteFolder(id)).data.data;
-        },
-        {
-            onError(error: any) {
-                toast({
-                    title: "Error",
-                    description: error?.message,
-                    variant: "destructive",
-                });
-            },
-        }
-    );
+    const deleteMutate = useMutation(async (id: any) => {
+        await pause(1);
+        return (await noteService.deleteFolder(id)).data.data;
+    });
 
-    const listener = (e?: { detail: DetailFolder }) => {
-        setDetailFolder(e?.detail);
+    const toggleOpen = () => {
         setOpen((prev) => !prev);
-    };
+    }
 
-    React.useEffect(() => {
-        window.addEventListener(REMOVE_FOLDER_EVENT, listener as any);
-        return () => {
-            window.removeEventListener(REMOVE_FOLDER_EVENT, listener as any);
-        };
-    }, []);
+    useBridgeEvent(REMOVE_FOLDER_EVENT_DIALOG, (payload) => {
+        setDetailFolder(payload);
+        toggleOpen();
+    });
 
-    const onClickContinue = () => {
-        listener();
+    const onClickContinue = async () => {
+        if (deleteMutate.isLoading) return;
+        toggleOpen();
         setStatusBar({
             type: "loading",
             show: true,
             message: `Deleting Folder ${detailFolder?.folder?.title}...`,
         });
-        deleteMutate
-            .mutateAsync(detailFolder?.folder?.id)
-            .then(() => {
-                window.dispatchEvent(new CustomEvent(REMOVE_FOLDER_EVENT_SUCCESS, { detail: detailFolder }))
-            })
-            .catch((e: any) => {
-                window.dispatchEvent(new CustomEvent(REMOVE_FOLDER_EVENT_FAILED, { detail: e?.message }));
-                setStatusBar({
-                    type: "danger",
-                    show: true,
-                    message: e?.message,
-                });
-            })
-            .finally(() => {
-                setTimeout(resetStatusBar, 500);
-                queryClient.refetchQueries();
-            });
+
+        try {
+            await deleteMutate.mutateAsync(detailFolder?.folder?.id);
+            fireBridgeEvent(REMOVE_FOLDER_EVENT_SUCCESS, detailFolder);
+        } catch (e: any) {
+            fireBridgeEvent(REMOVE_FOLDER_EVENT_FAILED, e?.message);
+        }
+        resetStatusBar();
+        queryClient.refetchQueries();
         setDetailFolder(undefined);
     };
 
     return (
-        <AlertDialog open={open} onOpenChange={listener as any}>
+        <AlertDialog open={open} onOpenChange={toggleOpen}>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -94,7 +73,7 @@ export default function DialogDeleteFolderGround() {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="flex flex-row items-center gap-3 justify-end">
-                    <Button variant="ghost" onClick={listener as any}>
+                    <Button variant="ghost" onClick={toggleOpen}>
                         Cancel
                     </Button>
                     <Button variant="destructive" onClick={onClickContinue}>

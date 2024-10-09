@@ -1,6 +1,6 @@
 "use client";
 
-import { MODE_WRITE } from "@/app/write/components/mode-write";
+import { MODE_WRITE, ModeWriteType } from "@/app/write/components/mode-write";
 import { SearchReturnType } from "@/service/search";
 import { Blocks } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
@@ -12,15 +12,20 @@ export type ItemProps = {
         href?: string;
         icon?: any;
         onClick?: () => void;
-    }
+    };
+    hasClicked?: () => void;
+    render?: (item: ItemProps["item"], onClick: () => void, type: ModeWriteType) => any;
 }
 
-export default function Item({ item }: ItemProps) {
+export default function Item({ item, hasClicked, render }: ItemProps) {
     const router = useRouter();
 
     const Type = MODE_WRITE.find((m) => m.mode === item?.type)!
 
     const onClick = () => {
+        if (hasClicked) {
+            hasClicked();
+        }
         if (item?.isMenu) {
             if (item?.href) {
                 router.push(item.href);
@@ -32,6 +37,10 @@ export default function Item({ item }: ItemProps) {
             return;
         }
         router.push(`/write/${item?.id}`);
+    };
+
+    if (render) {
+        return render(item, onClick, Type)
     }
 
     if (item?.isMenu) {
@@ -46,7 +55,7 @@ export default function Item({ item }: ItemProps) {
         )
     }
 
-    return <button onClick={onClick} className="rounded p-1 flex flex-col line-clamp-1 hover:bg-gray-100 bg-gray-50">
+    return <button onClick={onClick} className="rounded p-1 flex flex-col line-clamp-1 hover:bg-gray-100">
         {!item?.isOwner && (
             <div className="flex items-center gap-2 mb-2">
                 <Image title={item?.name || ""} height={25} width={25} alt={item?.name || ""}

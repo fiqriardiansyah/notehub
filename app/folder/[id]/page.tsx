@@ -1,28 +1,29 @@
 "use client";
 
 import CardNote from "@/components/card-note";
+import { REMOVE_FOLDER_EVENT_DIALOG, REMOVE_FOLDER_EVENT_FAILED, REMOVE_FOLDER_EVENT_SUCCESS } from "@/app/folder/components/delete-folder";
 import LayoutGrid from "@/components/layout-grid";
-import { emitterPickNotes, PICK_NOTES, PICK_NOTES_SUBMIT, usePickNotes } from "@/components/pick-notes";
+import { CLOSE_SIDE_PANEL, OPEN_SIDE_PANEL } from "@/components/layout/side-panel";
+import { PICK_NOTES, PICK_NOTES_SUBMIT, usePickNotes } from "@/components/pick-notes";
 import SettingNoteDrawer from "@/components/setting-note-drawer";
-import { REMOVE_FOLDER_EVENT, REMOVE_FOLDER_EVENT_SUCCESS } from "@/components/card-note/setting/delete-folder";
-import ToolBar from "@/components/tool-bar";
 import StateRender from "@/components/state-render";
+import ToolBar from "@/components/tool-bar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import useSidePage from "@/hooks/use-side-page";
+import { NoteContext, NoteContextType } from "@/context/note";
+import { fireBridgeEvent, useBridgeEvent } from "@/hooks/use-bridge-event";
 import useStatusBar from "@/hooks/use-status-bar";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { easeDefault, pause } from "@/lib/utils";
 import { DetailFolder, Note, Tag } from "@/models/note";
 import noteService from "@/service/note";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ChevronLeft, Pencil, Plus, Trash } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
 import { useParams } from "next/navigation";
 import React from "react";
 import FormTitle from "../components/form-title";
-import { NoteContext, NoteContextType } from "@/context/note";
 
 export default function FolderPage() {
     const { id } = useParams();
@@ -34,7 +35,6 @@ export default function FolderPage() {
         isEdit: false,
         tempTitle: ""
     });
-    const [setSidePage, resetSidePage] = useSidePage();
     const pickNotes = usePickNotes();
     const [_, setStatusBar] = useStatusBar();
     const isNavHide = useToggleHideNav();
@@ -71,37 +71,32 @@ export default function FolderPage() {
     }
 
     const onClickAddNotes = () => {
-        setSidePage(PICK_NOTES);
+        fireBridgeEvent(OPEN_SIDE_PANEL, {
+            groundOpen: PICK_NOTES,
+        });
     }
 
-    React.useEffect(() => {
-        const handleSubmitPickNote = (pickedNotes: Note[]) => {
-            resetSidePage();
-            if (addNoteToFolderMutate.isLoading) return;
-            pickNotes.hideNotes(pickedNotes);
-            addNoteToFolderMutate.mutateAsync(pickedNotes.map((n) => n.id)).then(() => {
-                detailFolderQuery.refetch();
-                pickNotes.notesQuery.refetch();
-                pickNotes.resetPickedNotes();
-                pickNotes.hideNotes([]);
-                generateChangesId();
-            }).catch((e: any) => {
-                pickNotes.hideNotes([]);
-                pickNotes.setPickedNotes(pickedNotes);
-                setStatusBar({
-                    type: "danger",
-                    show: true,
-                    message: e?.message,
-                });
+    useBridgeEvent(PICK_NOTES_SUBMIT, (pickedNotes: Note[]) => {
+        fireBridgeEvent(CLOSE_SIDE_PANEL, null);
+
+        if (addNoteToFolderMutate.isLoading) return;
+        pickNotes.hideNotes(pickedNotes);
+        addNoteToFolderMutate.mutateAsync(pickedNotes.map((n) => n.id)).then(() => {
+            detailFolderQuery.refetch();
+            pickNotes.notesQuery.refetch();
+            pickNotes.resetPickedNotes();
+            pickNotes.hideNotes([]);
+            generateChangesId();
+        }).catch((e: any) => {
+            pickNotes.hideNotes([]);
+            pickNotes.setPickedNotes(pickedNotes);
+            setStatusBar({
+                type: "danger",
+                show: true,
+                message: e?.message,
             });
-        };
-
-        emitterPickNotes.on(PICK_NOTES_SUBMIT, handleSubmitPickNote);
-
-        return () => {
-            emitterPickNotes.off(PICK_NOTES_SUBMIT, handleSubmitPickNote);
-        };
-    }, []);
+        });
+    })
 
     const notes = () => {
         if (addNoteToFolderMutate.isLoading || detailFolderQuery.isLoading) {
@@ -119,24 +114,30 @@ export default function FolderPage() {
     }
 
     const onClickDelete = () => {
-        window.dispatchEvent(new CustomEvent(REMOVE_FOLDER_EVENT, { detail: detailFolderQuery.data }));
+        fireBridgeEvent(REMOVE_FOLDER_EVENT_DIALOG, detailFolderQuery.data)
     }
 
     const onClickModified = () => {
         setOrderList((prev) => prev === "desc" ? "asc" : "desc");
     }
 
-    React.useEffect(() => {
-        const onDeleteSuccess = (e: { detail: DetailFolder }) => {
-            router.replace("/");
-        }
+    useBridgeEvent(REMOVE_FOLDER_EVENT_SUCCESS, (payload: DetailFolder) => {
+        setStatusBar({
+            type: "success",
+            show: true,
+            message: "Folder " + payload.folder?.title + " delete success",
+            autoClose: 5,
+        });
+        router.replace("/");
+    });
 
-        window.addEventListener(REMOVE_FOLDER_EVENT_SUCCESS, onDeleteSuccess as any);
-
-        return () => {
-            window.removeEventListener(REMOVE_FOLDER_EVENT_SUCCESS, onDeleteSuccess as any);
-        }
-    }, []);
+    useBridgeEvent(REMOVE_FOLDER_EVENT_FAILED, (payload: string) => {
+        setStatusBar({
+            type: "danger",
+            show: true,
+            message: payload,
+        });
+    });
 
     const listNote = notes();
 
@@ -149,7 +150,11 @@ export default function FolderPage() {
 
     return (
         <div className="container-custom pb-20 min-h-screen bg-white">
-            <motion.div animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} style={{ pointerEvents: isNavHide ? "none" : "auto" }} className="w-full flex items-center gap-3 py-1 z-20 sticky top-0 left-0">
+            <motion.div
+                animate={{ y: isNavHide ? "-100%" : 0 }}
+                transition={{ ease: easeDefault }}
+                style={{ pointerEvents: isNavHide ? "none" : "auto" }}
+                className="w-full flex bg-white items-center gap-3 py-1 z-20 sticky top-0 left-0">
                 <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
                     <ChevronLeft />
                 </Button>

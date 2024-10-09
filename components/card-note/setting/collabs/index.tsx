@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CommonContext, CommonContextType } from '@/context/common';
+import { useBridgeEvent } from '@/hooks/use-bridge-event';
 import { InvitationData } from '@/models/collab';
 import { Note } from '@/models/note';
 import collabService from '@/service/collab';
@@ -21,7 +22,7 @@ import ListAccountInvited from './list-account-invited';
 export const COLLABS_NOTE_GROUND = "collabsNoteGround";
 
 export default function CollabsNoteGround() {
-    const { common, callbackPayload } = React.useContext(CommonContext) as CommonContextType;
+    const { common } = React.useContext(CommonContext) as CommonContextType;
     const [payload, setPayload] = React.useState<Note>();
 
     const formSchema = z.object({
@@ -71,92 +72,87 @@ export default function CollabsNoteGround() {
         });
     }
 
-    callbackPayload((nameground, pld: Note) => {
-        if (nameground === COLLABS_NOTE_GROUND) {
-            setPayload(pld);
-        }
-    });
+    useBridgeEvent(COLLABS_NOTE_GROUND, (pld: Note) => {
+        setPayload(pld);
+    })
 
-    if (common?.groundOpen === COLLABS_NOTE_GROUND) {
-        return (
-            <motion.div
-                initial={{ scale: 0.7, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1, transition: { delay: .3 } }}
-                className="w-full h-full flex flex-col gap-6 p-5 md:p-0 md:w-[300px]">
-                <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-8 w-full flex-col flex"
-                    >
+    if (common?.groundOpen !== COLLABS_NOTE_GROUND) return null;
+    return (
+        <motion.div
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1, transition: { delay: .3 } }}
+            className="w-full h-full flex flex-col gap-6">
+            <h1 className="font-semibold text-xl capitalize mb-5">Collaborate with other people</h1>
+            <Form {...form}>
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-8 w-full flex-col flex"
+                >
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>
+                                    Invite people
+                                </FormLabel>
+                                <FormControl>
+                                    <Input type="email" placeholder="Insert email user" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <div className="flex items-start gap-4">
                         <FormField
                             control={form.control}
-                            name="email"
+                            name="role"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Invite people
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input type="email" placeholder="Insert email user" {...field} />
-                                    </FormControl>
+                                <FormItem className='w-full'>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select role" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="editor">Editor</SelectItem>
+                                            <SelectItem value="viewer">Viewer</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <div className="flex items-start gap-4">
-                            <FormField
-                                control={form.control}
-                                name="role"
-                                render={({ field }) => (
-                                    <FormItem className='w-full'>
-                                        <Select onValueChange={field.onChange} value={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select role" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="editor">Editor</SelectItem>
-                                                <SelectItem value="viewer">Viewer</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <Button loading={sendInviteMutate.isLoading} type='submit'>
-                                Invite
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
-                {sendInviteMutate.isError && <p className='text-red-400 text-xs my-4'>{(sendInviteMutate.error as any)?.message}</p>}
-                <StateRender data={getInvitationsQuery.data} isLoading={getInvitationsQuery.isLoading}>
-                    <StateRender.Data>
-                        <ListAccountInvited refresh={getInvitationsQuery.refetch} invitations={getInvitationsQuery.data} />
-                    </StateRender.Data>
-                    <StateRender.Loading>
-                        <div className="flex flex-col gap-4">
-                            <Skeleton className="w-[240px] h-[40px]" />
-                            <Skeleton className="w-[200px] h-[40px]" />
-                        </div>
-                    </StateRender.Loading>
-                </StateRender>
-                <StateRender data={collabAcountQuery.data} isLoading={collabAcountQuery.isLoading}>
-                    <StateRender.Data>
-                        <ListAccountCollab refresh={collabAcountQuery.refetch} collabAccount={collabAcountQuery.data} />
-                    </StateRender.Data>
-                    <StateRender.Loading>
-                        <div className="flex flex-col gap-4">
-                            <Skeleton className="w-[240px] h-[40px]" />
-                            <Skeleton className="w-[200px] h-[40px]" />
-                        </div>
-                    </StateRender.Loading>
-                </StateRender>
-            </motion.div>
-        )
-    }
-
-    return null;
-
+                        <Button loading={sendInviteMutate.isLoading} type='submit'>
+                            Invite
+                        </Button>
+                    </div>
+                </form>
+            </Form>
+            {sendInviteMutate.isError && <p className='text-red-400 text-xs my-4'>{(sendInviteMutate.error as any)?.message}</p>}
+            <StateRender data={getInvitationsQuery.data} isLoading={getInvitationsQuery.isLoading}>
+                <StateRender.Data>
+                    <ListAccountInvited refresh={getInvitationsQuery.refetch} invitations={getInvitationsQuery.data} />
+                </StateRender.Data>
+                <StateRender.Loading>
+                    <div className="flex flex-col gap-4">
+                        <Skeleton className="w-[240px] h-[40px]" />
+                        <Skeleton className="w-[200px] h-[40px]" />
+                    </div>
+                </StateRender.Loading>
+            </StateRender>
+            <StateRender data={collabAcountQuery.data} isLoading={collabAcountQuery.isLoading}>
+                <StateRender.Data>
+                    <ListAccountCollab refresh={collabAcountQuery.refetch} collabAccount={collabAcountQuery.data} />
+                </StateRender.Data>
+                <StateRender.Loading>
+                    <div className="flex flex-col gap-4">
+                        <Skeleton className="w-[240px] h-[40px]" />
+                        <Skeleton className="w-[200px] h-[40px]" />
+                    </div>
+                </StateRender.Loading>
+            </StateRender>
+        </motion.div>
+    )
 }

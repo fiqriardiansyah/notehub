@@ -7,6 +7,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { WriteContext, WriteContextType } from "@/context/write";
+import { useMobileMediaQuery } from "@/hooks/responsive";
 import { ModeNote } from "@/models/note";
 import { AnimatePresence, motion } from "framer-motion";
 import { FileType, ListTodo, Trophy } from "lucide-react";
@@ -45,6 +46,8 @@ export default function ModeWrite() {
     const { dataNote, setDataNote } = React.useContext(WriteContext) as WriteContextType
     const [show, setShow] = React.useState(false);
 
+    const isMobile = useMobileMediaQuery();
+
     const currentMode = MODE_WRITE.find((m) => m.mode === dataNote.modeWrite)!
 
     const restMode = MODE_WRITE.filter((m) => m.mode !== currentMode?.mode)!;
@@ -68,8 +71,9 @@ export default function ModeWrite() {
                 {show && (
                     <motion.div animate={{ scale: 1 }} initial={{ scale: 0 }} exit={{ scale: 0 }} className="flex flex-col gap-2 absolute bottom-[55px] left-0">
                         {restMode?.map((M) => (
-                            <Button onClick={onClickMode(M)} key={M.mode} size="icon" variant="outline">
+                            <Button onClick={onClickMode(M)} key={M.mode} size={isMobile ? "icon" : "default"} variant="outline" className="!flex !items-center !gap-2 !rounded-full">
                                 <M.icon />
+                                {isMobile ? null : M?.mode}
                             </Button>
                         ))}
                     </motion.div>
@@ -78,8 +82,9 @@ export default function ModeWrite() {
             <Tooltip>
                 <TooltipTrigger asChild>
                     <motion.div key={currentMode.mode}>
-                        <Button onClick={onClickChange} size="icon" className="z-10">
+                        <Button onClick={onClickChange} size={isMobile ? "icon" : "default"} className="z-10 !flex !items-center !gap-2 !rounded-full">
                             <Icon />
+                            {isMobile ? null : currentMode?.mode}
                         </Button>
                     </motion.div>
                 </TooltipTrigger>

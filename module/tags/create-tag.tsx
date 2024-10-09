@@ -1,5 +1,6 @@
 "use client"
 
+import animationData from '@/asset/animation/convetti.json';
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -12,14 +13,13 @@ import { defaultIcons, pause } from "@/lib/utils";
 import { Tag } from "@/models/note";
 import noteService from "@/service/note";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { icons, MoveUp } from "lucide-react";
+import { icons } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import Lottie from "react-lottie";
 import { z } from "zod";
-import animationData from '@/asset/animation/convetti.json';
 
 const defaultOptions = {
     autoplay: true,
@@ -30,12 +30,13 @@ const defaultOptions = {
 };
 
 export type CreateTagProps = {
-    toggleCreateOpener?: () => void
+
 }
 
-export default function CreateTag({ toggleCreateOpener }: CreateTagProps) {
+export default function CreateTag({ }: CreateTagProps) {
     const [icon, setIcon] = React.useState<string>();
     const [isSuccessCreate, setIsSuccessCreate] = React.useState(false);
+    const queryClient = useQueryClient();
 
     const formSchema = z.object({
         name: z.string().min(3, {
@@ -53,9 +54,10 @@ export default function CreateTag({ toggleCreateOpener }: CreateTagProps) {
         return (await noteService.createTag(data)).data.data
     }, {
         onSuccess: async () => {
+            queryClient.invalidateQueries({ queryKey: [noteService.getTag.name] })
             setIcon(undefined);
             form.reset();
-            form.resetField("name");
+            form.setValue("name", "");
             setIsSuccessCreate(true);
             await pause(5);
             setIsSuccessCreate(false);
@@ -116,7 +118,7 @@ export default function CreateTag({ toggleCreateOpener }: CreateTagProps) {
                                             <AnimatePresence>
                                                 {icon && (
                                                     <motion.div exit={{ scale: 0, width: 0 }} animate={{ scale: 1 }} initial={{ scale: 0 }} key={icon}>
-                                                        <Button onClick={onClickIcon(undefined)} title={icon} size="icon">
+                                                        <Button title={icon} size="icon">
                                                             <Icon />
                                                         </Button>
                                                     </motion.div>
@@ -140,8 +142,8 @@ export default function CreateTag({ toggleCreateOpener }: CreateTagProps) {
                             if (ic === icon) return null;
                             return (
                                 <motion.div exit={{ scale: 0, width: 0 }} animate={{ scale: 1 }} initial={{ scale: 0 }} key={ic}>
-                                    <Button onClick={onClickIcon(ic)} title={icon} variant="outline" size="icon">
-                                        <Icon />
+                                    <Button onClick={onClickIcon(ic)} title={icon} variant="outline" size="icon-small">
+                                        <Icon size={16} />
                                     </Button>
                                 </motion.div>
                             )
@@ -149,7 +151,7 @@ export default function CreateTag({ toggleCreateOpener }: CreateTagProps) {
                     </AnimatePresence>
                 </div>
             </div>
-            <div className="w-full flex items-center gap-2 overflow-hidden h-[40px]">
+            <div className="w-full flex items-center gap-2 mt-7 overflow-hidden h-[40px]">
                 <AnimatePresence mode="popLayout">
                     {isSuccessCreate ? (
                         <motion.div key="success" exit={{ y: '100px' }} animate={{ y: '0' }} initial={{ y: '100px' }} className="flex-1">
@@ -163,11 +165,6 @@ export default function CreateTag({ toggleCreateOpener }: CreateTagProps) {
                         </motion.div>
                     )}
                 </AnimatePresence>
-                {toggleCreateOpener && (
-                    <Button onClick={toggleCreateOpener} size="icon" variant="ghost">
-                        <MoveUp />
-                    </Button>
-                )}
             </div>
         </div>
     )

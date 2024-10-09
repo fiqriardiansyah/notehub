@@ -25,6 +25,7 @@ import MonthlyHabits from "./components/monthly-habits";
 import WeeklyHabits from "./components/weekly-habits";
 import SearchHabits from "./components/search-habits";
 import RunningTimer from "@/components/habits/running-timer";
+import { Card } from "@/components/ui/card";
 
 const tabs = [
     {
@@ -106,7 +107,7 @@ export default function Habits() {
     const onGoingHabits = habitsToday.data?.length ? habitsToday.data[0]?.id : undefined;
 
     return (
-        <div className="w-screen bg-white min-h-screen pb-20">
+        <div className="w-full bg-white min-h-screen pb-20">
             <motion.div
                 style={{ pointerEvents: isNavHide ? "none" : "auto" }}
                 animate={{ y: isNavHide ? "-100%" : 0 }}
@@ -149,22 +150,26 @@ export default function Habits() {
                     <StateRender data={allHabit.data} isLoading={allHabit.isLoading}>
                         <StateRender.Data>
                             {allHabit.data?.length ? (
-                                <div className={`container-custom flex flex-col ${habitsToday.data?.length ? "mt-2 mb-16" : ""}`}>
-                                    <HabitsUrgent inPageHabits onChangeHabit={habitsToday.refetch} />
-                                    <div className="my-5">
-                                        <RunningTimer />
-                                    </div>
-                                    {habitsToday.data?.length ? <p className="text-2xl my-3 mt-5">Should Do! 💪</p> : null}
-                                    <div className="flex flex-col gap-3" >
-                                        {habitsToday.data?.map((habit, i) => (
-                                            <ListCardHabit key={habit.id} index={i} habit={habit} />
-                                        ))}
-                                    </div>
+                                <div className={`container-custom grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-3 ${habitsToday.data?.length ? "my-3" : ""}`}>
+                                    <Card className="p-2">
+                                        <HabitsUrgent inPageHabits onChangeHabit={habitsToday.refetch} />
+                                        <div className="my-5">
+                                            <RunningTimer />
+                                        </div>
+                                    </Card>
+                                    <Card className="p-2">
+                                        {habitsToday.data?.length ? <p className="text-2xl">Should Do! 💪</p> : null}
+                                        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3 mt-2" >
+                                            {habitsToday.data?.map((habit, i) => (
+                                                <ListCardHabit key={habit.id} index={i} habit={habit} />
+                                            ))}
+                                        </div>
+                                    </Card>
                                 </div>
                             ) : null}
                         </StateRender.Data>
                     </StateRender>
-                    <Tabs defaultValue={activeTab} className="w-full sticky top-0 left-0 z-20" onValueChange={onTabChange}>
+                    <Tabs defaultValue={activeTab} className="container-custom sticky top-0 left-0 z-20" onValueChange={onTabChange}>
                         <TabsList className="!w-full">
                             {tabs?.map((tab) => <TabsTrigger className="!flex-1" key={tab.value} value={tab.value}>{tab.label}</TabsTrigger>)}
                         </TabsList>

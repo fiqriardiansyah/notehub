@@ -1,50 +1,54 @@
 "use client";
 
-import { CommonContext, CommonContextType } from "@/context/common";
-import { easeDefault } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import React from "react";
-import StatusBar from "../status-bar";
-import SidePage from "./side-page";
+import { useDesktopMediaQuery, useMobileMediaQuery, useTabletMediaQuery } from "@/hooks/responsive";
+import DesktopLayout from "./desktop";
+import Dialogs from "./dialogs";
+import MobileLayout from "./mobile";
+import SidePanel from "./side-panel";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { Button } from "../ui/button";
+import { Codesandbox } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Layout({ children }: { children: any }) {
-    const { common, setCommon } = React.useContext(
-        CommonContext
-    ) as CommonContextType;
+    const session = useSession();
+    const pathname = usePathname();
 
-    const onCloseSidePage = () => {
-        setCommon((prev) => ({ ...prev, sidePageOpen: false }));
-    };
+    const isMobile = useMobileMediaQuery();
+    const isDesktop = useDesktopMediaQuery();
+    const isTablet = useTabletMediaQuery();
+
+    if (!session?.data?.user) {
+        if (pathname === "/signin") return children;
+        return (
+            <>
+                <header className="sticky top-0 left-0 z-50 bg-white w-full border-b border-solid border-gray-200">
+                    <nav className="py-2 container-custom w-full flex items-center justify-between">
+                        <div className="text-lg font-semibold flex items-center gap-1"><Codesandbox /> NoteHub</div>
+                        <Link href="/signin">
+                            <Button variant="default">
+                                Signin
+                            </Button>
+                        </Link>
+                    </nav>
+                </header>
+                <div className="w-full pb-20 pt-2">
+                    {children}
+                </div>
+            </>
+        )
+    }
 
     return (
         <>
-            <motion.div
-                animate={common?.sidePageOpen ? { left: "-90vw", scale: 0.9 } : { left: 0, scale: 1 }}
-                className="!w-screen min-h-screen z-[1] relative bg-white"
-                transition={{ ease: easeDefault }}
-            >
-                <div className="w-full sticky top-0 left-0 z-50" id="top-nav"></div>
-                <StatusBar />
+            {(isDesktop || isTablet) && <DesktopLayout>
                 {children}
-            </motion.div>
-            <AnimatePresence>
-                {common?.sidePageOpen && (
-                    <motion.div
-                        onClick={onCloseSidePage}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="w-screen h-screen fixed cursor-pointer top-0 left-0 z-[2]"
-                    />
-                )}
-            </AnimatePresence>
-            <motion.div
-                animate={common?.sidePageOpen ? { x: "10vw" } : { x: "100vw" }}
-                initial={{ x: "100vw" }}
-                className="z-[3] fixed top-0 left-0 border-l border-solid border-gray-400"
-                transition={{ ease: easeDefault }}
-            >
-                <SidePage />
-            </motion.div>
+            </DesktopLayout>}
+            {isMobile && <MobileLayout>{children}</MobileLayout>}
+            <SidePanel />
+            <Dialogs />
         </>
-    );
+    )
 }
+

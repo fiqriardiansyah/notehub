@@ -7,11 +7,11 @@ import {
     DrawerHeader,
     DrawerTitle,
 } from "@/components/ui/drawer";
+import { CommonContext, CommonContextType } from "@/context/common";
 import { NoteContext, NoteContextType } from "@/context/note";
-import useBridgeTrigger from "@/context/trigger";
 import { useMobileMediaQuery } from "@/hooks/responsive";
+import { fireBridgeEvent, useBridgeEvent } from "@/hooks/use-bridge-event";
 import useMenuNoteCollabList, { CollaborateSetting } from "@/hooks/use-menu-note-collab-list";
-import useSidePage from "@/hooks/use-side-page";
 import { CollaborateProject } from "@/models/collab";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
@@ -25,18 +25,17 @@ export type CollabBottomSheet = {
 export const CLOSE_BOTTOM_SHEET = "closeBottomSheet";
 
 export default function CollabBottomSheet({ refetch }: CollabBottomSheet) {
+    const { common } = React.useContext(CommonContext) as CommonContextType;
     const { note, setNote } = React.useContext(NoteContext) as NoteContextType;
     const collabNote = note?.note as unknown as CollaborateProject;
 
     const isMobile = useMobileMediaQuery();
     const settings = useMenuNoteCollabList(collabNote);
-    const { fireBridgeTrigger, onBridgeTrigger } = useBridgeTrigger<CollaborateProject>();
-    const [setSidePage, resetSidePage, isSidePageOpen] = useSidePage();
 
-    const isOpen = !!note?.note && !isSidePageOpen;
+    const isOpen = !!note?.note && !common?.sidePageOpen;
 
     const onOpenChange = (val: boolean) => {
-        if (isSidePageOpen) return;
+        if (common?.sidePageOpen) return;
         if (!val) {
             setNote((prev) => ({
                 ...prev,
@@ -45,17 +44,15 @@ export default function CollabBottomSheet({ refetch }: CollabBottomSheet) {
         }
     };
 
-    onBridgeTrigger((key, payload) => {
-        if (key === CLOSE_BOTTOM_SHEET) {
-            setNote((prev) => ({ ...prev, note: null }));
-            if (refetch) refetch();
-        }
+    useBridgeEvent(CLOSE_BOTTOM_SHEET, (payload) => {
+        setNote((prev) => ({ ...prev, note: null }));
+        if (refetch) refetch();
     });
 
     const handleClickSetting = (setting: CollaborateSetting) => {
         return () => {
             if (setting.type === "leave_project") {
-                fireBridgeTrigger(LEAVE_PROJECT, collabNote);
+                fireBridgeEvent(LEAVE_PROJECT, collabNote);
             }
         }
     };

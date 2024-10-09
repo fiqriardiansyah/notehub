@@ -13,6 +13,7 @@ import { GoGear } from "react-icons/go";
 import FreeTextCardNote from "./freetext";
 import Secure from "./secure";
 import TodolistCardNote from "./todolist";
+import useProcess from "@/hooks/use-process";
 
 export type CardNoteType<T> = {
   note?: T;
@@ -21,7 +22,11 @@ export type CardNoteType<T> = {
 
 export default function CardNote<T extends Note>({ note, attachMenu }: CardNoteType<T>) {
   const { note: noteContext, setNote } = React.useContext(NoteContext) as NoteContextType;
+
+  const { proceed } = useProcess(note?.id);
+
   const onClickGear = () => {
+    if (proceed) return;
     setNote((prev) => ({
       ...prev,
       note,
@@ -41,13 +46,14 @@ export default function CardNote<T extends Note>({ note, attachMenu }: CardNoteT
       style={{ opacity: !noteContext?.note ? 1 : noteContext.note.id === note?.id ? 1 : 0.3 }}
       className="bg-white rounded-xl p-3 flex flex-col gap-3 border border-solid border-gray-500"
     >
+      {proceed && <span className="text-[10px] font-medium">{proceed}</span>}
       <div className="flex w-full items-center justify-between gap-2">
         <Link href={`/write/${note?.id}`}>
           <p className="title line-clamp-1 text-base">{note?.title}</p>
         </Link>
         <div className="flex items-center gap-1">
           {attachMenu && attachMenu(note)}
-          <button onClick={onClickGear} className=" cursor-pointer bg-transparent border-none">
+          <button disabled={!!proceed} onClick={onClickGear} className=" cursor-pointer bg-transparent border-none">
             <GoGear className="text-gray-500" />
           </button>
         </div>

@@ -23,7 +23,7 @@ export default function CardNotePick({ note, isPicked, className, ...props }: Ca
     }
 
     return (
-        <button className={`rounded-xl border border-solid ${isPicked ? "border-gray-700" : "border-gray-400"} overflow-hidden relative text-start ${className}`} {...props as any}>
+        <button className={`rounded-xl w-full border border-solid ${isPicked ? "border-gray-700" : "border-gray-400"} overflow-hidden relative text-start ${className}`} {...props as any}>
             {isPicked && <Check className='bg-gray-700 text-white absolute top-0 right-0 rounded-bl p-1' size={24} />}
             <div className="bg-white p-3 flex flex-col gap-3">
                 <div className="flex w-full items-center justify-between gap-2">

@@ -24,7 +24,7 @@ export default async function RootLayout({ children }: { children: any }) {
         <title>NoteHub</title>
         <meta name="description" content="My awesome app with new App Router" />
       </head>
-      <body className={cn("font-sans antialiased", fontSans.variable)}>
+      <body style={{ pointerEvents: "auto" }} className={cn("font-sans antialiased", fontSans.variable)}>
         <SessionProvider session={session} basePath="/api/auth">
           <Provider>
             <Layout>{children}</Layout>

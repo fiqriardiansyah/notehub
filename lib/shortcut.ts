@@ -2,25 +2,14 @@
 
 import MouseTrap from "mousetrap";
 
-class ShortCut {
-  mouseTrap?: typeof MouseTrap | null = null;
-  constructor() {
+export class ShortCut {
+  static logoutKey = "ctrl+shift+q";
+  static saveWriteKey = "ctrl+shift+s";
+  static searchKey = "ctrl+k";
+
+  static shortcut(key: string = "", callback: (str: string) => void) {
     if (typeof window !== null || typeof window !== undefined) {
-      this.mouseTrap = MouseTrap;
+      MouseTrap.bind(key, () => callback(key));
     }
   }
-
-  logoutKey = "ctrl+shift+q";
-  logout(callback: (str?: string) => void) {
-    if (!this.mouseTrap?.bind) return;
-    this.mouseTrap.bind(this.logoutKey, () => callback(this.logoutKey));
-  }
-
-  saveWriteKey = "ctrl+shift+s";
-  saveWrite(callback: (str?: string) => void) {
-    if (!this.mouseTrap?.bind) return;
-    this.mouseTrap.bind(this.saveWriteKey, () => callback(this.saveWriteKey));
-  }
 }
-
-export const shortCut = new ShortCut();
