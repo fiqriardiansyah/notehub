@@ -24,7 +24,8 @@ export interface Note {
     time: number;
     blocks: any[];
     version: string;
-  }
+  };
+  userId?: string;
   type: ModeNote;
   createdAt: string;
   updatedAt: string;

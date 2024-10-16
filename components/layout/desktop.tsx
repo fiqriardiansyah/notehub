@@ -1,19 +1,33 @@
 "use client";
 
 import { CommonContext, CommonContextType } from "@/context/common";
+import { fireBridgeEvent, useBridgeEvent } from "@/hooks/use-bridge-event";
 import { cn } from "@/lib/utils";
 import React from "react";
 import SideBar from "../navigation-bar/side-bar";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
-import { ScrollArea } from "../ui/scroll-area";
-import SidePanel from "./side-panel";
 import TopBarDesktop from "../navigation-bar/top-bar/desktop";
 import StatusBar from "../status-bar";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
+import { ScrollArea } from "../ui/scroll-area";
+import HelperPanel, { HELPER_PANEL, HELPER_PANEL_EXIT, HELPER_PANEL_SET_CONTENT } from "./helper-panel";
+import SidePanel from "./side-panel";
 
 const navCollapsedSize = 4;
 
 export default function DesktopLayout({ children }: { children: any }) {
-    const { defaultLayoutResizable, setIsDesktopSidebarCollapsed, isDesktopSidebarCollapsed } = React.useContext(CommonContext) as CommonContextType;
+    const { defaultLayoutResizable, setIsDesktopSidebarCollapsed, isDesktopSidebarCollapsed, setCommon } = React.useContext(CommonContext) as CommonContextType;
+
+    useBridgeEvent(HELPER_PANEL, (payload: { data: any, content: string }) => {
+        setCommon((prev) => ({ ...prev, helperPanel: { open: true, content: payload.content } }));
+        const timeout = setTimeout(() => {
+            fireBridgeEvent(HELPER_PANEL_SET_CONTENT, payload);
+            clearTimeout(timeout);
+        }, 100);
+    });
+
+    useBridgeEvent(HELPER_PANEL_EXIT, () => {
+        setCommon((prev) => ({ ...prev, helperPanel: undefined }));
+    })
 
     return (
         <ResizablePanelGroup
@@ -53,16 +67,17 @@ export default function DesktopLayout({ children }: { children: any }) {
                 </ScrollArea>
             </ResizablePanel>
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={defaultLayoutResizable[1]} minSize={50} >
+            <ResizablePanel defaultSize={defaultLayoutResizable[1]} minSize={50} className="flex flex-col" >
                 <TopBarDesktop />
-                <ResizablePanelGroup direction="horizontal" className="!h-[92%]">
-                    <ResizablePanel defaultSize={defaultLayoutResizable[1]} minSize={60} >
+                <ResizablePanelGroup direction="horizontal" className="flex-1">
+                    <ResizablePanel defaultSize={defaultLayoutResizable[1]} minSize={40} >
                         <ScrollArea className="!h-full relative">
                             <StatusBar />
                             {children}
                         </ScrollArea>
                     </ResizablePanel>
                     <SidePanel.Desktop />
+                    <HelperPanel />
                 </ResizablePanelGroup>
             </ResizablePanel>
         </ResizablePanelGroup>

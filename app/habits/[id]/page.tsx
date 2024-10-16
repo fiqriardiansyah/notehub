@@ -30,6 +30,7 @@ import Lottie from "react-lottie";
 import CardContinueZenMode from "./components/card-continue-zen-mode";
 import HistoryCalendar from "./components/history-calendar";
 import ListCardHabit from "./components/list-card-habit";
+import { useCheeringOverlay } from "@/components/overlay/cheering";
 
 const defaultOptions = {
     loop: true,
@@ -49,6 +50,7 @@ export default function HabitDetail() {
     const habitComplete = useHabitComplete();
     const isNavHide = useToggleHideNav();
     const queryClient = useQueryClient();
+    const cheeringOverlay = useCheeringOverlay();
 
     const noteDetailQuery = useQuery([noteService.getOneNote.name, id], async () => {
         return (await noteService.getOneNote(id as string)).data.data
@@ -141,7 +143,12 @@ export default function HabitDetail() {
 
     const onFinishClick = () => {
         finishHabits.mutateAsync(id as string).then(() => {
-            habitComplete.show();
+            const { wordCongrat, randomAnimate, affirmation } = habitComplete.generateRandom();
+            cheeringOverlay.play({
+                message: <h1 className="text-white text-5xl whitespace-nowrap text-center">{wordCongrat}</h1>,
+                element: <Lottie options={{ ...defaultOptions, animationData: randomAnimate, loop: true }} height={250} width={250} />,
+                description: <span className="text-white text-sm capitalize whitespace-nowrap">{affirmation}</span>
+            });
             noteDetailQuery.refetch();
             historyQuery.refetch();
         });
@@ -241,7 +248,7 @@ export default function HabitDetail() {
                             </div>
                         )}
                         {!isFreeToday && (
-                            <div className="flex items-center justify-between gap-3 mt-4 mb-2">
+                            <div className="flex items-center gap-3 mt-4 mb-2">
                                 {!habitCompleted ? <span className="text-gray-400 text-xs ">Need to do</span> :
                                     <span className="text-green-600 text-xs flex items-center">Complete!
                                         <Lottie style={{ pointerEvents: 'none' }} options={{ ...defaultOptions, animationData: fireAnim }} height={30} width={30} />

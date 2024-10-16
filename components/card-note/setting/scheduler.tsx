@@ -2,7 +2,7 @@
 
 import { CLOSE_SIDE_PANEL } from '@/components/layout/side-panel';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import CheckboxCustom from '@/components/ui/checkbox-custom';
 import {
     Select,
     SelectContent,
@@ -148,10 +148,7 @@ export default function Scheduler() {
                     {pickedReschedule === "day" && (
                         <>
                             <div className="flex flex-col gap-2">
-                                <label htmlFor="everyday" className='text-sm font-semibold flex items-center'>
-                                    <Checkbox checked={isEveryDay} onCheckedChange={onCheckEveryDay} id="everyday" className="mr-2" />
-                                    Every Day
-                                </label>
+                                <CheckboxCustom checked={isEveryDay} onChecked={onCheckEveryDay} label="Every Day" />
                                 <div className="flex flex-wrap gap-2 w-full">
                                     {days.map((day) => (
                                         <Toggle onPressedChange={onPressDay(day)} pressed={!!pickedDay.find((i) => i === day)} key={day} size="sm" variant="default" aria-label="Toggle" className="capitalize">

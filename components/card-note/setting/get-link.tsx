@@ -3,7 +3,7 @@
 import StateRender from "@/components/state-render";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import CheckboxCustom from "@/components/ui/checkbox-custom";
 import {
     Dialog,
     DialogContent,
@@ -46,7 +46,7 @@ export default function DialogGetLink() {
 
     const shareLink = !getShareLink.data?.link ? null : process.env.NEXT_PUBLIC_DOMAIN + "/share/" + getShareLink.data?.link;
 
-    const onCheckedChange = (val: CheckedState) => {
+    const onCheckedChange = (val: boolean) => {
         setChecked(val);
     }
 
@@ -136,10 +136,7 @@ export default function DialogGetLink() {
                     </StateRender>
                     {!getShareLink.data && (
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="share" className="text-sm">
-                                <Checkbox checked={checked} onCheckedChange={onCheckedChange} id="share" className="mr-2" />
-                                Anybody with this link can access (Read)
-                            </label>
+                            <CheckboxCustom checked={!!checked} onChecked={onCheckedChange} label="Anybody with this link can access (Read)" />
                             <Button loading={generateLink.isLoading} onClick={onClickGenerate} disabled={!checked || getShareLink.isLoading}>
                                 Generate link
                             </Button>

@@ -155,7 +155,7 @@ export default function FolderPage() {
                 transition={{ ease: easeDefault }}
                 style={{ pointerEvents: isNavHide ? "none" : "auto" }}
                 className="w-full flex bg-white items-center gap-3 py-1 z-20 sticky top-0 left-0">
-                <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
+                <Button onClick={onClickBack} title="Back" size="icon" variant="ghost" className="!w-10">
                     <ChevronLeft />
                 </Button>
                 {detailFolderQuery.isLoading ?

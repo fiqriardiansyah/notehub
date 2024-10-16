@@ -2,12 +2,15 @@
 
 import TodoListModeEditor, { Todo } from "@/app/write/mode/todolist";
 import ghostAnim from "@/asset/animation/ghost.json";
+import CollabsList from "@/components/common/collabs-list";
 import { CLOSE_SIDE_PANEL } from "@/components/layout/side-panel";
+import OpenSecureNote from "@/components/open-secure-note";
 import StateRender from "@/components/state-render";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CommonContext, CommonContextType } from "@/context/common";
 import { fireBridgeEvent, useBridgeEvent } from "@/hooks/use-bridge-event";
+import { formatDate } from "@/lib/utils";
 import { Note } from "@/models/note";
 import noteService from "@/service/note";
 import { useMutation } from "@tanstack/react-query";
@@ -16,16 +19,6 @@ import { MoveRight } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
 import dynamic from "next/dynamic";
 import React from "react";
-import Lottie from "react-lottie";
-
-const defaultOptions = {
-    loop: true,
-    animationData: ghostAnim,
-    autoplay: true,
-    rendererSettings: {
-        preserveAspectRatio: 'xMidYMid slice'
-    }
-};
 
 const FreetextModeEditor = dynamic(() => import("@/app/write/mode/freetext").then((mod) => mod.default),
     { ssr: false }
@@ -38,22 +31,49 @@ export default function ViewAttachNote() {
     const router = useRouter();
     const { common } = React.useContext(CommonContext) as CommonContextType;
     const [payload, setPayload] = React.useState<Pick<Note, "id" | "title">>();
+    const [todos, setTodos] = React.useState<Todo[]>([]);
+    const [isSecure, setIsSecure] = React.useState(false);
 
     const noteDetailMutate = useMutation(async (id: string) => {
         return (await noteService.getOneNote(id)).data.data
+    }, {
+        onSuccess(data) {
+            setTodos(data?.todos || []);
+        }
+    });
+
+    const isSecureNoteQuery = useMutation([noteService.isSecureNote.name], async (id: string) => {
+        return (await noteService.isSecureNote(id)).data.data;
+    }, {
+        onSuccess(data, id) {
+            if (!data) {
+                noteDetailMutate.mutate(id);
+            }
+            setIsSecure(data);
+        },
     });
 
     const changeTodosMutate = useMutation(async (todos: Todo[]) => {
         return (await noteService.changeTodos({ noteId: payload!.id, todos })).data.data;
     });
 
+    const openSecure = () => {
+        setIsSecure(false);
+        noteDetailMutate.mutate(payload!.id);
+    }
+
     const onChangeTodoList = (todo: Todo[]) => {
-        changeTodosMutate.mutate(todo);
+        fireBridgeEvent("update_todos_to_panel_" + payload?.id, todo);
+        const update = setTimeout(() => {
+            changeTodosMutate.mutateAsync(todos || []);
+        }, 300);
+
+        return () => clearTimeout(update);
     }
 
     useBridgeEvent(VIEW_ATTACH_NOTE, (payload: Pick<Note, "id" | "title">) => {
-        noteDetailMutate.mutate(payload.id);
         setPayload(payload);
+        isSecureNoteQuery.mutate(payload.id);
     });
 
     const onClickToNote = () => {
@@ -77,27 +97,64 @@ export default function ViewAttachNote() {
                 )}
                 <h1 className="capitalize">{payload?.title}</h1>
             </div>
-            <StateRender data={noteDetailMutate.data} isLoading={noteDetailMutate.isLoading} isEmpty={noteDetailMutate.data === null} >
+            <StateRender data={isSecureNoteQuery.data !== undefined || isSecureNoteQuery.data !== null} isLoading={isSecureNoteQuery.isLoading} isError={(isSecureNoteQuery.error as Error)?.message}>
                 <StateRender.Data>
-                    {noteDetailMutate.data?.type === "freetext"
-                        && <FreetextModeEditor showInfoDefault={false} data={noteDetailMutate.data?.note} asEdit options={{ readOnly: true }} />}
-                    {noteDetailMutate.data?.type === "todolist"
-                        && <TodoListModeEditor showInfoDefault={false} onChange={onChangeTodoList} onlyCanCheck defaultTodos={noteDetailMutate.data?.todos} />}
-
+                    {isSecure ? <OpenSecureNote refetch={openSecure} />
+                        : (
+                            <StateRender
+                                data={noteDetailMutate.data}
+                                isLoading={noteDetailMutate.isLoading}
+                                isError={noteDetailMutate.isError} >
+                                <StateRender.Data>
+                                    {noteDetailMutate.data?.type === "freetext"
+                                        && <FreetextModeEditor key="view_attach_note_text" showInfoDefault={false} data={noteDetailMutate.data?.note} asEdit options={{ readOnly: true }} />}
+                                    {noteDetailMutate.data?.type === "todolist"
+                                        && <TodoListModeEditor key="view_attach_note_todo" showInfoDefault={false} defaultTodos={todos} todos={todos} onChange={onChangeTodoList} />}
+                                    <CollabsList noteId={noteDetailMutate.data?.id as string} >
+                                        {(list) => {
+                                            if (!list?.length) {
+                                                return (
+                                                    <span className="caption my-10 block">
+                                                        {`Last edit at ${formatDate(noteDetailMutate.data?.updatedAt)}`}
+                                                    </span>
+                                                )
+                                            }
+                                            return (
+                                                <span className="caption my-10 block">
+                                                    {`Edited ${formatDate(noteDetailMutate.data?.updatedAt)} By `}
+                                                    <span className="font-semibold">{noteDetailMutate.data?.updatedBy}</span>
+                                                </span>
+                                            )
+                                        }}
+                                    </CollabsList>
+                                </StateRender.Data>
+                                <StateRender.Loading>
+                                    <div className="container-read flex flex-col gap-2">
+                                        <Skeleton className="w-[200px] h-[20px]" />
+                                        <Skeleton className="w-[250px] h-[20px]" />
+                                        <Skeleton className="w-[150px] h-[20px]" />
+                                    </div>
+                                </StateRender.Loading>
+                                <StateRender.Error>
+                                    <p className="text-red-500">
+                                        {(noteDetailMutate.error as Error)?.message}
+                                    </p>
+                                </StateRender.Error>
+                            </StateRender>
+                        )}
                 </StateRender.Data>
                 <StateRender.Loading>
-                    <Skeleton className="w-[200px] h-[20px]" />
-                    <Skeleton className="w-[250px] h-[20px]" />
-                    <Skeleton className="w-[150px] h-[20px]" />
-                </StateRender.Loading>
-                <StateRender.Empty>
-                    <div className="flex w-full flex-col items-center min-h-[300px] justify-center">
-                        <Lottie options={defaultOptions} height={200} width={200} style={{ pointerEvents: 'none' }} />
-                        <p className="m-0 text-red-400">
-                            Attached note/file not found
-                        </p>
+                    <div className="container-read flex flex-col gap-2">
+                        <Skeleton className="w-[200px] h-[20px]" />
+                        <Skeleton className="w-[250px] h-[20px]" />
+                        <Skeleton className="w-[150px] h-[20px]" />
                     </div>
-                </StateRender.Empty>
+                </StateRender.Loading>
+                <StateRender.Error>
+                    <p className="text-red-500">
+                        {(isSecureNoteQuery.error as Error)?.message}
+                    </p>
+                </StateRender.Error>
             </StateRender>
         </motion.div>
     )

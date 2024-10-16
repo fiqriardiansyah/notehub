@@ -32,7 +32,7 @@ api.interceptors.response.use(
   },
   (error) => {
     const baseResponse = error?.response?.data as BaseResponse<any>;
-    return Promise.reject(baseResponse?.error ? Error(baseResponse?.error?.message) : error)
+    return Promise.reject(baseResponse?.error ? Error(baseResponse?.error) : error)
   }
 );
 

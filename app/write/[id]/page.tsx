@@ -1,7 +1,6 @@
 "use client";
 
 import { BUTTON_SUCCESS_ANIMATION_TRIGGER } from "@/components/animation/button-success";
-import { COLLABS_NOTE_GROUND } from "@/components/card-note/setting/collabs";
 import CollabsList from "@/components/common/collabs-list";
 import ResponsiveTagsListed from "@/components/common/tag-listed";
 import OpenSecureNote from "@/components/open-secure-note";
@@ -27,11 +26,9 @@ import { useRouter } from "next-nprogress-bar";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import React, { useRef } from "react";
+import React from "react";
 import ToolsBar, { ToolsType } from "../components/tool-bar";
 import TodoListModeEditor, { Todo } from "../mode/todolist";
-import { OPEN_SIDE_PANEL } from "@/components/layout/side-panel";
-import { fireBridgeEvent } from "@/hooks/use-bridge-event";
 
 const FreetextModeEditor = dynamic(() => import("../mode/freetext").then((mod) => mod.default),
     { ssr: false }
@@ -156,13 +153,6 @@ export default function Write() {
         saveBtnRef.current.click();
     };
 
-    const onClickListCollabAccount = () => {
-        fireBridgeEvent(OPEN_SIDE_PANEL, {
-            groundOpen: COLLABS_NOTE_GROUND,
-            payload: noteDetailQuery.data,
-        });
-    }
-
     const excludeTools = () => {
         let excludesSetting = ["folder", "mode"];
         if (noteDetailQuery.data?.type === 'habits' || dataNote?.modeWrite === "habits") {
@@ -188,7 +178,7 @@ export default function Write() {
                 <motion.div style={{ pointerEvents: isNavHide ? "none" : "auto" }} animate={{ y: isNavHide ? "-100%" : 0 }} transition={{ ease: easeDefault }} className="sticky top-0 left-0 py-1 bg-white z-20">
                     <div className="flex flex-row items-center flex-1">
                         <div className="mr-3">
-                            <Button onClick={onClickBack} size="icon" variant="ghost" className="!w-10">
+                            <Button onClick={onClickBack} title="Back" size="icon" variant="ghost" className="!w-10">
                                 <ChevronLeft />
                             </Button>
                         </div>
@@ -209,7 +199,11 @@ export default function Write() {
                         </BreadcrumbList>
                     </Breadcrumb>
                 )}
-                <StateRender data={noteDetailQuery.data || isSecureNoteQuery.data} isLoading={noteDetailQuery.isLoading || isSecureNoteQuery.isLoading}>
+                <StateRender
+                    data={noteDetailQuery.data || isSecureNoteQuery.data}
+                    isLoading={noteDetailQuery.isLoading || isSecureNoteQuery.isLoading}
+                    isError={noteDetailQuery.isError || isSecureNoteQuery?.isError}
+                >
                     <StateRender.Data>
                         {isSecure ? (
                             <div className="flex items-center min-h-[400px] w-full">
@@ -242,7 +236,7 @@ export default function Write() {
                                     </FreetextModeEditor>}
                                 {dataNote.modeWrite === "todolist" && (asViewer ?
                                     (<TodoListModeEditor.AsView todos={todos} />) :
-                                    <TodoListModeEditor showInfoDefault={false} defaultTodos={todos} todos={todos} onSave={saveWrite}>
+                                    <TodoListModeEditor asEdit showInfoDefault={false} defaultTodos={todos} todos={todos} onSave={saveWrite}>
                                         <button ref={saveBtnRef} type="submit">submit</button>
                                     </TodoListModeEditor>)}
                                 {dataNote.modeWrite === "habits" && isOwner &&
@@ -270,9 +264,14 @@ export default function Write() {
                             <Skeleton className="w-[200px] h-[20px] mt-3" />
                         </div>
                     </StateRender.Loading>
+                    <StateRender.Error>
+                        <p className="text-red-500">
+                            {(noteDetailQuery.error as Error)?.message}
+                        </p>
+                    </StateRender.Error>
                 </StateRender>
             </div>
-            {!noteDetailQuery?.isLoading && noteDetailQuery.data?.role !== "viewer" && !isSecure && (
+            {!noteDetailQuery?.isLoading && noteDetailQuery.data?.role !== "viewer" && !isSecure && !noteDetailQuery.isError && (
                 <div className="flex justify-center fixed sm:absolute z-40 sm:bottom-2 bottom-0 left-0 sm:left-1/2 transform sm:-translate-x-1/2 w-full sm:w-fit sm:bg-white sm:rounded-full sm:shadow-xl">
                     <ToolsBar
                         currentNote={noteDetailQuery.data}

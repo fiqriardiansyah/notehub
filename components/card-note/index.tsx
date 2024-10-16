@@ -6,7 +6,7 @@ import { NoteContext, NoteContextType } from "@/context/note";
 import { formatDate } from "@/lib/utils";
 import { Note } from "@/models/note";
 import { motion } from "framer-motion";
-import { Bookmark } from "lucide-react";
+import { Bookmark, PanelRight } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { GoGear } from "react-icons/go";
@@ -14,14 +14,18 @@ import FreeTextCardNote from "./freetext";
 import Secure from "./secure";
 import TodolistCardNote from "./todolist";
 import useProcess from "@/hooks/use-process";
+import { useMobileMediaQuery } from "@/hooks/responsive";
+import { fireBridgeEvent } from "@/hooks/use-bridge-event";
+import { HELPER_PANEL, HELPER_PANEL_NOTE_VIEW } from "../layout/helper-panel";
 
 export type CardNoteType<T> = {
   note?: T;
   attachMenu?: (note?: T) => any;
 };
 
-export default function CardNote<T extends Note>({ note, attachMenu }: CardNoteType<T>) {
+const CardNote = <T extends Note>({ note, attachMenu }: CardNoteType<T>) => {
   const { note: noteContext, setNote } = React.useContext(NoteContext) as NoteContextType;
+  const isMobile = useMobileMediaQuery();
 
   const { proceed } = useProcess(note?.id);
 
@@ -33,11 +37,18 @@ export default function CardNote<T extends Note>({ note, attachMenu }: CardNoteT
     }));
   };
 
-  const content = () => {
+  const content = React.useMemo(() => {
     if (note?.isSecure) return <Secure />
     if (note?.type === "freetext") return <FreeTextCardNote note={note} />
     if (note?.type === "todolist") return <TodolistCardNote note={note} />
     return ""
+  }, [note]);
+
+  const onClickCard = () => {
+    fireBridgeEvent(HELPER_PANEL, {
+      data: note,
+      content: HELPER_PANEL_NOTE_VIEW,
+    });
   }
 
   return (
@@ -51,14 +62,19 @@ export default function CardNote<T extends Note>({ note, attachMenu }: CardNoteT
         <Link href={`/write/${note?.id}`}>
           <p className="title line-clamp-1 text-base">{note?.title}</p>
         </Link>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           {attachMenu && attachMenu(note)}
-          <button disabled={!!proceed} onClick={onClickGear} className=" cursor-pointer bg-transparent border-none">
+          {!isMobile ? (
+            <button disabled={!!proceed} onClick={onClickCard} title="Open in panel" className=" cursor-pointer bg-transparent border-none">
+              <PanelRight className="text-gray-500" size={16} />
+            </button>
+          ) : null}
+          <button disabled={!!proceed} onClick={onClickGear} title="Menu" className=" cursor-pointer bg-transparent border-none">
             <GoGear className="text-gray-500" />
           </button>
         </div>
       </div>
-      {content()}
+      {content}
       <ResponsiveTagsListed tags={note?.tags} size={15} />
       <div className="flex w-full items-center justify-between">
         <span className="caption">{formatDate(note?.updatedAt)}</span>
@@ -68,3 +84,5 @@ export default function CardNote<T extends Note>({ note, attachMenu }: CardNoteT
     </motion.div>
   );
 }
+
+export default React.memo(CardNote)

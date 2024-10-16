@@ -16,7 +16,11 @@ export type CommonState = {
     process?: {
         id?: string;
         nameOfProcess?: string;
-    }[]
+    }[];
+    helperPanel?: {
+        open?: boolean;
+        content?: string;
+    };
 };
 
 type CallbackPayload<T = any> = (callback: (nameground: string, payload: T) => void) => void;

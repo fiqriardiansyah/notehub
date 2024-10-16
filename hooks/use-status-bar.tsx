@@ -22,7 +22,10 @@ export default function useStatusBar() {
   const setStatusBar = (val: CommonState["statusBar"]) => {
     setCommon((prev) => ({
       ...prev,
-      statusBar: val,
+      statusBar: {
+        ...val,
+        show: !("show" in (val || {})) ? true : val?.show,
+      },
     }));
   };
 

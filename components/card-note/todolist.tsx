@@ -1,16 +1,17 @@
 "use client";
 
 import { Todo } from "@/app/write/mode/todolist";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
+import { fireBridgeEvent, useBridgeEvent } from "@/hooks/use-bridge-event";
 import useSkipFirstRender from "@/hooks/use-skip-first-render";
 import { progressCheer } from "@/lib/utils";
 import { Note } from "@/models/note";
 import noteService from "@/service/note";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import React from "react";
 import lodash from "lodash";
+import React from "react";
+import CheckboxCustom from "../ui/checkbox-custom";
 
 export type TodolistCardNoteType = React.HTMLProps<HTMLDivElement> & {
     note: Partial<Note>;
@@ -22,8 +23,9 @@ export default function TodolistCardNote({ note, maxItemShow, canInteract = true
     const [todos, setTodos] = React.useState(() => note.todos);
     const prevProgressDoneCheer = React.useRef<number>()
     const [progressDoneCheer, setProgressDoneCheer] = React.useState<number>();
+    const blockHitApiRef = React.useRef(false);
 
-    const changeTodosMutate = useMutation(async (todos: Todo[]) => {
+    const changeTodosMutate = useMutation([noteService.changeTodos.name, "card"], async (todos: Todo[]) => {
         return (await noteService.changeTodos({ noteId: note.id!, todos })).data.data;
     });
 
@@ -35,9 +37,19 @@ export default function TodolistCardNote({ note, maxItemShow, canInteract = true
         },
     });
 
+    useBridgeEvent("update_todos_from_helper_panel" + note?.id, (tds: Todo[]) => {
+        blockHitApiRef.current = true;
+        setTodos(tds);
+        const timeout = setTimeout(() => {
+            blockHitApiRef.current = false;
+            clearTimeout(timeout);
+        }, 200);
+    });
+
     useSkipFirstRender(() => {
+        if (blockHitApiRef.current) return;
+        if (lodash.isEqual(todos, note.todos)) return;
         const update = setTimeout(() => {
-            if (lodash.isEqual(todos, note.todos)) return;
             changeTodosMutate.mutateAsync(todos || []);
         }, 1000);
 
@@ -61,21 +73,20 @@ export default function TodolistCardNote({ note, maxItemShow, canInteract = true
         prevProgressDoneCheer.current = messagePoint === 100 ? undefined : messagePoint;
     }
 
-    const onCheckChange = (todo: Todo) => {
-        return (isCheck: boolean) => {
-            const currentTodos = todos?.map((td) => {
-                if (td.id !== todo.id) return td;
-                return {
-                    ...td,
-                    isCheck,
-                    checkedAt: isCheck ? new Date().getTime() : null,
-                }
-            });
-            const isDoneIncrease = currentTodos?.filter((t) => t.isCheck).length! > todos?.filter((t) => t.isCheck).length!
-            setTodos(currentTodos);
-            if (isDoneIncrease) {
-                progressCheerUpdate(currentTodos!);
+    const onCheckChange = (todo: Todo, isCheck: boolean) => {
+        const currentTodos = todos?.map((td) => {
+            if (td.id !== todo.id) return td;
+            return {
+                ...td,
+                isCheck,
+                checkedAt: isCheck ? new Date().getTime() : null,
             }
+        });
+        const isDoneIncrease = currentTodos?.filter((t) => t.isCheck).length! > todos?.filter((t) => t.isCheck).length!
+        setTodos(currentTodos);
+        fireBridgeEvent("update_todos_to_panel_" + note?.id, currentTodos);
+        if (isDoneIncrease) {
+            progressCheerUpdate(currentTodos!);
         }
     }
 
@@ -88,10 +99,12 @@ export default function TodolistCardNote({ note, maxItemShow, canInteract = true
                 {todos?.map((item, i) => {
                     if (maxItemShow !== undefined && i >= maxItemShow) return null;
                     return (
-                        <label key={item.id} htmlFor={item.id} className="flex items-start gap-3">
-                            <Checkbox disabled={!canInteract} onCheckedChange={onCheckChange(item)} checked={item.isCheck} id={item.id} />
-                            <span className={`text-sm cursor-pointer line-clamp-1 ${item.isCheck ? "line-through" : ""}`}>{item.content}</span>
-                        </label>
+                        <CheckboxCustom
+                            disabled={!canInteract}
+                            key={item.id}
+                            checked={item.isCheck}
+                            onChecked={(checked) => onCheckChange(item, checked)}
+                            label={<span className={`text-sm cursor-pointer line-clamp-1 ${item.isCheck ? "line-through" : ""}`}>{item.content}</span>} />
                     )
                 })}
             </div>

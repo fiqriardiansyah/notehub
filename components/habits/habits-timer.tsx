@@ -22,6 +22,7 @@ import moment from "moment";
 import React from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import themeColor from "tailwindcss/colors";
+import CheckboxCustom from "../ui/checkbox-custom";
 
 export type HabitsTimerProps = {
     anyId?: string;
@@ -156,10 +157,7 @@ export default function HabitsTimer({ children, todo, setTimer, anyId }: HabitsT
                                 Task mark done at {moment(todo?.checkedAt).format("DD MMM, HH:mm")} 🎉
                             </div>)}
                             {!todo?.timer?.isEnd && (
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox disabled={!!todo?.timer} checked={autoComplete} onCheckedChange={(e) => setAutoComplete(e as boolean)} id="terms" />
-                                    <Label htmlFor="terms">Auto complete task when time end</Label>
-                                </div>
+                                <CheckboxCustom disabled={!!todo?.timer} checked={autoComplete} onChecked={setAutoComplete} label="Auto complete task when time end" />
                             )}
                             {isTimesUp && !todo?.timer?.isEnd && (
                                 <Button onClick={onReset} size="icon">

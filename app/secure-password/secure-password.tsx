@@ -12,11 +12,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/components/ui/use-toast";
+import useStatusBar from "@/hooks/use-status-bar";
 import noteService from "@/service/note";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -25,6 +24,8 @@ export type SecurePasswordProps = {
 };
 
 const SecurePassword = ({ onFinish }: SecurePasswordProps) => {
+  const [_, setStatusBar, resetStatusBar] = useStatusBar();
+
   const checkHasPassNote = useQuery(
     ["has-password"],
     async () => (await noteService.hasPasswordNote()).data.data
@@ -44,8 +45,6 @@ const SecurePassword = ({ onFinish }: SecurePasswordProps) => {
         })
       ).data.data
   );
-
-  const { toast } = useToast();
 
   const formSchema = z.object({
     password: z.string().min(5, {
@@ -69,7 +68,9 @@ const SecurePassword = ({ onFinish }: SecurePasswordProps) => {
     resolver: zodResolver(formSchema),
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    resetStatusBar();
+
     if (values.password !== values["password-repeat"]) {
       form.setError(
         "password-repeat",
@@ -78,8 +79,9 @@ const SecurePassword = ({ onFinish }: SecurePasswordProps) => {
       );
       return;
     }
+
+    // for change password
     if (checkHasPassNote.data) {
-      // change password
       if (values.password === values["old-password"]) {
         form.setError(
           "old-password",
@@ -88,38 +90,39 @@ const SecurePassword = ({ onFinish }: SecurePasswordProps) => {
         );
         return;
       }
-      changePassswordMutate
-        .mutateAsync({
-          password: values.password,
-          newPassword: values["old-password"] as string,
-        })
-        .then(async () => {
-          toast({
-            title: "Success",
-            description: (
-              <p className="text-green-400">Password has been changed!</p>
-            ),
-          });
-          if (onFinish) onFinish();
+
+      try {
+        const message = await changePassswordMutate.mutateAsync({
+          password: values["old-password"] as string,
+          newPassword: values.password
         });
+        setStatusBar({ type: "success", message, autoClose: 5 });
+        form.reset();
+        form.setValue("password", "" as never);
+        form.setValue("password-repeat", "" as never);
+        form.setValue("old-password", "" as never);
+        if (onFinish) onFinish();
+      } catch (e: any) {
+        setStatusBar({ type: "danger", message: e?.message });
+      }
       return;
     }
-    setPasswordMutate.mutateAsync(values.password).then(async () => {
-      toast({
-        title: "Success",
-        description: (
-          <p className="text-green-400">Password has been created!</p>
-        ),
-      });
+
+    try {
+      const message = await setPasswordMutate.mutateAsync(values.password);
+      setStatusBar({ type: "success", message, autoClose: 5 });
       if (onFinish) onFinish();
-    });
+    } catch (e: any) {
+      setStatusBar({ type: "danger", message: e?.message });
+    }
+
   }
 
   return (
     <div className="w-full h-full flex flex-col gap-4">
       <h2 className="font-semibold text-sm">
         {checkHasPassNote.data
-          ? "Change Secure Password Note"
+          ? "Change Password Note"
           : null}
       </h2>
       <Form {...form}>

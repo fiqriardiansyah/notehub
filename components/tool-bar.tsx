@@ -5,9 +5,7 @@ import { Tag } from "@/models/note";
 import Chip from "@/module/tags/chip";
 import { motion } from "framer-motion";
 import React from "react";
-import { CiGrid41 } from "react-icons/ci";
 import { GoArrowDown, GoArrowUp } from "react-icons/go";
-import Slider from "react-slick";
 
 export type ToolbarProps = {
   rightAddition?: () => React.ReactNode;
@@ -25,17 +23,6 @@ export default function ToolBar({ rightAddition, onClickModified, order, tags, s
       onClickModified();
     }
   }
-
-  const settings = {
-    dots: false,
-    infinite: false,
-    speed: 500,
-    slidesToScroll: 4,
-    autoplay: false,
-    nextArrow: undefined,
-    prevArrow: undefined,
-    variableWidth: true,
-  };
 
   const removedDuplicateTags = tags?.reduce((tags: Tag[], tag: Tag) => {
     if (tags.find((t) => t.id === tag.id)) return tags;
@@ -68,21 +55,14 @@ export default function ToolBar({ rightAddition, onClickModified, order, tags, s
         </div>
         <div className="flex items-center gap-1">
           {rightAddition && rightAddition()}
-          <button className="bg-none cursor-pointer p-2 text-2xl">
-            <CiGrid41 />
-          </button>
         </div>
       </div>
       <div className="overflow-x-auto flex gap-1 flex-nowrap">
-        {/* {removedDuplicateTags?.length ? ( */}
-        {/* <Slider {...settings} className="!w-full"> */}
         {removedDuplicateTags?.map((tag) => (
           <motion.div key={tag.id + "visible"} animate={{ scale: 1, width: 'auto' }} exit={{ scale: 0, width: 0 }} className="pr-2 py-2">
             <Chip onClick={onClickTag(tag)} pick={!!filterTag?.find((t) => t.id === tag.id)} tag={tag} withTooltip={false} />
           </motion.div>
         ))}
-        {/* // </Slider>
-        // ) : null} */}
       </div>
     </div>
   );

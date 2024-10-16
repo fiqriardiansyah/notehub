@@ -43,13 +43,13 @@ const noteService = {
 
   setPasswordNote: (
     password: string
-  ): Promise<AxiosResponse<BaseResponse<boolean>>> =>
+  ): Promise<AxiosResponse<BaseResponse<string>>> =>
     api.post("/note/spn", { password }),
 
   changePasswordNote: (data: {
     password: string;
     newPassword: string;
-  }): Promise<AxiosResponse<BaseResponse<boolean>>> =>
+  }): Promise<AxiosResponse<BaseResponse<string>>> =>
     api.post("/note/cpn", {
       password: data.newPassword,
       "old-password": data.password,

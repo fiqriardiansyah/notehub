@@ -1,24 +1,23 @@
 "use client";
 
+import CheckboxCustom from "@/components/ui/checkbox-custom";
 import { Input } from "@/components/ui/input";
-import { Info, Plus, Trash } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import React from "react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { AnimatePresence, motion } from "framer-motion";
-import { CheckedState } from "@radix-ui/react-checkbox";
-import { v4 as uuid } from 'uuid';
-import dayjs from "dayjs";
-import useStatusBar from "@/hooks/use-status-bar";
 import { WriteContext, WriteContextType } from "@/context/write";
-import { Note } from "@/models/note";
-import { Timer } from "@/models/habits";
-import AsView from "./as-view";
 import { useMobileMediaQuery } from "@/hooks/responsive";
+import useStatusBar from "@/hooks/use-status-bar";
+import { Timer } from "@/models/habits";
+import { Note } from "@/models/note";
+import dayjs from "dayjs";
+import { AnimatePresence, motion } from "framer-motion";
+import { Info, Plus, Trash } from "lucide-react";
+import React from "react";
+import { v4 as uuid } from 'uuid';
+import AsView from "./as-view";
 
 export type Todo = {
     id: string;
@@ -37,10 +36,11 @@ export type TodoListModeEditorProps = {
     onSave?: (data: Partial<Note>) => void;
     showInfoDefault?: boolean;
     onlyCanCheck?: boolean;
+    asEdit?: boolean;
 }
 
 const TodoListModeEditor = ({
-    onChange, todos = [], children, onSave, showInfoDefault = true, onlyCanCheck, defaultTodos = [],
+    onChange, todos = [], children, onSave, showInfoDefault = true, onlyCanCheck, defaultTodos = [], asEdit,
 }: TodoListModeEditorProps) => {
     const { dataNote } = React.useContext(WriteContext) as WriteContextType;
     const [_, setStatusBar] = useStatusBar();
@@ -48,12 +48,15 @@ const TodoListModeEditor = ({
     const [str, setStr] = React.useState("");
     const [showInfo, setShowInfo] = React.useState(true);
     const isMobile = useMobileMediaQuery();
+    const defaultTodoChangedRef = React.useRef(false);
 
     React.useEffect(() => {
-        if (defaultTodos) {
+        if (defaultTodos.length) {
+            if (defaultTodoChangedRef.current && asEdit) return;
             setList(defaultTodos);
+            defaultTodoChangedRef.current = true;
         }
-    }, [defaultTodos.length]);
+    }, [defaultTodos]);
 
     const onDeleteItem = (todo: Todo) => {
         return () => {
@@ -65,21 +68,19 @@ const TodoListModeEditor = ({
         }
     }
 
-    const onUpdateCheck = (todo: Todo) => {
-        return (e: CheckedState) => {
-            setList((prev) => {
-                const newList = prev.map((ls) => {
-                    if (ls.id !== todo.id) return ls;
-                    return {
-                        ...ls,
-                        isCheck: e as boolean,
-                        checkedAt: e ? new Date().getTime() : null,
-                    }
-                });
-                if (onChange) onChange(newList);
-                return newList;
-            })
-        }
+    const onUpdateCheck = (todo: Todo, isCheck: boolean) => {
+        setList((prev) => {
+            const newList = prev.map((ls) => {
+                if (ls.id !== todo.id) return ls;
+                return {
+                    ...ls,
+                    isCheck: isCheck,
+                    checkedAt: isCheck ? new Date().getTime() : null,
+                }
+            });
+            if (onChange) onChange(newList);
+            return newList;
+        })
     }
 
     const onAddTodo = (e: any) => {
@@ -131,13 +132,14 @@ const TodoListModeEditor = ({
                 <AnimatePresence>
                     {list?.map((item) => (
                         <motion.div animate={{ height: 'auto' }} initial={{ height: 0 }} exit={{ height: 0, opacity: 0 }} key={item.id} className="flex items-start overflow-hidden justify-between">
-                            <label htmlFor={item.id} className="flex items-center cursor-pointer gap-3 p-1">
-                                <Checkbox id={item.id} checked={item.isCheck} onCheckedChange={onUpdateCheck(item)} />
-                                <div className="flex flex-col">
-                                    <span>{item.content}</span>
-                                    {item.checkedAt && <span className="text-xs font-medium text-gray-400 capitalize">done at {dayjs(item.checkedAt).format("DD MMM, HH:mm")}</span>}
-                                </div>
-                            </label>
+                            <CheckboxCustom
+                                size="md"
+                                checked={item.isCheck}
+                                onChecked={(checked) => onUpdateCheck(item, checked)}
+                                label={(<label className="flex flex-col cursor-pointer">
+                                    {item.content}
+                                    {item.checkedAt && <span className="text-xs capitalize text-gray-400">{`done at ${dayjs(item.checkedAt).format("DD MMM, HH:mm")}`}</span>}
+                                </label>)} />
                             {!onlyCanCheck && (
                                 <Tooltip>
                                     <TooltipTrigger asChild>

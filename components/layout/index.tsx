@@ -42,10 +42,7 @@ export default function Layout({ children }: { children: any }) {
 
     return (
         <>
-            {(isDesktop || isTablet) && <DesktopLayout>
-                {children}
-            </DesktopLayout>}
-            {isMobile && <MobileLayout>{children}</MobileLayout>}
+            {(isDesktop || isTablet) ? (<DesktopLayout>{children}</DesktopLayout>) : (<MobileLayout>{children}</MobileLayout>)}
             <SidePanel />
             <Dialogs />
         </>

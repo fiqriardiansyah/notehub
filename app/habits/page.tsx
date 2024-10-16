@@ -26,6 +26,16 @@ import WeeklyHabits from "./components/weekly-habits";
 import SearchHabits from "./components/search-habits";
 import RunningTimer from "@/components/habits/running-timer";
 import { Card } from "@/components/ui/card";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { useMobileMediaQuery } from "@/hooks/responsive";
 
 const tabs = [
     {
@@ -51,6 +61,7 @@ export default function Habits() {
     const isNavHide = useToggleHideNav();
     const searchParams = useSearchParams();
     const query = searchParams.get("query");
+    const isMobile = useMobileMediaQuery();
 
     const pickedDay = moment().format("dddd");
     const pickedDate = moment().format("DD MMM YYYY");
@@ -151,34 +162,51 @@ export default function Habits() {
                         <StateRender.Data>
                             {allHabit.data?.length ? (
                                 <div className={`container-custom grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-3 ${habitsToday.data?.length ? "my-3" : ""}`}>
-                                    <Card className="p-2">
+                                    <div className="">
                                         <HabitsUrgent inPageHabits onChangeHabit={habitsToday.refetch} />
                                         <div className="my-5">
                                             <RunningTimer />
                                         </div>
-                                    </Card>
-                                    <Card className="p-2">
+                                    </div>
+                                    <div className="">
                                         {habitsToday.data?.length ? <p className="text-2xl">Should Do! 💪</p> : null}
                                         <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3 mt-2" >
                                             {habitsToday.data?.map((habit, i) => (
                                                 <ListCardHabit key={habit.id} index={i} habit={habit} />
                                             ))}
                                         </div>
-                                    </Card>
+                                    </div>
                                 </div>
                             ) : null}
                         </StateRender.Data>
                     </StateRender>
-                    <Tabs defaultValue={activeTab} className="container-custom sticky top-0 left-0 z-20" onValueChange={onTabChange}>
-                        <TabsList className="!w-full">
-                            {tabs?.map((tab) => <TabsTrigger className="!flex-1" key={tab.value} value={tab.value}>{tab.label}</TabsTrigger>)}
-                        </TabsList>
-                    </Tabs>
-                    <div className="container-custom flex flex-col mt-2 min-h-[50vh] pb-20">
-                        {activeTab === "all" && <AllHabits onGoingHabits={onGoingHabits} />}
-                        {activeTab === "day" && <DailyHabits onGoingHabits={onGoingHabits} />}
-                        {activeTab === "weekly" && <WeeklyHabits onGoingHabits={onGoingHabits} />}
-                        {activeTab === "monthly" && <MonthlyHabits onGoingHabits={onGoingHabits} />}
+
+                    <div className="container-custom">
+                        {!isMobile ? (
+                            <Select value={activeTab} onValueChange={onTabChange}>
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Select Type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {tabs.map((tab) => (
+                                        <SelectItem key={tab.label} value={tab.value}>{tab.label}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        ) : (
+                            <Tabs defaultValue={activeTab} className="sticky top-0 left-0 z-20" onValueChange={onTabChange}>
+                                <TabsList className="!w-full">
+                                    {tabs?.map((tab) => <TabsTrigger className="!flex-1" key={tab.value} value={tab.value}>{tab.label}</TabsTrigger>)}
+                                </TabsList>
+                            </Tabs>
+                        )}
+
+                        <div className="flex flex-col mt-2 min-h-[50vh] pb-20">
+                            {activeTab === "all" && <AllHabits onGoingHabits={onGoingHabits} />}
+                            {activeTab === "day" && <DailyHabits onGoingHabits={onGoingHabits} />}
+                            {activeTab === "weekly" && <WeeklyHabits onGoingHabits={onGoingHabits} />}
+                            {activeTab === "monthly" && <MonthlyHabits onGoingHabits={onGoingHabits} />}
+                        </div>
                     </div>
                 </>
             )}

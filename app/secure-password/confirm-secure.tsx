@@ -75,7 +75,8 @@ export default function ConfirmSecure({ onFinish }: ConfirmSecureType) {
                 >
                     Apply
                 </Button>
-                <p className="mt-4 text-sm">Forgot your password? <Link href="/secure-password" className="text-red-400">Forgot password</Link></p>
+                <p className="mt-4 text-sm opacity-45">Forgot your password? <Link href="#" className="text-red-400 cursor-not-allowed">Forgot password</Link></p>
+                <Link href="/secure-password" className="text-xs mt-1 underline">Change password</Link>
             </form>
         </Form>
     )

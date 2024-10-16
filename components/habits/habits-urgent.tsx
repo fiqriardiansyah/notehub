@@ -2,7 +2,6 @@
 
 import { Todo } from "@/app/write/mode/todolist";
 import Countdown from "@/components/common/countdown";
-import { Checkbox } from "@/components/ui/checkbox";
 import useHabitComplete from "@/hooks/use-habit-complete";
 import useSkipFirstRender from "@/hooks/use-skip-first-render";
 import { easeDefault, hexToRgba, progressCheer } from "@/lib/utils";
@@ -16,8 +15,19 @@ import Link from "next/link";
 import React from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import themeColor from "tailwindcss/colors";
+import CheckboxCustom from "../ui/checkbox-custom";
 import HabitsCountdown from "./habits-countdown";
 import HabitsTimer from "./habits-timer";
+import Lottie from "react-lottie";
+import { useCheeringOverlay } from "../overlay/cheering";
+
+const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice'
+    }
+};
 
 export type HabitsUrgentProps = React.HTMLProps<HTMLDivElement> & {
     onChangeHabit?: () => void;
@@ -30,6 +40,7 @@ export default function HabitsUrgent({ onChangeHabit, inPageHabits, className, .
     const [progressDoneCheer, setProgressDoneCheer] = React.useState<number>();
     const habitComplete = useHabitComplete();
     const queryClient = useQueryClient();
+    const cheeringOverlay = useCheeringOverlay();
 
     const getHabitsUrgent = useQuery([habitsService.getUrgentHabit.name], async () => {
         const list = (await habitsService.getUrgentHabit(1)).data.data;
@@ -109,7 +120,13 @@ export default function HabitsUrgent({ onChangeHabit, inPageHabits, className, .
 
     const onClickDone = () => {
         finishHabits.mutateAsync(habit?.id as string).then(() => {
-            habitComplete.show();
+            const { wordCongrat, randomAnimate, affirmation } = habitComplete.generateRandom();
+            cheeringOverlay.play({
+                message: <h1 className="text-white text-5xl whitespace-nowrap text-center">{wordCongrat}</h1>,
+                element: <Lottie options={{ ...defaultOptions, animationData: randomAnimate, loop: true }} height={250} width={250} />,
+                description: <span className="text-white text-sm capitalize whitespace-nowrap">{affirmation}</span>
+            });
+
             getHabitsUrgent.refetch();
             if (onChangeHabit) onChangeHabit();
         });
@@ -253,7 +270,7 @@ export default function HabitsUrgent({ onChangeHabit, inPageHabits, className, .
                                     )}
                                 </div>
                             </div>
-                            <Checkbox checked={todo.isCheck} onCheckedChange={onUpdateCheck(todo)} />
+                            <CheckboxCustom checked={todo.isCheck} onChecked={onUpdateCheck(todo)} />
                         </div>
                     ))}
                 </div>

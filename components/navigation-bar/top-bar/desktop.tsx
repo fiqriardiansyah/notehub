@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AlignJustify, Bell } from "lucide-react";
 
 export default function TopBarDesktop() {
+
     const countUnreadNotifQuery = useQuery([notificationService.countUnreadNotif.name], async () => {
         return (await notificationService.countUnreadNotif()).data.data
     });
@@ -20,7 +21,7 @@ export default function TopBarDesktop() {
     };
 
     const onClickMenu = () => {
-        fireBridgeEvent("TESTTT", "xixixi")
+
     }
 
     return (

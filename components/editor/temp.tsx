@@ -58,7 +58,7 @@ export const useEditor = ({ tools, data, editorRef, options = {}, asEdit, placeh
 
     // initialize EditorJS
     React.useEffect(() => {
-        if (asEdit && !data) return;
+        if (!asEdit && !data) return;
 
         let editor: EditorJS;
 

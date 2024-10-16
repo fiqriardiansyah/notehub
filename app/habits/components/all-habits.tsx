@@ -19,7 +19,7 @@ export default function AllHabits({ onGoingHabits }: AllHabitsProps) {
         <StateRender data={habits.data} isLoading={habits.isLoading} isError={habits.isError}>
             <StateRender.Data>
                 {habits.data?.length ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
                         {habits.data?.map((habit) => <GridCardHabit onGoingHabits={onGoingHabits} key={habit.id} habits={habit} />)}
                     </div>
                 ) : (

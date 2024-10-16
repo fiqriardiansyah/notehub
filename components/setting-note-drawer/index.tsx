@@ -137,6 +137,7 @@ export function withFunctionality(WrappedComponent: React.ComponentType<any>) {
                     message: `Deleting ${note?.title} note...`,
                 });
                 await deleteMutate.mutateAsync(note);
+                generateChangesId();
                 setStatusBar({
                     type: "success",
                     show: true,
