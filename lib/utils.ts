@@ -6,12 +6,13 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import moment from "moment";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
+import themeColor from "tailwindcss/colors";
 
 dayjs.extend(relativeTime);
 dayjs.extend(advancedFormat);
 
-export const FORMAT_DATE_RETRIEVE = "YYYY-MM-DDTHH:mm:ss.SSSZ"
-export const FORMAT_DATE_SAVE = "YYYY-MM-DD HH:mm:ss.SSS"
+export const FORMAT_DATE_RETRIEVE = "YYYY-MM-DDTHH:mm:ss.SSSZ";
+export const FORMAT_DATE_SAVE = "YYYY-MM-DD HH:mm:ss.SSS";
 
 export function formatDate(date: any) {
   const now = dayjs();
@@ -40,10 +41,10 @@ export function remainingTimeInDays(unitOfTime: moment.unitOfTime.StartOf) {
     seconds,
     string: `${days} day, ${hours}:${minutes}:${seconds}`,
     isTimesUp: !moment().isBetween(moment().startOf("week"), endOfWeek),
-  }
+  };
 }
 
-export function remainingTimeInHour(time: { start: any, end: any }) {
+export function remainingTimeInHour(time: { start: any; end: any }) {
   const time1 = moment(time.start, FORMAT_DATE_SAVE).format("HH:mm:ss");
   const time2 = moment(time.end, FORMAT_DATE_SAVE).format("HH:mm:ss");
 
@@ -52,7 +53,7 @@ export function remainingTimeInHour(time: { start: any, end: any }) {
   const endTime = moment(`1970-01-01 ${time2}`, format);
 
   const now = moment();
-  const currentTime = moment(`1970-01-01 ${now.format('HH:mm:ss')}`, format);
+  const currentTime = moment(`1970-01-01 ${now.format("HH:mm:ss")}`, format);
 
   const duration = moment.duration(endTime.diff(currentTime));
   const hours = Math.floor(duration.asHours()).toString().padStart(2, "0");
@@ -65,7 +66,7 @@ export function remainingTimeInHour(time: { start: any, end: any }) {
     seconds,
     string: `${hours}:${minutes}:${seconds}`,
     isTimesUp: !currentTime.isBetween(startTime, endTime),
-  }
+  };
 }
 
 export function cn(...inputs: ClassValue[]) {
@@ -165,18 +166,22 @@ export async function pause(time: number = 1) {
 }
 
 export function hexToRgba(hex: string, opacity: number) {
-  hex = hex.replace(/^#/, '');
+  hex = hex.replace(/^#/, "");
 
   let r = parseInt(hex.substring(0, 2), 16);
   let g = parseInt(hex.substring(2, 4), 16);
   let b = parseInt(hex.substring(4, 6), 16);
 
-  let a = Math.round(opacity * 255).toString(16).padStart(2, '0');
+  let a = Math.round(opacity * 255)
+    .toString(16)
+    .padStart(2, "0");
 
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}${a}`;
+  return `#${r.toString(16).padStart(2, "0")}${g
+    .toString(16)
+    .padStart(2, "0")}${b.toString(16).padStart(2, "0")}${a}`;
 }
 
-export const easeDefault = [0.79, 0.14, 0.15, 0.86]
+export const easeDefault = [0.79, 0.14, 0.15, 0.86];
 
 export const defaultIcons = [
   "Accessibility",
@@ -212,34 +217,53 @@ export const defaultIcons = [
   "Slack",
   "Twitter",
   "Trello",
-  "Youtube"
+  "Youtube",
 ];
 
 export const progressCheer = [
   {
+    donepoint: 0,
+    content: "Lets goo!",
+    color: "text-yellow-400",
+    bgColor: themeColor.yellow[400],
+  },
+  {
     donepoint: 1,
     content: "Good start!",
-    color: "text-yellow-400",
-    bgColor: "#facc15",
+    color: "text-pink-400",
+    bgColor: themeColor.pink[400],
   },
   {
     donepoint: 2,
     content: "Keep it up! 🔥",
     color: "text-red-400",
-    bgColor: "#f87171 ",
+    bgColor: themeColor.red[400],
   },
   {
     donepoint: 3,
     content: "Few more to go! 😎",
     color: "text-blue-400",
-    bgColor: "#60a5fa",
+    bgColor: themeColor.blue[400],
   },
   {
     donepoint: 4,
     content: "Finish, Good job! 🎉",
     color: "text-green-400",
-    bgColor: "#4ade80 ",
-  }
+    bgColor: themeColor.green[400],
+  },
 ];
+
+export const calculateShowProgress = ({
+  taskDone,
+  taskLength,
+}: {
+  taskDone: number;
+  taskLength: number;
+}) => {
+  const progress = Math.round((taskDone / taskLength) * 100);
+  const point = Math.floor(progress / (100 / progressCheer.length));
+  const stepPoint = point === 0 ? point : point - 1;
+  return stepPoint;
+};
 
 export const withoutSignPath = /^\/(signin|share\/[^/]+)$/;
