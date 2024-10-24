@@ -69,14 +69,12 @@ export const CommonProvider = ({ children }: { children: any }) => {
 
   React.useEffect(() => {
     if (isMobile) {
-      setCommon({});
+      setCommon((prev) => ({
+        process: prev?.process,
+        statusBar: prev?.statusBar,
+      }));
       return;
     }
-    setCommon((prev) => ({
-      ...prev,
-      groundOpen: prev?.groundOpen,
-      sidePageOpen: prev?.sidePageOpen,
-    }));
   }, [pathname]);
 
   const value = {
