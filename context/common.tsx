@@ -63,16 +63,7 @@ export const CommonProvider = ({ children }: { children: any }) => {
 
   const isMobile = useMobileMediaQuery();
   const pathname = usePathname();
-  const [common, setCommon] = React.useState<CommonState>({
-    process: [
-      {
-        id: "kfjaieasoifiaeifj",
-        nameOfProcess: "creating note",
-        putInFloatingStack: true,
-        type: "progress",
-      },
-    ],
-  });
+  const [common, setCommon] = React.useState<CommonState>();
   const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] =
     React.useState<boolean>(defaultCollapsed);
 
