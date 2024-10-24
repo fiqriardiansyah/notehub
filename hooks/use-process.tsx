@@ -1,32 +1,59 @@
-import { CommonContext, CommonContextType } from "@/context/common";
+import { CommonContext, CommonContextType, Process } from "@/context/common";
 import React from "react";
 
 const useProcess = (id?: string) => {
-    const { common, setCommon } = React.useContext(CommonContext) as CommonContextType;
+  const { common, setCommon } = React.useContext(
+    CommonContext
+  ) as CommonContextType;
 
-    const setProcess = (process: { id: string, nameOfProcess: string }) => {
-        setCommon((prev) => {
-            if (prev.process?.find((p) => p.id === process.id && process.nameOfProcess === p.nameOfProcess)) {
-                return prev;
-            }
-            return {
-                ...prev,
-                process: [...(prev?.process || []), process],
-            }
-        });
-    }
+  const allProcess = common?.process;
 
-    const proceed = common?.process?.find((p) => p.id === id)?.nameOfProcess;
+  const setProcess = (process: Process) => {
+    setCommon((prev) => {
+      if (
+        prev.process?.find(
+          (p) =>
+            p.id === process.id && process.nameOfProcess === p.nameOfProcess
+        )
+      ) {
+        return prev;
+      }
+      return {
+        ...prev,
+        process: [...(prev?.process || []), process],
+      };
+    });
+  };
 
-    const finishProcess = (id: string) => {
-        setCommon((prev) => ({ ...prev, process: prev?.process?.filter((p) => p.id !== id) }));
-    }
+  const proceed = common?.process?.find((p) => p.id === id)?.nameOfProcess;
 
-    return {
-        proceed,
-        setProcess,
-        finishProcess,
-    }
-}
+  const finishProcess = (id: string) => {
+    setCommon((prev) => ({
+      ...prev,
+      process: prev?.process?.filter((p) => p.id !== id),
+    }));
+  };
 
-export default useProcess
+  const updateProcess = (id: string, process: Omit<Process, "id">) => {
+    setCommon((prev) => ({
+      ...prev,
+      process: prev?.process?.map((p) => {
+        if (p.id !== id) return p;
+        return {
+          ...p,
+          ...process,
+        };
+      }),
+    }));
+  };
+
+  return {
+    proceed,
+    setProcess,
+    finishProcess,
+    allProcess,
+    updateProcess,
+  };
+};
+
+export default useProcess;

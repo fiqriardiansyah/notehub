@@ -153,6 +153,13 @@ export function convertEditorDataToText(data: Note["note"]) {
         result += block.data?.text + " - " + block.data?.caption + "<br />";
         result += "<br />";
         break;
+      case "image":
+        if (result.includes("image-thumbnail")) {
+          break;
+        }
+        result += `<img src="${block.data?.url}" class="image-thumbnail" />`;
+        result += "<br />";
+        break;
       default:
         break;
     }
@@ -267,3 +274,26 @@ export const calculateShowProgress = ({
 };
 
 export const withoutSignPath = /^\/(signin|share\/[^/]+)$/;
+
+export const toBase64 = (file: any) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+  });
+
+export const getContentType = (base64String: string): string | null => {
+  const matches = base64String.match(/^data:(.*);base64,/);
+  return matches ? matches[1] : null;
+};
+
+export const downloadFileFromLink = (fileUrl: string, fileName: string) => {
+  const a = document.createElement("a");
+  a.href = fileUrl;
+  a.download = fileName;
+  a.target = "_blank";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};

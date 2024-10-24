@@ -24,7 +24,9 @@ export type CardNoteType<T> = {
 };
 
 const CardNote = <T extends Note>({ note, attachMenu }: CardNoteType<T>) => {
-  const { note: noteContext, setNote } = React.useContext(NoteContext) as NoteContextType;
+  const { note: noteContext, setNote } = React.useContext(
+    NoteContext
+  ) as NoteContextType;
   const isMobile = useMobileMediaQuery();
 
   const { proceed } = useProcess(note?.id);
@@ -38,10 +40,20 @@ const CardNote = <T extends Note>({ note, attachMenu }: CardNoteType<T>) => {
   };
 
   const content = React.useMemo(() => {
-    if (note?.isSecure) return <Secure />
-    if (note?.type === "freetext") return <FreeTextCardNote note={note} />
-    if (note?.type === "todolist") return <TodolistCardNote note={note} />
-    return ""
+    if (note?.isSecure)
+      return (
+        <Link href={`/write/${note?.id}`}>
+          <Secure />
+        </Link>
+      );
+    if (note?.type === "freetext")
+      return (
+        <Link href={`/write/${note?.id}`}>
+          <FreeTextCardNote note={note} />
+        </Link>
+      );
+    if (note?.type === "todolist") return <TodolistCardNote note={note} />;
+    return "";
   }, [note]);
 
   const onClickCard = () => {
@@ -49,13 +61,19 @@ const CardNote = <T extends Note>({ note, attachMenu }: CardNoteType<T>) => {
       data: note,
       content: HELPER_PANEL_NOTE_VIEW,
     });
-  }
+  };
 
   return (
     <motion.div
       exit={{ scale: 0.3, opacity: 0, transition: { delay: 0.3 } }}
-      style={{ opacity: !noteContext?.note ? 1 : noteContext.note.id === note?.id ? 1 : 0.3 }}
-      className="bg-white rounded-xl p-3 flex flex-col gap-3 border border-solid border-gray-500"
+      style={{
+        opacity: !noteContext?.note
+          ? 1
+          : noteContext.note.id === note?.id
+          ? 1
+          : 0.3,
+      }}
+      className="bg-white rounded-xl p-3 flex flex-col gap-3 border border-solid border-gray-300"
     >
       {proceed && <span className="text-[10px] font-medium">{proceed}</span>}
       <div className="flex w-full items-center justify-between gap-2">
@@ -65,11 +83,21 @@ const CardNote = <T extends Note>({ note, attachMenu }: CardNoteType<T>) => {
         <div className="flex items-center gap-2">
           {attachMenu && attachMenu(note)}
           {!isMobile ? (
-            <button disabled={!!proceed} onClick={onClickCard} title="Open in panel" className=" cursor-pointer bg-transparent border-none">
+            <button
+              disabled={!!proceed}
+              onClick={onClickCard}
+              title="Open in panel"
+              className=" cursor-pointer bg-transparent border-none"
+            >
               <PanelRight className="text-gray-500" size={16} />
             </button>
           ) : null}
-          <button disabled={!!proceed} onClick={onClickGear} title="Menu" className=" cursor-pointer bg-transparent border-none">
+          <button
+            disabled={!!proceed}
+            onClick={onClickGear}
+            title="Menu"
+            className=" cursor-pointer bg-transparent border-none"
+          >
             <GoGear className="text-gray-500" />
           </button>
         </div>
@@ -83,6 +111,6 @@ const CardNote = <T extends Note>({ note, attachMenu }: CardNoteType<T>) => {
       <CollabsList noteId={note?.id} />
     </motion.div>
   );
-}
+};
 
-export default React.memo(CardNote)
+export default React.memo(CardNote);

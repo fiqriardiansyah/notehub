@@ -5,6 +5,8 @@ import LoadingStatusBar from "./loading";
 import ErrorStatusBar from "./error";
 import SucccessStatusBar from "./success";
 import React from "react";
+import ProgressStatusBar from "./progress";
+import { cn } from "@/lib/utils";
 
 export default function StatusBar() {
   const [statusBar] = useStatusBar();
@@ -15,12 +17,18 @@ export default function StatusBar() {
     }
   }, [statusBar?.show]);
 
+  const className = cn(
+    "container-custom flex flex-col gap-3",
+    statusBar?.show ? "py-3" : ""
+  );
+
   return (
     <div className="z-20 w-full">
-      <div className="container-custom">
+      <div className={className}>
         <LoadingStatusBar {...statusBar} />
         <ErrorStatusBar {...statusBar} />
         <SucccessStatusBar {...statusBar} />
+        <ProgressStatusBar {...statusBar} />
       </div>
     </div>
   );

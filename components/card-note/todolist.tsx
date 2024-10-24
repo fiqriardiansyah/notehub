@@ -162,7 +162,7 @@ export default function TodolistCardNote({
               </AnimatePresence>
             </div>
             <p className="m-0 text-xs text-gray-500 text-end">
-              {`${taskDone}/${todos?.length}`} done
+              {`${taskDone}/${todos?.length}`}
             </p>
           </div>
         </>

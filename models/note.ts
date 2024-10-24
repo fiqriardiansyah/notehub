@@ -1,4 +1,5 @@
 import { Todo } from "@/app/write/mode/todolist";
+import { FileInfo } from "@/hooks/use-upload-file";
 import { User } from "next-auth";
 
 export interface Tag {
@@ -10,8 +11,9 @@ export interface Tag {
   creatorId?: string;
 }
 
-export type ModeNote = "freetext" | "todolist" | "habits"
+export type ModeNote = "freetext" | "todolist" | "habits";
 
+export type FileInfoFromServer = Pick<FileInfo, "url" | "name" | "sizeInMb">;
 export interface Note {
   id: string;
   title: string;
@@ -43,6 +45,8 @@ export interface Note {
   schedulerStartTime?: string;
   schedulerEndTime?: string;
   reschedule?: boolean;
+  filesUrl?: FileInfoFromServer[];
+  imagesUrl?: FileInfoFromServer[];
 }
 
 export interface DetailNote extends Note {
@@ -63,7 +67,16 @@ export interface DetailFolder {
   notes: Note[];
 }
 
-export interface CreateNote extends Omit<Note, "createdAt" | "updatedAt"> { }
+export interface CreateNote extends Omit<Note, "createdAt" | "updatedAt"> {
+  files?: Pick<
+    FileInfo,
+    "base64" | "name" | "contentType" | "sizeInMb" | "url"
+  >[];
+  images?: Pick<
+    FileInfo,
+    "base64" | "name" | "contentType" | "sizeInMb" | "url"
+  >[];
+}
 
 export interface ChangeTodosData {
   noteId: string;

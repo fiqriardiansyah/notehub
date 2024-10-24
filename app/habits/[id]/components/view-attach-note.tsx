@@ -3,6 +3,8 @@
 import TodoListModeEditor, { Todo } from "@/app/write/mode/todolist";
 import ghostAnim from "@/asset/animation/ghost.json";
 import CollabsList from "@/components/common/collabs-list";
+import ListFile from "@/components/file/list-file";
+import ListImage from "@/components/file/list-image";
 import { CLOSE_SIDE_PANEL } from "@/components/layout/side-panel";
 import OpenSecureNote from "@/components/open-secure-note";
 import StateRender from "@/components/state-render";
@@ -142,6 +144,18 @@ export default function ViewAttachNote() {
                     onChange={onChangeTodoList}
                   />
                 )}
+                {noteDetailMutate.data?.imagesUrl?.length ? (
+                  <>
+                    <div className="h-6"></div>
+                    <ListImage defaultList={noteDetailMutate.data?.imagesUrl} />
+                  </>
+                ) : null}
+                {noteDetailMutate.data?.filesUrl?.length ? (
+                  <>
+                    <div className="h-6"></div>
+                    <ListFile defaultList={noteDetailMutate.data?.filesUrl} />
+                  </>
+                ) : null}
                 <CollabsList noteId={noteDetailMutate.data?.id as string}>
                   {(list) => {
                     if (!list?.length) {

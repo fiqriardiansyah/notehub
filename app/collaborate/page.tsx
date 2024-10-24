@@ -69,7 +69,7 @@ export default function CollaboratePage() {
   return (
     <>
       {renderTopNav()}
-      <div className="container-custom pb-20 min-h-screen">
+      <div className="container-custom pb-20 min-h-screen pt-3">
         <ToolBar
           filterTag={filterTag}
           setFilterTag={setFilterTag}
