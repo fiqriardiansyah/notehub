@@ -63,7 +63,7 @@ export default function ToolsBar({
     !excludeSettings?.find((s) => s === "mode") && !isLoading;
 
   return (
-    <div className="w-full bg-white p-1 h-full flex items-center justify-evenly gap-2 container-custom lg:rounded-full">
+    <div className="w-full bg-white p-1 h-full flex items-center justify-evenly gap-2 container-custom sm:rounded-full">
       <AnimatePresence mode="popLayout">
         {showCollab && (
           <AnimateItem key="collabs">
@@ -112,12 +112,13 @@ export default function ToolsBar({
       </ButtonSuccessAnim>
       <AnimatePresence mode="popLayout">
         {showModeWrite && (
-          <AnimateItem key="modewrite">
-            <div className="flex gap-2">
-              <div className="h-[35px] w-[1px] bg-gray-500"></div>
-              <ModeWrite />
-            </div>
-          </AnimateItem>
+          <motion.div
+            exit={{ width: "0", scale: 0, opacity: 0 }}
+            animate={{ width: "auto", scale: 1, opacity: 1 }}
+            initial={{ width: "0", scale: 0, opacity: 0 }}
+          >
+            <ModeWrite />
+          </motion.div>
         )}
       </AnimatePresence>
       <AnimatePresence mode="popLayout">

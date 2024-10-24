@@ -62,7 +62,7 @@ export default function FreetextModeEditor({
 
   return (
     <>
-      <h1 className="text-2xl font-light underline mb-2 w-fit">Content</h1>
+      <p className="text-xs text-gray-400 font-light mb-2 w-fit">Content</p>
       <Editor editorRef={setFreetextEditor} tools={toolsDefault} {...props} />
       <form onSubmit={onSubmit} className="h-0 w-0 opacity-0 hidden">
         {children}

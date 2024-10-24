@@ -10,26 +10,23 @@ import {
   WriteContext,
   WriteContextType,
 } from "@/context/write";
+import { useBridgeEvent } from "@/hooks/use-bridge-event";
+import useProcess from "@/hooks/use-process";
 import useStatusBar from "@/hooks/use-status-bar";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
-import { easeDefault } from "@/lib/utils";
 import { CreateNote, ModeNote } from "@/models/note";
 import ShowedTags from "@/module/tags/showed-tags";
 import validation from "@/validation";
 import { noteValidation } from "@/validation/note";
-import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
 import dynamic from "next/dynamic";
 import { usePathname, useSearchParams } from "next/navigation";
 import React from "react";
-import FileAttach from "./components/file-attach";
-import ImageAttach from "./components/image-attach";
-import ToolsBar from "./components/tool-bar";
-import TodoListModeEditor from "./mode/todolist/index";
 import { v4 as uuid } from "uuid";
-import useProcess from "@/hooks/use-process";
-import { useBridgeEvent } from "@/hooks/use-bridge-event";
+import ToolsBar from "./components/tool-bar";
+import TopToolBar from "./components/top-tool-bar";
+import TodoListModeEditor from "./mode/todolist/index";
 
 const FreetextModeEditor = dynamic(
   () => import("./mode/freetext").then((mod) => mod.default),
@@ -143,43 +140,32 @@ export default function Write() {
 
   return (
     <div className="flex flex-col">
-      <motion.div
-        style={{ pointerEvents: isNavHide ? "none" : "auto" }}
-        animate={{ y: isNavHide ? "-100%" : 0 }}
-        transition={{ ease: easeDefault }}
-        className="w-full flex items-center container-custom z-10 justify gap-3 py-1 sticky top-0 left-0 bg-white"
-      >
-        <div className="flex flex-row items-center flex-1 w-full">
-          <div className="mr-3">
-            <Button
-              onClick={onClickBack}
-              title="Back"
-              size="icon"
-              variant="ghost"
-              className="!w-10"
-            >
-              <ChevronLeft />
-            </Button>
-          </div>
-          <p>Create new {dataNote.modeWrite}</p>
+      <div className="flex flex-row flex-1 w-full items-center container-custom z-10 justify gap-3 py-1 sticky top-0 left-0 bg-white">
+        <div className="mr-3">
+          <Button
+            onClick={onClickBack}
+            title="Back"
+            size="icon"
+            variant="ghost"
+            className="!w-10"
+          >
+            <ChevronLeft />
+          </Button>
         </div>
-      </motion.div>
-      <div className="w-full overflow-x-hidden container-read lg:flex-1 bg-white overflow-y-auto min-h-screen pb-20 lg:!px-10">
+        <TopToolBar />
+      </div>
+      <div className="w-full container-read lg:flex-1 mt-10 bg-white overflow-y-auto min-h-screen pb-20 lg:!px-10">
         <input
           value={dataNote?.title}
           onChange={onChangeTitle}
           autoFocus={true}
           type="text"
           placeholder="Title ..."
-          className="text-2xl w-full font-medium border-none focus:outline-none outline-none bg-transparent"
+          className="text-2xl w-full font-medium border-none focus:outline-none outline-none bg-transparent mb-5"
         />
-        <div className="flex items-center gap-4 my-5">
-          <FileAttach />
-          <ImageAttach />
-        </div>
         {dataNote.tags?.length ? (
           <div className="">
-            <h1 className="text-2xl font-light mb-3 underline w-fit">Tags</h1>
+            <p className="text-xs text-gray-400 font-light mb-2 w-fit">Tags</p>
             <ShowedTags className="my-5 sm:!flex-wrap" />
           </div>
         ) : null}

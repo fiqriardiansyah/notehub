@@ -21,16 +21,16 @@ import {
   WriteContextType,
   WriteStateType,
 } from "@/context/write";
+import { useBridgeEvent } from "@/hooks/use-bridge-event";
+import useProcess from "@/hooks/use-process";
 import useStatusBar from "@/hooks/use-status-bar";
-import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
-import { easeDefault, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { CreateNote } from "@/models/note";
 import ShowedTags from "@/module/tags/showed-tags";
 import noteService from "@/service/note";
 import validation from "@/validation";
 import { noteValidation } from "@/validation/note";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
 import { ChevronLeft, FolderOpen } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
 import dynamic from "next/dynamic";
@@ -39,12 +39,9 @@ import { useParams, usePathname } from "next/navigation";
 import React from "react";
 import { v4 as uuid } from "uuid";
 import ListFile from "../../../components/file/list-file";
-import FileAttach from "../components/file-attach";
-import ImageAttach from "../components/image-attach";
 import ToolsBar, { ToolsType } from "../components/tool-bar";
 import TodoListModeEditor, { Todo } from "../mode/todolist";
-import { useBridgeEvent } from "@/hooks/use-bridge-event";
-import useProcess from "@/hooks/use-process";
+import TopToolBar from "../components/top-tool-bar";
 
 const FreetextModeEditor = dynamic(
   () => import("../mode/freetext").then((mod) => mod.default),
@@ -69,7 +66,6 @@ export default function Write() {
     generateChangesId,
     note: { changesRandomId },
   } = React.useContext(NoteContext) as NoteContextType;
-  const isNavHide = useToggleHideNav();
   const saveBtnRef = React.useRef<HTMLButtonElement>(null);
   const [todos, setTodos] = React.useState<Todo[]>([]);
   const { allProcess } = useProcess();
@@ -224,27 +220,20 @@ export default function Write() {
   return (
     <>
       <div className="container-custom pb-20 min-h-screen bg-white relative">
-        <motion.div
-          style={{ pointerEvents: isNavHide ? "none" : "auto" }}
-          animate={{ y: isNavHide ? "-100%" : 0 }}
-          transition={{ ease: easeDefault }}
-          className="sticky top-0 left-0 py-1 bg-white z-20"
-        >
-          <div className="flex flex-row items-center flex-1">
-            <div className="mr-3">
-              <Button
-                onClick={onClickBack}
-                title="Back"
-                size="icon"
-                variant="ghost"
-                className="!w-10"
-              >
-                <ChevronLeft />
-              </Button>
-            </div>
-            <h1>Detail {dataNote?.title}</h1>
+        <div className="flex flex-row items-center flex-1 sticky top-0 left-0 py-1 bg-white z-20">
+          <div className="mr-3">
+            <Button
+              onClick={onClickBack}
+              title="Back"
+              size="icon"
+              variant="ghost"
+              className="!w-10"
+            >
+              <ChevronLeft />
+            </Button>
           </div>
-        </motion.div>
+          <TopToolBar />
+        </div>
         {noteDetailQuery.data?.folderName && isOwner && (
           <Breadcrumb>
             <BreadcrumbList>
@@ -273,7 +262,7 @@ export default function Write() {
                 <OpenSecureNote refetch={noteDetailQuery.mutate} />
               </div>
             ) : (
-              <div className="w-full container-read overflow-x-hidden lg:!px-10">
+              <div className="w-full container-read overflow-x-hidden lg:!px-10 mt-10">
                 <input
                   disabled={asViewer}
                   value={dataNote?.title}
@@ -281,17 +270,13 @@ export default function Write() {
                   autoFocus={true}
                   type="text"
                   placeholder="Title ..."
-                  className="text-2xl w-full font-medium border-none focus:outline-none outline-none bg-transparent"
+                  className="text-2xl w-full font-medium border-none focus:outline-none outline-none bg-transparent mb-5"
                 />
-                <div className="flex items-center gap-4 my-5">
-                  <FileAttach />
-                  <ImageAttach />
-                </div>
                 {dataNote.tags?.length ? (
                   <div className="">
-                    <h1 className="text-2xl font-light mb-3 underline w-fit">
+                    <p className="text-xs text-gray-400 font-light mb-2 w-fit">
                       Tags
-                    </h1>
+                    </p>
                     {isOwner ? (
                       <ShowedTags className="my-5 sm:!flex-wrap" />
                     ) : (
