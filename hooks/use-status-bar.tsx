@@ -15,7 +15,7 @@ export default function useStatusBar() {
   const reset = () => {
     setCommon((prev) => ({
       ...prev,
-      statusBar: null,
+      statusBar: undefined,
     }));
   };
 
