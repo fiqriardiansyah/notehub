@@ -23,6 +23,7 @@ import { GET_LINK_EVENT_DIALOG } from "../card-note/setting/get-link";
 import { CLOSE_SIDE_PANEL, OPEN_SIDE_PANEL } from "../layout/side-panel";
 import Attach from "./attach";
 import BottomSheet from "./bottom-sheet";
+import { useSelectToolBar } from "../select-tool-bar.tsx/provider";
 
 export type WithFunctionalityHOCProps = {
   settings: NoteSetting[];
@@ -41,6 +42,7 @@ export function withFunctionality(WrappedComponent: React.ComponentType<any>) {
     const { note, setNote, generateChangesId } = React.useContext(
       NoteContext
     ) as NoteContextType;
+    const { toggleSelectedNote } = useSelectToolBar();
 
     const currentNote = note?.note;
 
@@ -180,6 +182,13 @@ export function withFunctionality(WrappedComponent: React.ComponentType<any>) {
 
     const handleClickSetting = (setting: NoteSetting) => {
       return () => {
+        if (setting.type === "select") {
+          if (currentNote) {
+            toggleSelectedNote(currentNote);
+            setNote((prev) => ({ ...prev, note: undefined }));
+          }
+          return;
+        }
         if (setting.type === "link") {
           fireBridgeEvent(GET_LINK_EVENT_DIALOG, currentNote);
           setNote((prev) => ({ ...prev, note: undefined }));

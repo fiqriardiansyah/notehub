@@ -1,31 +1,37 @@
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
+import { Button } from "@/components/ui/button";
+import { ImagePlus, Paperclip } from "lucide-react";
 import FileAttach from "./file-attach";
 import ImageAttach from "./image-attach";
 
 export default function TopToolBar() {
   return (
-    <Menubar>
-      <MenubarMenu>
-        <MenubarTrigger>File</MenubarTrigger>
-        <MenubarContent>
-          <FileAttach>
-            {({ onClick }) => (
-              <MenubarItem onSelect={onClick}>Attach File</MenubarItem>
-            )}
-          </FileAttach>
-          <ImageAttach>
-            {({ onClick }) => (
-              <MenubarItem onSelect={onClick}>Attach Image</MenubarItem>
-            )}
-          </ImageAttach>
-        </MenubarContent>
-      </MenubarMenu>
-    </Menubar>
+    <div className="flex items-center gap-2">
+      <FileAttach>
+        {({ onClick }) => (
+          <Button
+            onClick={onClick}
+            size="icon"
+            variant="ghost"
+            className="!rounded"
+            title="Attach File"
+          >
+            <Paperclip size={16} />
+          </Button>
+        )}
+      </FileAttach>
+      <ImageAttach>
+        {({ onClick }) => (
+          <Button
+            onClick={onClick}
+            size="icon"
+            variant="ghost"
+            className="!rounded"
+            title="Attach Image"
+          >
+            <ImagePlus size={16} />
+          </Button>
+        )}
+      </ImageAttach>
+    </div>
   );
 }

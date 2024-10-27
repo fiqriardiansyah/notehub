@@ -3,12 +3,12 @@
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { FileInfo } from "@/hooks/use-upload-file";
+import { downloadFileFromLink } from "@/lib/utils";
+import { DialogTitle } from "@radix-ui/react-dialog";
 import { ArrowDownToLine, X } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import { Button } from "../ui/button";
-import { DialogTitle } from "@radix-ui/react-dialog";
-import { downloadFileFromLink } from "@/lib/utils";
 
 export type CardImageProps = {
   file: FileInfo;

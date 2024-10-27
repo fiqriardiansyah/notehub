@@ -11,7 +11,7 @@ const useProcess = (id?: string) => {
   const setProcess = (process: Process) => {
     setCommon((prev) => {
       if (
-        prev.process?.find(
+        prev?.process?.find(
           (p) =>
             p.id === process.id && process.nameOfProcess === p.nameOfProcess
         )

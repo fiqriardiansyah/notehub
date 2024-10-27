@@ -12,6 +12,12 @@ import {
 import { NoteShared, ShareLink } from "@/models/share";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 
+export type AddNoteFolderParams = {
+  folderId?: string;
+  newFolderName?: string;
+  noteIds: string[];
+};
+
 const noteService = {
   createNote: (
     data: CreateNote,
@@ -55,17 +61,25 @@ const noteService = {
   ): Promise<AxiosResponse<BaseResponse<DetailFolder>>> =>
     api.patch(`/note/f/${id}`, data),
 
+  removeNoteFromFolder: (data: {
+    noteIds: string[];
+  }): Promise<AxiosResponse<BaseResponse<any>>> => api.patch(`/note/rnf`, data),
+
   addNoteToFolder: (
-    folderId: string,
-    noteIds: string[]
+    params: AddNoteFolderParams
   ): Promise<AxiosResponse<BaseResponse<any>>> =>
-    api.post(`/note/antf`, { folderId, noteIds }),
+    api.post(`/note/antf`, params),
 
   isSecureNote: (id: string): Promise<AxiosResponse<BaseResponse<boolean>>> =>
     api.get(`/note/isn/${id}`),
 
-  deleteNote: (id: string): Promise<AxiosResponse<BaseResponse<Note>>> =>
+  deleteNote: (id: string): Promise<AxiosResponse<BaseResponse<any>>> =>
     api.delete(`/note/${id}`),
+
+  deleteNotes: (params: {
+    ids: string[];
+  }): Promise<AxiosResponse<BaseResponse<any>>> =>
+    api.post(`/note/many`, params),
 
   deleteFolder: (
     id: string

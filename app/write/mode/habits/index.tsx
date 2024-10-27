@@ -75,9 +75,10 @@ export default function HabitsModeEditor({
         <Editor
           asEdit={asEdit}
           data={asEdit ? note?.description : undefined}
-          placeholder="Habits Description"
+          placeholder="Type Description here..."
           editorRef={setFreetextEditor}
         />
+        <p className="text-xs text-gray-400 font-light mb-2 w-fit">Task</p>
         <TodoListModeEditor
           todos={todos}
           defaultTodos={note?.todos}

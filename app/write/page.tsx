@@ -13,7 +13,6 @@ import {
 import { useBridgeEvent } from "@/hooks/use-bridge-event";
 import useProcess from "@/hooks/use-process";
 import useStatusBar from "@/hooks/use-status-bar";
-import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { CreateNote, ModeNote } from "@/models/note";
 import ShowedTags from "@/module/tags/showed-tags";
 import validation from "@/validation";
@@ -50,8 +49,8 @@ export default function Write() {
   ) as NoteContextType;
   const saveBtnRef = React.useRef<HTMLButtonElement>(null);
   const idForProcessRef = React.useRef(uuid());
+  const buttonSaveRef = React.useRef<HTMLButtonElement>();
   const [_, setStatusBar, resetStatusBar] = useStatusBar();
-  const isNavHide = useToggleHideNav();
   const { allProcess } = useProcess();
   const typeDefault = searchParams.get("type") as ModeNote;
   const currentProcess = allProcess?.find(
@@ -138,6 +137,10 @@ export default function Write() {
     setDataNote((prev) => ({ ...prev, title: val }));
   };
 
+  // ShortCut.shortcut(ShortCut.saveWriteKey, () => {
+  //   buttonSaveRef.current?.click();
+  // });
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-row flex-1 w-full items-center container-custom z-10 justify gap-3 py-1 sticky top-0 left-0 bg-white">
@@ -154,7 +157,7 @@ export default function Write() {
         </div>
         <TopToolBar />
       </div>
-      <div className="w-full container-read lg:flex-1 mt-10 bg-white overflow-y-auto min-h-screen pb-20 lg:!px-10">
+      <div className="w-full container-read lg:flex-1 mt-10 bg-white overflow-y-auto pb-20 lg:!px-10">
         <input
           value={dataNote?.title}
           onChange={onChangeTitle}
@@ -177,11 +180,14 @@ export default function Write() {
           </FreetextModeEditor>
         )}
         {dataNote.modeWrite === "todolist" && (
-          <TodoListModeEditor onSave={saveWrite}>
-            <button ref={saveBtnRef} type="submit">
-              submit
-            </button>
-          </TodoListModeEditor>
+          <>
+            <p className="text-xs text-gray-400 font-light mb-2 w-fit">Task</p>
+            <TodoListModeEditor onSave={saveWrite}>
+              <button ref={saveBtnRef} type="submit">
+                submit
+              </button>
+            </TodoListModeEditor>
+          </>
         )}
         {dataNote.modeWrite === "habits" && (
           <HabitsModeEditor onSave={saveWrite}>
@@ -197,6 +203,7 @@ export default function Write() {
       </div>
       <div className="flex justify-center fixed sm:absolute z-40 sm:bottom-2 bottom-0 left-0 sm:left-1/2 transform sm:-translate-x-1/2 w-full sm:w-fit sm:bg-white sm:rounded-full sm:shadow-xl">
         <ToolsBar
+          ref={buttonSaveRef}
           excludeSettings={
             dataNote.modeWrite === "habits"
               ? ["folder", "delete", "collabs", "secure"]

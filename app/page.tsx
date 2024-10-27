@@ -6,6 +6,8 @@ import HabitsAlert from "@/components/habits/habits-alert";
 import LayoutGrid from "@/components/layout-grid";
 import BottomBar from "@/components/navigation-bar/bottom-bar";
 import TopBar from "@/components/navigation-bar/top-bar/mobile";
+import SelectToolbar from "@/components/select-tool-bar.tsx";
+import { SelectToolBarProvider } from "@/components/select-tool-bar.tsx/provider";
 import SettingNoteDrawer from "@/components/setting-note-drawer";
 import StateRender from "@/components/state-render";
 import ToolBar from "@/components/tool-bar";
@@ -64,57 +66,70 @@ export default function IndexPage() {
   };
 
   return (
-    <>
-      {renderTopNav()}
-      <div className="container-custom pb-20 pt-3 min-h-screen grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-3 relative">
-        {showHabitUrgent && (
-          <div className="sticky top-0 h-fit">
-            <HabitsAlert callback={callbackHabits} />
-          </div>
-        )}
-        <div className="w-full -order-1">
-          <ToolBar
-            filterTag={filterTag}
-            setFilterTag={setFilterTag}
-            tags={tags}
-            order={orderList}
-            onClickModified={onClickModified}
-          />
-          <StateRender data={itemsQuery.data} isLoading={itemsQuery.isLoading}>
-            <StateRender.Data>
-              <div className="w-full my-7">
-                {filteredItems?.length ? (
-                  <LayoutGrid items={filteredItems}>
-                    {(item) => {
-                      if (item.type === "folder")
-                        return <CardFolder {...item} key={item.id} />;
-                      return (
-                        <CardNote
-                          note={item as Note}
-                          key={item.id}
-                          attachMenu={(note) => (
-                            <SettingNoteDrawer.Attach note={note} />
-                          )}
-                        />
-                      );
-                    }}
-                  </LayoutGrid>
+    <SelectToolBarProvider notes={itemsQuery.data as Note[]}>
+      {(context) => (
+        <>
+          {renderTopNav()}
+          <div className="container-custom pb-20 pt-3 min-h-screen grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-3 relative">
+            {showHabitUrgent && (
+              <div className="sticky top-0 h-fit">
+                <HabitsAlert callback={callbackHabits} />
+              </div>
+            )}
+            <div className="w-full -order-1">
+              <div className="w-full sticky z-10 top-0 left-0 bg-white">
+                {context?.selectToolbar?.selectedNotes?.length ? (
+                  <SelectToolbar tools={["deleted", "add_folder"]} />
                 ) : (
-                  <ButtonToWrite
-                    href="/write?type=freetext"
-                    title="There is no notes available"
+                  <ToolBar
+                    filterTag={filterTag}
+                    setFilterTag={setFilterTag}
+                    tags={tags}
+                    order={orderList}
+                    onClickModified={onClickModified}
                   />
                 )}
               </div>
-            </StateRender.Data>
-            <StateRender.Loading>
-              <p>Getting Notes...</p>
-            </StateRender.Loading>
-          </StateRender>
-        </div>
-      </div>
-      <SettingNoteDrawer.BottomSheet refetch={itemsQuery.refetch} />
-      <BottomBar />
-    </>
+              <StateRender
+                data={itemsQuery.data}
+                isLoading={itemsQuery.isLoading}
+              >
+                <StateRender.Data>
+                  <div className="w-full my-7">
+                    {filteredItems?.length ? (
+                      <LayoutGrid items={filteredItems}>
+                        {(item) => {
+                          if (item.type === "folder")
+                            return <CardFolder {...item} key={item.id} />;
+                          return (
+                            <CardNote
+                              note={item as Note}
+                              key={item.id}
+                              attachMenu={(note) => (
+                                <SettingNoteDrawer.Attach note={note} />
+                              )}
+                            />
+                          );
+                        }}
+                      </LayoutGrid>
+                    ) : (
+                      <ButtonToWrite
+                        href="/write?type=freetext"
+                        title="There is no notes available"
+                      />
+                    )}
+                  </div>
+                </StateRender.Data>
+                <StateRender.Loading>
+                  <p>Getting Notes...</p>
+                </StateRender.Loading>
+              </StateRender>
+            </div>
+          </div>
+          <SettingNoteDrawer.BottomSheet refetch={itemsQuery.refetch} />
+          <BottomBar />
+        </>
+      )}
+    </SelectToolBarProvider>
   );
 }

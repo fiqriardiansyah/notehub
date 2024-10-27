@@ -31,16 +31,9 @@ export type CommonState = {
   helperPanel?: HelperPanel;
 };
 
-type CallbackPayload<T = any> = (
-  callback: (nameground: string, payload: T) => void
-) => void;
-
 export type CommonContextType<T = any> = {
   common: CommonState;
   setCommon: React.Dispatch<React.SetStateAction<CommonState>>;
-  callbackPayload: CallbackPayload<T>;
-  triggerCallbackPayload: (nameground: string, payload: any) => void;
-  emptyCallback: () => void;
   setIsDesktopSidebarCollapsed: React.Dispatch<boolean>;
   isDesktopSidebarCollapsed: boolean;
   defaultLayoutResizable: number[];

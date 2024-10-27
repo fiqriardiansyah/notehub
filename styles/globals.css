@@ -81,6 +81,14 @@
   }
 }
 
+.codex-editor.codex-editor--toolbox-opened {
+  z-index: 99 !important;
+}
+
+.ce-block.ce-block--selected {
+  z-index: 99 !important;
+}
+
 .spinner {
   animation: spinner-c7wet2 1s infinite linear;
 }

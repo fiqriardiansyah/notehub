@@ -19,7 +19,7 @@ export default function StatusBar() {
 
   const className = cn(
     "container-custom flex flex-col gap-3",
-    statusBar?.show ? "py-3" : ""
+    statusBar?.show && statusBar?.type ? "py-3" : ""
   );
 
   return (

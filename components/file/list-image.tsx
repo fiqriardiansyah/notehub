@@ -6,6 +6,7 @@ import React from "react";
 import { CardImage } from "./card-image";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { useMobileMediaQuery } from "@/hooks/responsive";
 
 export type ListImageProps = { canEdit?: boolean; defaultList?: FileInfo[] };
 
@@ -13,6 +14,7 @@ export default function ListImage({
   canEdit,
   defaultList = [],
 }: ListImageProps) {
+  const isMobile = useMobileMediaQuery();
   const { dataNote, setDataNote } = React.useContext(
     WriteContext
   ) as WriteContextType;
@@ -34,25 +36,48 @@ export default function ListImage({
   const images = defaultList.length ? defaultList : dataNote?.images;
 
   const calculateSpan = (index: number) => {
-    const className = cn(
-      index === 0 && length === 1 ? "h-[400px] col-span-4" : null,
-      length === 2 ? "col-span-2 h-[200px]" : null,
-      length === 3
-        ? index === 0
-          ? "col-span-2 row-span-2"
-          : "col-span-2"
-        : null,
-      length === 4 ? "col-span-2 h-[200px]" : null,
-      length === 5 ? (index === 0 ? "col-span-2 row-span-2" : "") : null,
-      length === 6 ? (index === 0 || index === 1 ? "row-span-2" : "") : null,
-      length === 7 ? (index === 0 ? "row-span-2" : "") : null,
-      (length || 1) >= 9 ? (index === 0 ? "row-span-2 col-span-2" : null) : null
-    );
+    let className;
+    if (isMobile) {
+      className = cn(
+        index === 0 && length === 1 ? "h-[300px] col-span-2" : null,
+        length === 2 ? "col-span-1 h-[200px]" : null,
+        length === 3
+          ? index === 0
+            ? "row-span-2 h-[300px]"
+            : "col-span-1"
+          : null
+      );
+    } else {
+      className = cn(
+        index === 0 && length === 1 ? "h-[400px] col-span-4" : null,
+        length === 2 ? "col-span-2 h-[200px]" : null,
+        length === 3
+          ? index === 0
+            ? "col-span-2 row-span-2"
+            : "col-span-2"
+          : null,
+        length === 4 ? "col-span-2 h-[200px]" : null,
+        length === 5 ? (index === 0 ? "col-span-2 row-span-2" : "") : null,
+        length === 6 ? (index === 0 || index === 1 ? "row-span-2" : "") : null,
+        length === 7 ? (index === 0 ? "row-span-2" : "") : null,
+        (length || 1) >= 9
+          ? index === 0
+            ? "row-span-2 col-span-2"
+            : null
+          : null
+      );
+    }
+
     return className;
   };
 
   return (
-    <div className="grid grid-cols-4 gap-2 grid-flow-row">
+    <div
+      className={cn(
+        "grid gap-2 grid-flow-row",
+        isMobile ? "grid-cols-2" : "grid-cols-4"
+      )}
+    >
       <AnimatePresence>
         {images?.map((file, i) => (
           <motion.div
