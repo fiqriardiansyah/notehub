@@ -14,6 +14,7 @@ import { Note } from "@/models/note";
 import noteService from "@/service/note";
 import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { v4 as uuid } from "uuid";
 import * as lodash from "lodash";
 import { PencilRuler, X } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
@@ -24,11 +25,11 @@ import { HELPER_PANEL_EXIT, HELPER_PANEL_NOTE_VIEW } from ".";
 import { NoteContext, NoteContextType } from "@/context/note";
 import ListImage from "@/components/file/list-image";
 import ListFile from "@/components/file/list-file";
+import { CardImage } from "@/components/file/card-image";
+import LayoutGrid from "@/components/layout-grid";
+import { CardFile } from "@/components/file/card-file";
 
-const FreetextModeEditor = dynamic(
-  () => import("@/app/write/mode/freetext").then((mod) => mod.default),
-  { ssr: false }
-);
+const FreetextModeEditor = dynamic(() => import("@/app/write/mode/freetext").then((mod) => mod.default), { ssr: false });
 
 export default function NoteViewPanel() {
   const { setCommon } = React.useContext(CommonContext) as CommonContextType;
@@ -46,7 +47,12 @@ export default function NoteViewPanel() {
 
   const noteDetailMutate = useMutation(
     async (id: string) => {
-      return (await noteService.getOneNote(id)).data.data;
+      const request = (await noteService.getOneNote(id)).data.data;
+      return {
+        ...request,
+        filesUrl: request?.filesUrl?.map((f) => ({ ...f, id: uuid() })),
+        imagesUrl: request?.imagesUrl?.map((i) => ({ ...i, id: uuid() })),
+      };
     },
     {
       onSuccess(data) {
@@ -58,8 +64,7 @@ export default function NoteViewPanel() {
   );
 
   const changeTodosMutate = useMutation(async (todos: Todo[]) => {
-    return (await noteService.changeTodos({ noteId: payload!.id, todos })).data
-      .data;
+    return (await noteService.changeTodos({ noteId: payload!.id, todos })).data.data;
   });
 
   const isSecureNoteQuery = useMutation(
@@ -141,33 +146,19 @@ export default function NoteViewPanel() {
     >
       <div className="w-full p-2 flex items-center sticky top-0 left-0 justify-between border-b z-30 bg-white border-gray-200 px-4">
         <div className="flex items-center gap-2">
-          <Button
-            onClick={onClickEdit}
-            title="Edit"
-            size="icon-small"
-            variant="ghost"
-          >
+          <Button onClick={onClickEdit} title="Edit" size="icon-small" variant="ghost">
             <PencilRuler size={15} />
           </Button>
           <CollabsList noteId={payload?.id} />
         </div>
-        <Button
-          ref={buttonCloseRef}
-          onClick={onClickClose}
-          title="close"
-          size="icon-small"
-          variant="ghost"
-        >
+        <Button ref={buttonCloseRef} onClick={onClickClose} title="close" size="icon-small" variant="ghost">
           <X size={16} />
         </Button>
       </div>
       <div className="container-read flex flex-col w-full gap-6 py-4">
         <h1 className="capitalize">{payload?.title}</h1>
         <StateRender
-          data={
-            isSecureNoteQuery.data !== undefined ||
-            isSecureNoteQuery.data !== null
-          }
+          data={isSecureNoteQuery.data !== undefined || isSecureNoteQuery.data !== null}
           isLoading={isSecureNoteQuery.isLoading}
           isError={(isSecureNoteQuery.error as Error)?.message}
         >
@@ -175,53 +166,41 @@ export default function NoteViewPanel() {
             {isSecure ? (
               <OpenSecureNote refetch={openSecure} />
             ) : (
-              <StateRender
-                data={noteDetailMutate.data}
-                isLoading={noteDetailMutate.isLoading}
-                isError={noteDetailMutate.isError}
-              >
+              <StateRender data={noteDetailMutate.data} isLoading={noteDetailMutate.isLoading} isError={noteDetailMutate.isError}>
                 <StateRender.Data>
-                  {noteDetailMutate.data?.type === "freetext" &&
-                  noteDetailMutate.data.note?.blocks?.length ? (
-                    <FreetextModeEditor
-                      showInfoDefault={false}
-                      data={noteDetailMutate.data?.note}
-                      options={{ readOnly: true }}
-                    />
+                  {noteDetailMutate.data?.type === "freetext" && noteDetailMutate.data.note?.blocks?.length ? (
+                    <FreetextModeEditor showInfoDefault={false} data={noteDetailMutate.data?.note} options={{ readOnly: true }} />
                   ) : null}
                   {noteDetailMutate.data?.type === "todolist" && (
-                    <TodoListModeEditor
-                      showInfoDefault={false}
-                      defaultTodos={todos}
-                      todos={todos}
-                      onChange={onChangeTodoList}
-                    />
+                    <TodoListModeEditor showInfoDefault={false} defaultTodos={todos} todos={todos} onChange={onChangeTodoList} />
                   )}
                   {noteDetailMutate.data?.imagesUrl?.length ? (
-                    <ListImage defaultList={noteDetailMutate.data?.imagesUrl} />
+                    <ListImage defaultList={noteDetailMutate.data?.imagesUrl}>
+                      {({ canEdit, length, list, onRemove }) => (
+                        <LayoutGrid items={list} minWidthItem={140}>
+                          {(image) => <CardImage file={image} key={image.id} canEdit={canEdit} onRemove={onRemove} />}
+                        </LayoutGrid>
+                      )}
+                    </ListImage>
                   ) : null}
                   {noteDetailMutate.data?.filesUrl?.length ? (
-                    <ListFile defaultList={noteDetailMutate.data?.filesUrl} />
+                    <ListFile defaultList={noteDetailMutate.data?.filesUrl}>
+                      {({ canEdit, length, list, onRemove }) => (
+                        <LayoutGrid items={list} minWidthItem={140}>
+                          {(file) => <CardFile file={file} key={file.id} canEdit={canEdit} onRemove={onRemove} />}
+                        </LayoutGrid>
+                      )}
+                    </ListFile>
                   ) : null}
                   <CollabsList noteId={noteDetailMutate.data?.id as string}>
                     {(list) => {
                       if (!list?.length) {
-                        return (
-                          <span className="caption my-10 block">
-                            {`Last edit at ${formatDate(
-                              noteDetailMutate.data?.updatedAt
-                            )}`}
-                          </span>
-                        );
+                        return <span className="caption my-10 block">{`Last edit at ${formatDate(noteDetailMutate.data?.updatedAt)}`}</span>;
                       }
                       return (
                         <span className="caption my-10 block">
-                          {`Edited ${formatDate(
-                            noteDetailMutate.data?.updatedAt
-                          )} By `}
-                          <span className="font-semibold">
-                            {noteDetailMutate.data?.updatedBy}
-                          </span>
+                          {`Edited ${formatDate(noteDetailMutate.data?.updatedAt)} By `}
+                          <span className="font-semibold">{noteDetailMutate.data?.updatedBy}</span>
                         </span>
                       );
                     }}
@@ -235,9 +214,7 @@ export default function NoteViewPanel() {
                   </div>
                 </StateRender.Loading>
                 <StateRender.Error>
-                  <p className="text-red-500">
-                    {(noteDetailMutate.error as Error)?.message}
-                  </p>
+                  <p className="text-red-500">{(noteDetailMutate.error as Error)?.message}</p>
                 </StateRender.Error>
               </StateRender>
             )}
@@ -250,9 +227,7 @@ export default function NoteViewPanel() {
             </div>
           </StateRender.Loading>
           <StateRender.Error>
-            <p className="text-red-500">
-              {(isSecureNoteQuery.error as Error)?.message}
-            </p>
+            <p className="text-red-500">{(isSecureNoteQuery.error as Error)?.message}</p>
           </StateRender.Error>
         </StateRender>
       </div>

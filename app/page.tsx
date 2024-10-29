@@ -18,6 +18,9 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import ReactDom from "react-dom";
 import ButtonToWrite from "./habits/components/button-make-habit";
+import { useMobileMediaQuery } from "@/hooks/responsive";
+import habitsService from "@/service/habits";
+import { cn } from "@/lib/utils";
 
 export default function IndexPage() {
   const {
@@ -25,14 +28,11 @@ export default function IndexPage() {
   } = React.useContext(NoteContext) as NoteContextType;
   const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
   const [filterTag, setFilterTag] = React.useState<Tag[]>([]);
-  const [showHabitUrgent, setShowHabitUrgent] = React.useState(true);
+  const isMobile = useMobileMediaQuery();
 
-  const itemsQuery = useQuery(
-    [noteService.getAllItems.name, orderList, changesRandomId],
-    async () => {
-      return (await noteService.getAllItems(orderList)).data.data;
-    }
-  );
+  const itemsQuery = useQuery([noteService.getAllItems.name, orderList, changesRandomId], async () => {
+    return (await noteService.getAllItems(orderList)).data.data;
+  });
 
   React.useEffect(() => {
     itemsQuery.refetch();
@@ -40,9 +40,7 @@ export default function IndexPage() {
 
   const renderTopNav = () => {
     return (
-      typeof document !== "undefined" &&
-      document.querySelector("#top-nav") &&
-      ReactDom.createPortal(<TopBar />, document.querySelector("#top-nav")!)
+      typeof document !== "undefined" && document.querySelector("#top-nav") && ReactDom.createPortal(<TopBar />, document.querySelector("#top-nav")!)
     );
   };
 
@@ -61,62 +59,33 @@ export default function IndexPage() {
     return !!i.tags?.find((t) => !!filterTag.find((tag) => tag.id === t.id));
   });
 
-  const callbackHabits = (nt?: Note[]) => {
-    setShowHabitUrgent(!!nt?.length);
-  };
-
   return (
     <SelectToolBarProvider notes={itemsQuery.data as Note[]}>
       {(context) => (
         <>
           {renderTopNav()}
           <div className="container-custom pb-20 pt-3 min-h-screen grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-3 relative">
-            {showHabitUrgent && (
-              <div className="sticky top-0 h-fit">
-                <HabitsAlert callback={callbackHabits} />
-              </div>
-            )}
-            <div className="w-full -order-1">
+            <HabitsAlert>{(component) => <div className={cn(isMobile ? "" : "sticky top-0 h-fit")}>{component}</div>}</HabitsAlert>
+            <div className={cn("w-full", isMobile ? "" : "-order-1")}>
               <div className="w-full sticky z-10 top-0 left-0 bg-white">
                 {context?.selectToolbar?.selectedNotes?.length ? (
                   <SelectToolbar tools={["deleted", "add_folder"]} />
                 ) : (
-                  <ToolBar
-                    filterTag={filterTag}
-                    setFilterTag={setFilterTag}
-                    tags={tags}
-                    order={orderList}
-                    onClickModified={onClickModified}
-                  />
+                  <ToolBar filterTag={filterTag} setFilterTag={setFilterTag} tags={tags} order={orderList} onClickModified={onClickModified} />
                 )}
               </div>
-              <StateRender
-                data={itemsQuery.data}
-                isLoading={itemsQuery.isLoading}
-              >
+              <StateRender data={itemsQuery.data} isLoading={itemsQuery.isLoading}>
                 <StateRender.Data>
                   <div className="w-full my-7">
                     {filteredItems?.length ? (
-                      <LayoutGrid items={filteredItems}>
+                      <LayoutGrid items={filteredItems} minWidthItem={isMobile ? 140 : 250}>
                         {(item) => {
-                          if (item.type === "folder")
-                            return <CardFolder {...item} key={item.id} />;
-                          return (
-                            <CardNote
-                              note={item as Note}
-                              key={item.id}
-                              attachMenu={(note) => (
-                                <SettingNoteDrawer.Attach note={note} />
-                              )}
-                            />
-                          );
+                          if (item.type === "folder") return <CardFolder {...item} key={item.id} />;
+                          return <CardNote note={item as Note} key={item.id} attachMenu={(note) => <SettingNoteDrawer.Attach note={note} />} />;
                         }}
                       </LayoutGrid>
                     ) : (
-                      <ButtonToWrite
-                        href="/write?type=freetext"
-                        title="There is no notes available"
-                      />
+                      <ButtonToWrite href="/write?type=freetext" title="There is no notes available" />
                     )}
                   </div>
                 </StateRender.Data>

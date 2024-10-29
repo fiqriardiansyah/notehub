@@ -18,35 +18,42 @@ export type UseUploadFileProps = {
   accept?: string;
   multiple?: boolean;
   onChange?: (files: FileInfo[]) => void;
+  onError?: (error: string) => void;
 };
 
-export const useUploadFile = ({
-  accept,
-  multiple,
-  onChange,
-}: UseUploadFileProps) => {
+export const MAX_IN_MB = 10;
+export const MAX_SIZE_FILE = 1024 * 1024 * MAX_IN_MB; //10 MB
+
+export const useUploadFile = ({ accept, multiple, onChange, onError }: UseUploadFileProps) => {
   const [files, setFiles] = React.useState<FileInfo[]>([]);
 
   const handleFileChange = async (event: any) => {
     try {
       const files = event.target.files;
+      let calculateSize = 0;
 
       if (files.length > 0) {
-        const listBase64 = await Promise.all(
-          Array.from(files).map((file: any) => toBase64(file))
-        );
-        const fileDetails = Array.from(files).map((file: any, i) => ({
-          id: uuid(),
-          name: file.name,
-          size: file.size,
-          extension: file.name.split(".").pop(),
-          previewUri: file.type.startsWith("image/")
-            ? URL.createObjectURL(file)
-            : null,
-          sizeInMb: (file.size / (1024 * 1024)).toFixed(2),
-          base64: listBase64[i] as string,
-          contentType: getContentType(listBase64[i] as string) as string,
-        }));
+        const listBase64 = await Promise.all(Array.from(files).map((file: any) => toBase64(file)));
+        const fileDetails = Array.from(files).map((file: any, i) => {
+          calculateSize += file.size;
+          return {
+            id: uuid(),
+            name: file.name,
+            size: file.size,
+            extension: file.name.split(".").pop(),
+            previewUri: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
+            sizeInMb: (file.size / (1024 * 1024)).toFixed(2),
+            base64: listBase64[i] as string,
+            contentType: getContentType(listBase64[i] as string) as string,
+          };
+        });
+
+        if (calculateSize > MAX_SIZE_FILE) {
+          if (onError) {
+            onError(`Accumulate file size is maximal ${MAX_IN_MB}MB`);
+          }
+          return;
+        }
 
         if (onChange) {
           onChange(fileDetails);

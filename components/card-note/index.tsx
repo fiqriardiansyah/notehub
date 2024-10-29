@@ -26,17 +26,12 @@ export type CardNoteType<T> = {
 };
 
 const CardNote = <T extends Note>({ note, attachMenu }: CardNoteType<T>) => {
-  const { note: noteContext, setNote } = React.useContext(
-    NoteContext
-  ) as NoteContextType;
+  const { note: noteContext, setNote } = React.useContext(NoteContext) as NoteContextType;
   const isMobile = useMobileMediaQuery();
-  const { selectToolbar, isSelectActive, toggleSelectedNote } =
-    useSelectToolBar();
+  const { selectToolbar, isSelectActive, toggleSelectedNote } = useSelectToolBar();
   const { proceed } = useProcess(note?.id);
 
-  const isSelected = !!selectToolbar?.selectedNotes?.find(
-    (n) => n.id === note?.id
-  );
+  const isSelected = !!selectToolbar?.selectedNotes?.find((n) => n.id === note?.id);
 
   const onClickGear = () => {
     if (proceed) return;
@@ -81,29 +76,17 @@ const CardNote = <T extends Note>({ note, attachMenu }: CardNoteType<T>) => {
       tabIndex={!isSelectActive ? -"1" : 0}
       exit={{ scale: 0.3, opacity: 0, transition: { delay: 0.3 } }}
       style={{
-        opacity: !noteContext?.note
-          ? 1
-          : noteContext.note.id === note?.id
-          ? 1
-          : 0.3,
+        opacity: !noteContext?.note ? 1 : noteContext.note.id === note?.id ? 1 : 0.3,
       }}
       className={cn(
-        "bg-white rounded-xl focus:border-gray-500 active:border-gray-500 p-3 border border-solid border-gray-300",
+        "bg-white rounded-xl focus:border-gray-500 active:border-gray-500 p-2 md:p-3 border border-solid border-gray-300",
         isSelectActive ? "cursor-pointer" : ""
       )}
     >
-      <div
-        className={cn(
-          "flex flex-col gap-3",
-          isSelectActive ? "pointer-events-none" : ""
-        )}
-      >
+      <div className={cn("flex flex-col gap-3", isSelectActive ? "pointer-events-none" : "")}>
         {proceed && <span className="text-[10px] font-medium">{proceed}</span>}
         <div className="flex w-full items-center justify-between gap-2">
-          <Link
-            tabIndex={isSelectActive ? -"1" : 0}
-            href={`/write/${note?.id}`}
-          >
+          <Link tabIndex={isSelectActive ? -"1" : 0} href={`/write/${note?.id}`}>
             <p className="title line-clamp-1 text-base">{note?.title}</p>
           </Link>
           <div className="flex items-center gap-2">

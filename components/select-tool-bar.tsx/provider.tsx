@@ -7,23 +7,14 @@ export type SelectToolBarState = {
 
 export type SelectToolBarContextType = {
   selectToolbar: SelectToolBarState;
-  setSelectToolbar: React.Dispatch<
-    React.SetStateAction<SelectToolBarState | undefined>
-  >;
+  setSelectToolbar: React.Dispatch<React.SetStateAction<SelectToolBarState | undefined>>;
   notes?: Note[];
 };
 
 export const SelectToolBarContext = React.createContext({});
 
-export const SelectToolBarProvider = ({
-  children,
-  notes,
-}: {
-  children: (value: SelectToolBarContextType) => any;
-  notes?: Note[];
-}) => {
-  const [selectToolbar, setSelectToolbar] =
-    React.useState<SelectToolBarState>();
+export const SelectToolBarProvider = ({ children, notes }: { children: (value: SelectToolBarContextType) => any; notes?: Note[] }) => {
+  const [selectToolbar, setSelectToolbar] = React.useState<SelectToolBarState>();
 
   const value = {
     selectToolbar,
@@ -31,24 +22,15 @@ export const SelectToolBarProvider = ({
     notes,
   } as SelectToolBarContextType;
 
-  return (
-    <SelectToolBarContext.Provider value={value}>
-      {children(value)}
-    </SelectToolBarContext.Provider>
-  );
+  return <SelectToolBarContext.Provider value={value}>{children(value)}</SelectToolBarContext.Provider>;
 };
 
 export const useSelectToolBar = () => {
-  const context = React.useContext(
-    SelectToolBarContext
-  ) as SelectToolBarContextType;
+  const context = React.useContext(SelectToolBarContext) as SelectToolBarContextType;
 
+  const items = (context?.notes as (Note | Folder)[])?.filter((i) => i.type !== "folder") || [];
   const isSelectActive = !!context?.selectToolbar?.selectedNotes?.length;
-  const isAllSelected =
-    context?.selectToolbar?.selectedNotes?.length === context?.notes?.length;
-  const items =
-    (context?.notes as (Note | Folder)[])?.filter((i) => i.type !== "folder") ||
-    [];
+  const isAllSelected = context?.selectToolbar?.selectedNotes?.length === items?.length;
 
   const emptiedSelectedNote = () => {
     context.setSelectToolbar((prev) => ({ ...prev, selectedNotes: [] }));
@@ -71,9 +53,7 @@ export const useSelectToolBar = () => {
   };
 
   if (!context) {
-    throw new Error(
-      "useSelectToolBar must be used within a SelectToolBarProvider"
-    );
+    throw new Error("useSelectToolBar must be used within a SelectToolBarProvider");
   }
 
   return {

@@ -1,7 +1,8 @@
+import animationData from "@/asset/animation/mini-convetti.json";
+import { useBridgeEvent } from "@/hooks/use-bridge-event";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
 import Lottie from "react-lottie";
-import animationData from "@/asset/animation/mini-convetti.json";
 
 const defaultOptions = {
   loop: false,
@@ -12,8 +13,7 @@ const defaultOptions = {
   },
 };
 
-export const BUTTON_SUCCESS_ANIMATION_TRIGGER =
-  "button_success_animation_trigger_";
+export const BUTTON_SUCCESS_ANIMATION_TRIGGER = "button_success_animation_trigger_";
 
 export type ButtonSuccessAnimType = React.HTMLProps<HTMLDivElement> & {
   message?: string;
@@ -21,50 +21,43 @@ export type ButtonSuccessAnimType = React.HTMLProps<HTMLDivElement> & {
   children?: any;
 };
 
-export default function ButtonSuccessAnim({
-  children,
-  className,
-  message,
-  id,
-  ...props
-}: ButtonSuccessAnimType) {
+export default function ButtonSuccessAnim({ children, className, message, id, ...props }: ButtonSuccessAnimType) {
   const [show, setShow] = React.useState(false);
 
   const Children = () =>
     React.Children.map(children, (child) =>
       React.cloneElement(child, {
-        className: `${child.props.className} relative z-1`,
+        className: `${child.props.className} z-1`,
       })
     );
 
   React.useEffect(() => {
-    if (show) {
-      setTimeout(() => {
+    let timeout;
+
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      if (show) {
         setShow((prev) => !prev);
-      }, 3000);
-    }
+      }
+    }, 3000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [show]);
 
-  React.useEffect(() => {
-    const handler = (e: any) => {
-      if (show) return;
-      setShow(true);
-    };
+  const handler = () => {
+    setShow(true);
+  };
 
-    window.addEventListener(BUTTON_SUCCESS_ANIMATION_TRIGGER + id, handler);
-    return () => {
-      window.removeEventListener(
-        BUTTON_SUCCESS_ANIMATION_TRIGGER + id,
-        handler
-      );
-    };
-  }, []);
+  useBridgeEvent(BUTTON_SUCCESS_ANIMATION_TRIGGER + id, handler);
 
   return (
-    <div {...props} className={`relative ${className}`}>
+    <div {...props} tabIndex={-1} className={`relative ${className}`}>
       <AnimatePresence>
         {show && (
           <motion.p
+            tabIndex={-1}
             initial={{ scale: 0, rotate: "20deg", y: "50%", opacity: 0 }}
             animate={{
               scale: 1,
@@ -81,21 +74,15 @@ export default function ButtonSuccessAnim({
           </motion.p>
         )}
       </AnimatePresence>
-      <Lottie
-        isStopped={!show}
-        options={defaultOptions}
-        height={120}
-        width={120}
-        style={{
-          margin: 0,
-          position: "absolute",
-          zIndex: 0,
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          pointerEvents: "none",
-        }}
-      />
+      <div tabIndex={-1} className="pointer-events-none absolute m-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+        <AnimatePresence>
+          {show && (
+            <motion.div animate={{ scale: 1 }} exit={{ scale: 0 }} initial={{ scale: 0 }}>
+              <Lottie isStopped={!show} options={defaultOptions} height={120} width={120} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
       <Children />
     </div>
   );

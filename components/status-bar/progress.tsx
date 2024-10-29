@@ -19,11 +19,7 @@ const Component = ({ icon, message }: { icon?: any; message: any }) => {
   );
 };
 
-export const ProgressStatusBarAsProcess = ({
-  process,
-}: {
-  process: Process;
-}) => {
+export const ProgressStatusBarAsProcess = ({ process }: { process: Process }) => {
   const [progress, setProgress] = React.useState(0);
 
   //  USE FOR DEBUG
@@ -48,25 +44,14 @@ export const ProgressStatusBarAsProcess = ({
   //     }
   // }, []);
 
-  useBridgeEvent(
-    UPDATE_PROGRESS_PROCESS + "_" + process.id,
-    (payload: { val: number }) => {
-      setProgress(payload.val);
-    }
-  );
+  useBridgeEvent(UPDATE_PROGRESS_PROCESS + "_" + process.id, (payload: { val: number }) => {
+    setProgress(payload.val);
+  });
 
   return (
     <div className="w-full p-1 bg-gray-100 px-2">
-      {progress !== 100 ? (
-        <span className="text-xs font-medium text-gray-400 m-0 capitalize">
-          {process.nameOfProcess}...
-        </span>
-      ) : null}
-      {progress === 100 ? (
-        <Component message={`${process.nameOfProcess}...`} />
-      ) : (
-        <Progress className="h-[5px] mt-1 w-full" value={progress} />
-      )}
+      {progress !== 100 ? <span className="text-xs font-medium text-gray-400 m-0 capitalize">Uploading files</span> : null}
+      {progress === 100 ? <Component message={`${process.nameOfProcess}...`} /> : <Progress className="h-[5px] mt-1 w-full" value={progress} />}
     </div>
   );
 };

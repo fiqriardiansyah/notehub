@@ -3,8 +3,11 @@
 import TodoListModeEditor, { Todo } from "@/app/write/mode/todolist";
 import ghostAnim from "@/asset/animation/ghost.json";
 import CollabsList from "@/components/common/collabs-list";
+import { CardFile } from "@/components/file/card-file";
+import { CardImage } from "@/components/file/card-image";
 import ListFile from "@/components/file/list-file";
 import ListImage from "@/components/file/list-image";
+import LayoutGrid from "@/components/layout-grid";
 import { CLOSE_SIDE_PANEL } from "@/components/layout/side-panel";
 import OpenSecureNote from "@/components/open-secure-note";
 import StateRender from "@/components/state-render";
@@ -22,10 +25,7 @@ import { useRouter } from "next-nprogress-bar";
 import dynamic from "next/dynamic";
 import React from "react";
 
-const FreetextModeEditor = dynamic(
-  () => import("@/app/write/mode/freetext").then((mod) => mod.default),
-  { ssr: false }
-);
+const FreetextModeEditor = dynamic(() => import("@/app/write/mode/freetext").then((mod) => mod.default), { ssr: false });
 
 export const VIEW_ATTACH_NOTE = "viewAttachNote";
 
@@ -63,8 +63,7 @@ export default function ViewAttachNote() {
   );
 
   const changeTodosMutate = useMutation(async (todos: Todo[]) => {
-    return (await noteService.changeTodos({ noteId: payload!.id, todos })).data
-      .data;
+    return (await noteService.changeTodos({ noteId: payload!.id, todos })).data.data;
   });
 
   const openSecure = () => {
@@ -109,10 +108,7 @@ export default function ViewAttachNote() {
         <h1 className="capitalize">{payload?.title}</h1>
       </div>
       <StateRender
-        data={
-          isSecureNoteQuery.data !== undefined ||
-          isSecureNoteQuery.data !== null
-        }
+        data={isSecureNoteQuery.data !== undefined || isSecureNoteQuery.data !== null}
         isLoading={isSecureNoteQuery.isLoading}
         isError={(isSecureNoteQuery.error as Error)?.message}
       >
@@ -120,11 +116,7 @@ export default function ViewAttachNote() {
           {isSecure ? (
             <OpenSecureNote refetch={openSecure} />
           ) : (
-            <StateRender
-              data={noteDetailMutate.data}
-              isLoading={noteDetailMutate.isLoading}
-              isError={noteDetailMutate.isError}
-            >
+            <StateRender data={noteDetailMutate.data} isLoading={noteDetailMutate.isLoading} isError={noteDetailMutate.isError}>
               <StateRender.Data>
                 {noteDetailMutate.data?.type === "freetext" && (
                   <FreetextModeEditor
@@ -147,34 +139,36 @@ export default function ViewAttachNote() {
                 {noteDetailMutate.data?.imagesUrl?.length ? (
                   <>
                     <div className="h-6"></div>
-                    <ListImage defaultList={noteDetailMutate.data?.imagesUrl} />
+                    <ListImage defaultList={noteDetailMutate.data?.imagesUrl}>
+                      {({ list }) => (
+                        <LayoutGrid items={list} minWidthItem={140}>
+                          {(image) => <CardImage file={image} key={image.id} />}
+                        </LayoutGrid>
+                      )}
+                    </ListImage>
                   </>
                 ) : null}
                 {noteDetailMutate.data?.filesUrl?.length ? (
                   <>
                     <div className="h-6"></div>
-                    <ListFile defaultList={noteDetailMutate.data?.filesUrl} />
+                    <ListFile defaultList={noteDetailMutate.data?.filesUrl}>
+                      {({ list }) => (
+                        <LayoutGrid items={list} minWidthItem={140}>
+                          {(file) => <CardFile file={file} key={file.id} />}
+                        </LayoutGrid>
+                      )}
+                    </ListFile>
                   </>
                 ) : null}
                 <CollabsList noteId={noteDetailMutate.data?.id as string}>
                   {(list) => {
                     if (!list?.length) {
-                      return (
-                        <span className="caption my-10 block">
-                          {`Last edit at ${formatDate(
-                            noteDetailMutate.data?.updatedAt
-                          )}`}
-                        </span>
-                      );
+                      return <span className="caption my-10 block">{`Last edit at ${formatDate(noteDetailMutate.data?.updatedAt)}`}</span>;
                     }
                     return (
                       <span className="caption my-10 block">
-                        {`Edited ${formatDate(
-                          noteDetailMutate.data?.updatedAt
-                        )} By `}
-                        <span className="font-semibold">
-                          {noteDetailMutate.data?.updatedBy}
-                        </span>
+                        {`Edited ${formatDate(noteDetailMutate.data?.updatedAt)} By `}
+                        <span className="font-semibold">{noteDetailMutate.data?.updatedBy}</span>
                       </span>
                     );
                   }}
@@ -188,9 +182,7 @@ export default function ViewAttachNote() {
                 </div>
               </StateRender.Loading>
               <StateRender.Error>
-                <p className="text-red-500">
-                  {(noteDetailMutate.error as Error)?.message}
-                </p>
+                <p className="text-red-500">{(noteDetailMutate.error as Error)?.message}</p>
               </StateRender.Error>
             </StateRender>
           )}
@@ -203,9 +195,7 @@ export default function ViewAttachNote() {
           </div>
         </StateRender.Loading>
         <StateRender.Error>
-          <p className="text-red-500">
-            {(isSecureNoteQuery.error as Error)?.message}
-          </p>
+          <p className="text-red-500">{(isSecureNoteQuery.error as Error)?.message}</p>
         </StateRender.Error>
       </StateRender>
     </motion.div>

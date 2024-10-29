@@ -18,7 +18,7 @@ export default function FloatingProcessStack() {
   };
 
   const className = cn(
-    "bg-white rounded-lg shadow-md z-50 fixed bottom-4 left-4 right-4 sm:right-auto p-2 border border-solid border-gray-300",
+    "bg-white rounded-lg shadow-md z-50 fixed bottom-12 sm:bottom-4 left-4 right-4 sm:right-auto p-2 border border-solid border-gray-300",
     !isMinimize ? "sm:min-w-[250px]" : "w-fit"
   );
 
@@ -27,18 +27,10 @@ export default function FloatingProcessStack() {
     <div className={className}>
       <div className="w-full flex items-center justify-between gap-5">
         <div className="flex gap-1 items-center">
-          {isMinimize && (
-            <Button size="icon-small">
-              {process.filter((p) => p.type === "progress").length}
-            </Button>
-          )}
+          {isMinimize && <Button size="icon-small">{process.filter((p) => p.type === "progress").length}</Button>}
           <p className="text-xs font-medium">Process Queue</p>
         </div>
-        <button
-          onClick={onClickMinimize}
-          className=""
-          title={isMinimize ? "Maximize" : "Minimize"}
-        >
+        <button onClick={onClickMinimize} className="" title={isMinimize ? "Maximize" : "Minimize"}>
           {isMinimize ? <Maximize size={16} /> : <Minimize size={16} />}
         </button>
       </div>

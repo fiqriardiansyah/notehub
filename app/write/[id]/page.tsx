@@ -6,25 +6,15 @@ import ResponsiveTagsListed from "@/components/common/tag-listed";
 import ListImage from "@/components/file/list-image";
 import OpenSecureNote from "@/components/open-secure-note";
 import StateRender from "@/components/state-render";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-} from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NoteContext, NoteContextType } from "@/context/note";
-import {
-  ON_UPDATE_SUCCESS,
-  WriteContext,
-  WriteContextType,
-  WriteStateType,
-} from "@/context/write";
-import { useBridgeEvent } from "@/hooks/use-bridge-event";
+import { ON_UPDATE_SUCCESS, WriteContext, WriteContextType, WriteStateType } from "@/context/write";
+import { fireBridgeEvent, useBridgeEvent } from "@/hooks/use-bridge-event";
 import useProcess from "@/hooks/use-process";
 import useStatusBar from "@/hooks/use-status-bar";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { CreateNote } from "@/models/note";
 import ShowedTags from "@/module/tags/showed-tags";
 import noteService from "@/service/note";
@@ -39,19 +29,13 @@ import { useParams, usePathname } from "next/navigation";
 import React from "react";
 import { v4 as uuid } from "uuid";
 import ListFile from "../../../components/file/list-file";
-import ToolsBar, { ToolsType } from "../components/tool-bar";
+import ToolsBar, { SHOW_ANIMATION_BTN_SAVE_TOOLBAR, ToolsType } from "../components/tool-bar";
 import TodoListModeEditor, { Todo } from "../mode/todolist";
 import TopToolBar from "../components/top-tool-bar";
 
-const FreetextModeEditor = dynamic(
-  () => import("../mode/freetext").then((mod) => mod.default),
-  { ssr: false }
-);
+const FreetextModeEditor = dynamic(() => import("../mode/freetext").then((mod) => mod.default), { ssr: false });
 
-const HabitsModeEditor = dynamic(
-  () => import("../mode/habits").then((mod) => mod.default),
-  { ssr: false }
-);
+const HabitsModeEditor = dynamic(() => import("../mode/habits").then((mod) => mod.default), { ssr: false });
 
 export default function Write() {
   const router = useRouter();
@@ -59,9 +43,7 @@ export default function Write() {
   const pathname = usePathname();
 
   const [_, setStatusBar, resetStatusBar] = useStatusBar();
-  const { dataNote, setDataNote, updateMutate } = React.useContext(
-    WriteContext
-  ) as WriteContextType;
+  const { dataNote, setDataNote, updateMutate } = React.useContext(WriteContext) as WriteContextType;
   const {
     generateChangesId,
     note: { changesRandomId },
@@ -129,9 +111,7 @@ export default function Write() {
   useBridgeEvent(ON_UPDATE_SUCCESS, (payload: { processId: string }) => {
     generateChangesId();
     if (pathname.includes("/write") && payload.processId === id) {
-      window.dispatchEvent(
-        new CustomEvent(BUTTON_SUCCESS_ANIMATION_TRIGGER + "button-save-write")
-      );
+      fireBridgeEvent(BUTTON_SUCCESS_ANIMATION_TRIGGER + SHOW_ANIMATION_BTN_SAVE_TOOLBAR, null);
       noteDetailQuery.mutate();
     }
   });
@@ -191,23 +171,14 @@ export default function Write() {
 
   const excludeTools = () => {
     let excludesSetting = ["folder", "mode"];
-    if (
-      noteDetailQuery.data?.type === "habits" ||
-      dataNote?.modeWrite === "habits"
-    ) {
+    if (noteDetailQuery.data?.type === "habits" || dataNote?.modeWrite === "habits") {
       excludesSetting = [...excludesSetting, "secure", "collabs"];
     }
     if (noteDetailQuery.data?.isSecure || dataNote?.isSecure) {
       excludesSetting.push("collabs");
     }
     if (noteDetailQuery.data?.role === "editor") {
-      excludesSetting = [
-        ...excludesSetting,
-        "delete",
-        "secure",
-        "collabs",
-        "tag",
-      ] as ToolsType[];
+      excludesSetting = [...excludesSetting, "delete", "secure", "collabs", "tag"] as ToolsType[];
     }
 
     return excludesSetting as ToolsType[];
@@ -222,13 +193,7 @@ export default function Write() {
       <div className="container-custom pb-20 min-h-screen bg-white relative">
         <div className="flex flex-row items-center flex-1 sticky top-0 left-0 py-1 bg-white z-20">
           <div className="mr-3">
-            <Button
-              onClick={onClickBack}
-              title="Back"
-              size="icon"
-              variant="ghost"
-              className="!w-10"
-            >
+            <Button onClick={onClickBack} title="Back" size="icon" variant="ghost" className="!w-10">
               <ChevronLeft />
             </Button>
           </div>
@@ -239,13 +204,8 @@ export default function Write() {
             <BreadcrumbList>
               <FolderOpen size={18} />
               <BreadcrumbItem>
-                <Link
-                  href={`/folder/${noteDetailQuery.data?.folderId}`}
-                  passHref
-                >
-                  <BreadcrumbLink>
-                    {noteDetailQuery.data?.folderName}
-                  </BreadcrumbLink>
+                <Link href={`/folder/${noteDetailQuery.data?.folderId}`} passHref>
+                  <BreadcrumbLink>{noteDetailQuery.data?.folderName}</BreadcrumbLink>
                 </Link>
               </BreadcrumbItem>
             </BreadcrumbList>
@@ -274,17 +234,12 @@ export default function Write() {
                 />
                 {dataNote.tags?.length ? (
                   <div className="">
-                    <p className="text-xs text-gray-400 font-light mb-2 w-fit">
-                      Tags
-                    </p>
+                    <p className="text-xs text-gray-400 font-light mb-2 w-fit">Tags</p>
                     {isOwner ? (
                       <ShowedTags className="my-5 sm:!flex-wrap" />
                     ) : (
                       <div className="my-4">
-                        <ResponsiveTagsListed
-                          tags={noteDetailQuery.data?.tags}
-                          size={16}
-                        />
+                        <ResponsiveTagsListed tags={noteDetailQuery.data?.tags} size={16} />
                       </div>
                     )}
                   </div>
@@ -307,25 +262,14 @@ export default function Write() {
                   (asViewer ? (
                     <TodoListModeEditor.AsView todos={todos} />
                   ) : (
-                    <TodoListModeEditor
-                      asEdit
-                      showInfoDefault={false}
-                      defaultTodos={todos}
-                      todos={todos}
-                      onSave={saveWrite}
-                    >
+                    <TodoListModeEditor asEdit showInfoDefault={false} defaultTodos={todos} todos={todos} onSave={saveWrite}>
                       <button ref={saveBtnRef} type="submit">
                         submit
                       </button>
                     </TodoListModeEditor>
                   ))}
                 {dataNote.modeWrite === "habits" && isOwner && (
-                  <HabitsModeEditor
-                    showInfoDefault={false}
-                    note={noteDetailQuery.data}
-                    asEdit
-                    onSave={saveWrite}
-                  >
+                  <HabitsModeEditor showInfoDefault={false} note={noteDetailQuery.data} asEdit onSave={saveWrite}>
                     <button ref={saveBtnRef} type="submit">
                       submit
                     </button>
@@ -336,12 +280,8 @@ export default function Write() {
                     if (isOwner && !list?.length) return null;
                     return (
                       <span className="caption my-10 block">
-                        {`Edited ${formatDate(
-                          noteDetailQuery.data?.updatedAt
-                        )} By `}
-                        <span className="font-semibold">
-                          {noteDetailQuery.data?.updatedBy}
-                        </span>
+                        {`Edited ${formatDate(noteDetailQuery.data?.updatedAt)} By `}
+                        <span className="font-semibold">{noteDetailQuery.data?.updatedBy}</span>
                       </span>
                     );
                   }}
@@ -361,25 +301,25 @@ export default function Write() {
             </div>
           </StateRender.Loading>
           <StateRender.Error>
-            <p className="text-red-500">
-              {(noteDetailQuery.error as Error)?.message}
-            </p>
+            <p className="text-red-500">{(noteDetailQuery.error as Error)?.message}</p>
           </StateRender.Error>
         </StateRender>
       </div>
-      {!noteDetailQuery?.isLoading &&
-        noteDetailQuery.data?.role !== "viewer" &&
-        !isSecure &&
-        !noteDetailQuery.isError && (
-          <div className="flex justify-center fixed sm:absolute z-40 sm:bottom-2 bottom-0 left-0 sm:left-1/2 transform sm:-translate-x-1/2 w-full sm:w-fit sm:bg-white sm:rounded-full sm:shadow-xl">
-            <ToolsBar
-              currentNote={noteDetailQuery.data}
-              excludeSettings={excludeTools()}
-              isLoading={currentProcess?.type === "progress"}
-              save={onSaveClick}
-            />
-          </div>
-        )}
+      {noteDetailQuery.data?.role !== "viewer" && !isSecure && !noteDetailQuery.isError && (
+        <div
+          className={cn(
+            "flex justify-center fixed sm:absolute z-40 sm:bottom-2 bottom-0 left-0 sm:left-1/2 transform sm:-translate-x-1/2 w-full sm:w-fit sm:bg-white sm:rounded-full sm:shadow-xl",
+            noteDetailQuery.isLoading ? "pointer-events-none" : ""
+          )}
+        >
+          <ToolsBar
+            currentNote={noteDetailQuery.data}
+            excludeSettings={excludeTools()}
+            isLoading={currentProcess?.type === "progress"}
+            save={onSaveClick}
+          />
+        </div>
+      )}
     </>
   );
 }
