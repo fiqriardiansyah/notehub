@@ -3,12 +3,14 @@
 import BottomBar from "@/components/navigation-bar/bottom-bar";
 import TopBar from "@/components/navigation-bar/top-bar/mobile";
 import ReactDom from "react-dom";
-import FreetextView from "../share/[id]/components/freetext";
 import { useQuery } from "@tanstack/react-query";
 import noteService from "@/service/note";
 import ListImage from "@/components/file/list-image";
 import StateRender from "@/components/state-render";
 import { Skeleton } from "@/components/ui/skeleton";
+import dynamic from "next/dynamic";
+
+const FreetextView = dynamic(() => import("@/app/share/[id]/components/freetext").then((mod) => mod.default), { ssr: false });
 
 export default function Insight() {
   const content = useQuery([noteService.getOneNote.name, "insight"], async () => {
