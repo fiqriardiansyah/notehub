@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import Checklist from "@editorjs/checklist";
 import EditorJS, { ToolConstructable, ToolSettings } from "@editorjs/editorjs";
 import Header from "@editorjs/header";
@@ -58,27 +59,12 @@ export type EditorProps = {
   placeholder?: string;
 };
 
-export const useEditor = ({
-  tools,
-  data,
-  editorRef,
-  options = {},
-  asEdit,
-  placeholder = "Type anything here...",
-}: EditorProps) => {
+export const useEditor = ({ tools, data, editorRef, options = {}, asEdit, placeholder = "Type anything here..." }: EditorProps) => {
   const [loading, setLoading] = React.useState(true);
-  const [editorInstance, setEditorInstance] = React.useState<
-    EditorJS | undefined
-  >(undefined);
+  const [editorInstance, setEditorInstance] = React.useState<EditorJS | undefined>(undefined);
 
-  const {
-    data: ignoreData,
-    tools: ignoreTools,
-    holder: ignoreHolder,
-    ...editorOptions
-  } = options;
+  const { data: ignoreData, tools: ignoreTools, holder: ignoreHolder, ...editorOptions } = options;
 
-  // initialize EditorJS
   React.useEffect(() => {
     if (asEdit && !data) return;
 
@@ -100,16 +86,13 @@ export const useEditor = ({
 
     initializeEditor();
 
-    // Clean up editor instance on component unmount
     return () => {
       if (editor) {
-        // editor.destroy().catch(() => { /* Handle any cleanup errors */ });
         setEditorInstance(undefined);
       }
     };
   }, [tools, data, asEdit, placeholder]);
 
-  // Pass editor instance back via ref (if provided)
   React.useEffect(() => {
     if (editorInstance && editorRef) {
       editorRef(editorInstance);
@@ -120,12 +103,21 @@ export const useEditor = ({
 };
 
 export const Editor = ({ tools, ...props }: EditorProps) => {
-  const { editorInstance, loading } = useEditor({ ...props, tools });
+  const { loading } = useEditor({ ...props, tools });
+
+  React.useEffect(() => {
+    if (props?.options?.readOnly) {
+      const imgCaption = document.querySelectorAll('div[data-placeholder="Enter a caption"]');
+      if (imgCaption) {
+        imgCaption?.forEach((imgC) => imgC.classList.add("hidden"));
+      }
+    }
+  }, [props?.options?.readOnly, props?.data, loading]);
 
   return (
     <div className="relative">
       {loading && <span>Wait a second ya...</span>}
-      <div id="editor-js" className={loading ? "hidden" : ""}></div>
+      <div id="editor-js" className={cn(loading ? "hidden" : "")}></div>
     </div>
   );
 };

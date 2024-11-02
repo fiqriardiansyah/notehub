@@ -33,12 +33,9 @@ export default function CollaboratePage() {
   const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
   const [filterTag, setFilterTag] = React.useState<Tag[]>([]);
 
-  const projectsQuery = useMutation(
-    [collabService.getMyCollaborateProject.name, orderList, changesRandomId],
-    async () => {
-      return (await collabService.getMyCollaborateProject(orderList)).data.data;
-    }
-  );
+  const projectsQuery = useMutation([collabService.getMyCollaborateProject.name, orderList, changesRandomId], async () => {
+    return (await collabService.getMyCollaborateProject(orderList)).data.data;
+  });
 
   React.useEffect(() => {
     projectsQuery.mutate();
@@ -46,9 +43,7 @@ export default function CollaboratePage() {
 
   const renderTopNav = () => {
     return (
-      typeof document !== "undefined" &&
-      document.querySelector("#top-nav") &&
-      ReactDom.createPortal(<TopBar />, document.querySelector("#top-nav")!)
+      typeof document !== "undefined" && document.querySelector("#top-nav") && ReactDom.createPortal(<TopBar />, document.querySelector("#top-nav")!)
     );
   };
 
@@ -69,43 +64,21 @@ export default function CollaboratePage() {
   return (
     <>
       {renderTopNav()}
-      <div className="container-custom pb-20 min-h-screen pt-3">
-        <ToolBar
-          filterTag={filterTag}
-          setFilterTag={setFilterTag}
-          tags={tags}
-          order={orderList}
-          onClickModified={onClickModified}
-        />
+      <div className="container-custom pb-20 min-h-screen">
+        <div className="w-full sticky z-10 top-0 left-0 bg-white py-2">
+          <ToolBar filterTag={filterTag} setFilterTag={setFilterTag} tags={tags} order={orderList} onClickModified={onClickModified} />
+        </div>
         <div className="h-[20px]"></div>
-        <StateRender
-          data={projectsQuery.data}
-          isLoading={projectsQuery.isLoading}
-        >
+        <StateRender data={projectsQuery.data} isLoading={projectsQuery.isLoading}>
           <StateRender.Data>
             {filteredItems?.length ? (
               <LayoutGrid items={filteredItems}>
-                {(item) => (
-                  <CardNoteCollab
-                    note={item}
-                    key={item.id}
-                    attachMenu={(note) => (
-                      <SettingNoteCollabDrawer.Attach note={note} />
-                    )}
-                  />
-                )}
+                {(item) => <CardNoteCollab note={item} key={item.id} attachMenu={(note) => <SettingNoteCollabDrawer.Attach note={note} />} />}
               </LayoutGrid>
             ) : (
               <div className="min-h-[400px] flex flex-col items-center justify-center">
-                <Lottie
-                  options={defaultOptions}
-                  width={250}
-                  height={250}
-                  style={{ pointerEvents: "none" }}
-                />
-                <h3 className="mt-4">
-                  Join other people's project as collaborators
-                </h3>
+                <Lottie options={defaultOptions} width={250} height={250} style={{ pointerEvents: "none" }} />
+                <h3 className="mt-4">Join other people's project as collaborators</h3>
               </div>
             )}
           </StateRender.Data>

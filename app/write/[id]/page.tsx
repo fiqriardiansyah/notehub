@@ -197,7 +197,7 @@ export default function Write() {
               <ChevronLeft />
             </Button>
           </div>
-          <TopToolBar />
+          {!isSecure ? <TopToolBar /> : null}
         </div>
         {noteDetailQuery.data?.folderName && isOwner && (
           <Breadcrumb>

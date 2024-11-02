@@ -64,10 +64,10 @@ export default function IndexPage() {
       {(context) => (
         <>
           {renderTopNav()}
-          <div className="container-custom pb-20 pt-3 min-h-screen grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-3 relative">
+          <div className="container-custom pb-20 min-h-screen grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-3 relative">
             <HabitsAlert>{(component) => <div className={cn(isMobile ? "" : "sticky top-0 h-fit")}>{component}</div>}</HabitsAlert>
             <div className={cn("w-full", isMobile ? "" : "-order-1")}>
-              <div className="w-full sticky z-10 top-0 left-0 bg-white">
+              <div className="w-full sticky z-10 top-0 left-0 bg-white py-2">
                 {context?.selectToolbar?.selectedNotes?.length ? (
                   <SelectToolbar tools={["deleted", "add_folder"]} />
                 ) : (
