@@ -1,54 +1,133 @@
-# prochampion
+# Notespacehub
 
-🎉 Congratulations, your project was successfully generated with [Create Next Stack](https://www.create-next-stack.com/)!
+### _Your daily tracker notes, todos and habits manager_
 
-To get started, run:
+![Notespacehub](https://ik.imagekit.io/p4ukigs1hrvx/notespacehub-bg_iu22nzgdf.png?updatedAt=1730190310235)
 
-```bash
-npm run dev
-```
+> **Live**: [https://notehub-pi.vercel.app](https://notehub-pi.vercel.app/)
 
-## Final Steps
+---
 
-There are a few final steps that we were not able to perform automatically. We have provided a complete list for you below. You should take care of these before you can start developing your project. You can delete each item from the list as you go along.
+## Table of Contents
 
-### To do:
+- [About the Project](#about-the-project)
+- [Built With](#built-with)
+- [Features](#features)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Contributes](#contributes)
+- [Contact](#contact)
 
-- Integrate Vercel with your repository host for continuous deployments at https://vercel.com/new
+---
 
-## Scripts
+## About the Project
 
-The table below provides names and descriptions of the npm scripts available in this project.
+Welcome to **NotespaceHub**! This app is your all-in-one productivity tool designed to simplify note-taking, task management, and habit tracking. Built for collaboration and personal productivity, NotespaceHub aims to keep you organized and motivated to accomplish more.
 
-Each script is run using `npm run <script-name>`. For example: `npm run dev`.
+![Project Screenshot](https://ik.imagekit.io/p4ukigs1hrvx/notespacehub-ss-1.png?updatedAt=1730545016690)
 
-| Name            | Description                                                                                                                                                                                                                                     |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `prepare`       | The [`prepare` life cycle script](https://docs.npmjs.com/cli/v7/using-npm/scripts#life-cycle-scripts) is used to set up Git pre-commit hooks when people install dependencies, eg. using `npm install`. This script should not be run manually. |
-| `dev`           | Runs the Next.js development server.                                                                                                                                                                                                            |
-| `build`         | Generates a production build.                                                                                                                                                                                                                   |
-| `start`         | Runs the Next.js production server built using `build` script.                                                                                                                                                                                  |
-| `lint`          | Runs [ESLint](https://eslint.org/) to catch linting errors in the source code.                                                                                                                                                                  |
-| `format`        | Formats all source code in the project.                                                                                                                                                                                                         |
-| `format:check`  | Checks the formatting of all code in the project.                                                                                                                                                                                               |
-| `deploy:vercel` | Deploy a preview deployment to Vercel                                                                                                                                                                                                           |
+### Built With
 
-## Technologies
+- [NextJS](https://nextjs.org)
+- [Shadcn UI](https://ui.shadcn.com/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [NestJS](https://nestjs.com/)
+- [PostgresSQL](https://www.postgresql.org/)
+- [Prisma](https://www.prisma.io/)
 
-The table below gives an overview of the technologies used in this project, as well as places to learn more about them.
+## Features
 
-| Name            | Links                                                                                                                                                                                                           |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Next.js         | [Website](https://nextjs.org/) - [Docs](https://nextjs.org/docs) - [Learn Next.js](https://nextjs.org/learn) - [GitHub](https://github.com/vercel/next.js) - [Wikipedia](https://en.wikipedia.org/wiki/Next.js) |
-| React           | [Website](https://reactjs.org/) - [Docs](https://reactjs.org/docs/getting-started.html) - [GitHub](https://github.com/facebook/react) - [Wikipedia](<https://en.wikipedia.org/wiki/React_(JavaScript_library)>) |
-| TypeScript      | [Website](https://www.typescriptlang.org/) - [Docs](https://www.typescriptlang.org/docs/) - [GitHub](https://github.com/microsoft/TypeScript) - [Wikipedia](https://en.wikipedia.org/wiki/TypeScript)           |
-| Tailwind CSS    | [Website](https://tailwindcss.com/) - [Docs](https://tailwindcss.com/docs) - [GitHub](https://github.com/tailwindlabs/tailwindcss)                                                                              |
-| Framer Motion   | [Website](https://www.framer.com/motion/) - [Docs](https://www.framer.com/docs/) - [GitHub](https://github.com/framer/motion)                                                                                   |
-| React Hook Form | [Website](https://react-hook-form.com/) - [Docs](https://react-hook-form.com/get-started) - [GitHub](https://github.com/react-hook-form/react-hook-form)                                                        |
-| React Query     | [Website](https://tanstack.com/query/latest) - [Docs](https://tanstack.com/query/latest/docs/react/overview) - [GitHub](https://github.com/tanstack/query)                                                      |
-| ESLint          | [Website](https://eslint.org/) - [Configuration](https://eslint.org/docs/user-guide/configuring/) - [Rules](https://eslint.org/docs/rules/) - [GitHub](https://github.com/eslint/eslint)                        |
-| Prettier        | [Website](https://prettier.io/) - [Docs](https://prettier.io/docs/en/index.html) - [Options](https://prettier.io/docs/en/options.html) - [GitHub](https://github.com/prettier/prettier)                         |
-| Husky           | [Website](https://typicode.github.io/husky/) - [Docs](https://typicode.github.io/husky/) - [GitHub](https://github.com/typicode/husky)                                                                          |
-| lint-staged     | [Website](https://github.com/okonet/lint-staged) - [GitHub](https://github.com/okonet/lint-staged)                                                                                                              |
-| npm             | [Website](https://www.npmjs.com/) - [Docs](https://docs.npmjs.com/) - [GitHub](https://github.com/npm/cli)                                                                                                      |
-| Vercel          | [Website](https://vercel.com/) - [Docs](https://vercel.com/docs) - [CLI Docs](https://vercel.com/docs/cli)                                                                                                      |
+- **My Space 💻**, on this page you can manage your notes, todos, folder and any.
+- **Collaborate**, you can working on other people project in this page as long as they account you as collaborator either as Editor or Viewer 😘
+- **Write 📝**, there is 3 type of notes so far you can create namely Freetext, Todo and Habits.
+- **Habits**, make your goals from small habits. you can use this feature to track your day, week and monthly task of habits you want to build 🚀
+- other cool feature is coming soon 🔥🔥🔥
+
+## Getting Started
+
+### Prerequisites
+
+To get the project up and running, you'll need to install the following:
+
+- Frontend
+  - Node > v18.18.2
+  - Google Oauth id and secret key
+  - Github Oauth id and secret key
+  - Unsplash App name, **optional**
+- Backend
+  - Node > v18.18.2
+  - PostgreSQL
+  - AWS Account ( S3 for uploading file mechanism )
+  - Email provider ( ex: Gmail, Mailtrap, Mailchimp ), **optional**
+  - Unsplash access key, **optional**
+
+### Installation
+
+#### Frontend
+
+- Clone the repo
+  ```base
+  https://github.com/fiqriardiansyah/notehub.git
+  ```
+- Install
+  ```
+  npm install
+  npm install --force //if command above showing error
+  ```
+- Create .env file, copy inside .env.example and fill with your config
+- Running
+  - Development
+    ```
+    npm run dev
+    ```
+  - Production
+    ```
+    npm run build
+    npm run start
+    ```
+
+#### Backend
+
+- Clone the repo
+  ```
+  https://github.com/fiqriardiansyah/notehub-api.git
+  ```
+- Install
+  ```
+  npm install
+  ```
+- Create .env file, copy inside .env.example and fill with your config
+- Running
+  - Prerequisites
+    - create 'notehub' (make sure db name align with .env DATABASE URL) database in postgresql
+    - running prisma command
+      ```
+      npx prisma migrate dev
+      npx prisma generate
+      ```
+  - Development
+    ```
+    npm run start:dev
+    ```
+  - Production
+    ```
+    npm run build
+    npm run start
+    ```
+
+## Contributes
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
+
+- Fork the Project
+- Create your Feature Branch (git checkout -b feature/YourFeature)
+- Commit your Changes (git commit -m 'feat: Add some feature')
+- Push to the Branch (git push origin feature/YourFeature)
+- Open a Pull Request
+
+## Contact
+
+**Project initiator**: Fiqri Ardiansyah - [fiqriardian92@gmail.com]
+
+GAASSS 🚀🔥🔥

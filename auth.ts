@@ -32,7 +32,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "database",
   },
-  secret: "fiqriardiansyah",
+  secret: process.env.NEXT_PUBLIC_SECRET,
   callbacks: {
     session(params) {
       return {
