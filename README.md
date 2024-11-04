@@ -4,7 +4,7 @@
 
 ![Notespacehub](https://ik.imagekit.io/p4ukigs1hrvx/notespacehub-bg_iu22nzgdf.png?updatedAt=1730190310235)
 
-> **Live**: [https://notehub-pi.vercel.app](https://notehub-pi.vercel.app/)
+> **Live**: [https://www.notespacehub.com/](https://www.notespacehub.com/)
 
 ---
 
@@ -105,6 +105,7 @@ To get the project up and running, you'll need to install the following:
       ```
       npx prisma migrate dev
       npx prisma generate
+      npm run seed
       ```
   - Development
     ```
