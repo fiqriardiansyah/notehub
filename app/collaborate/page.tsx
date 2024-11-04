@@ -10,6 +10,7 @@ import SettingNoteCollabDrawer from "@/components/setting-note-drawer/collabs";
 import StateRender from "@/components/state-render";
 import ToolBar from "@/components/tool-bar";
 import { NoteContext, NoteContextType } from "@/context/note";
+import { useMobileMediaQuery } from "@/hooks/responsive";
 import { Tag } from "@/models/note";
 import collabService from "@/service/collab";
 import { useMutation } from "@tanstack/react-query";
@@ -32,6 +33,7 @@ export default function CollaboratePage() {
   } = React.useContext(NoteContext) as NoteContextType;
   const [orderList, setOrderList] = React.useState<"desc" | "asc">("desc");
   const [filterTag, setFilterTag] = React.useState<Tag[]>([]);
+  const isMobile = useMobileMediaQuery();
 
   const projectsQuery = useMutation([collabService.getMyCollaborateProject.name, orderList, changesRandomId], async () => {
     return (await collabService.getMyCollaborateProject(orderList)).data.data;
@@ -72,7 +74,7 @@ export default function CollaboratePage() {
         <StateRender data={projectsQuery.data} isLoading={projectsQuery.isLoading}>
           <StateRender.Data>
             {filteredItems?.length ? (
-              <LayoutGrid items={filteredItems}>
+              <LayoutGrid items={filteredItems} minWidthItem={isMobile ? 140 : 250}>
                 {(item) => <CardNoteCollab note={item} key={item.id} attachMenu={(note) => <SettingNoteCollabDrawer.Attach note={note} />} />}
               </LayoutGrid>
             ) : (

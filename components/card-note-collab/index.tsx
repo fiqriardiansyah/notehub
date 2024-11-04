@@ -22,17 +22,12 @@ export type CardNoteCollabType<T> = {
   attachMenu?: (note?: T) => any;
 };
 
-export default function CardNoteCollab<T extends CollaborateProject>({
-  note,
-  attachMenu,
-}: CardNoteCollabType<T>) {
+export default function CardNoteCollab<T extends CollaborateProject>({ note, attachMenu }: CardNoteCollabType<T>) {
   const isMobile = useMobileMediaQuery();
 
   const { proceed } = useProcess(note?.id);
 
-  const { note: noteContext, setNote } = React.useContext(
-    NoteContext
-  ) as NoteContextType;
+  const { note: noteContext, setNote } = React.useContext(NoteContext) as NoteContextType;
   const onClickGear = () => {
     setNote((prev) => ({
       ...prev,
@@ -40,11 +35,16 @@ export default function CardNoteCollab<T extends CollaborateProject>({
     }));
   };
 
-  const content = () => {
-    if (note?.type === "freetext") return <FreeTextCardNote note={note} />;
+  const content = React.useMemo(() => {
+    if (note?.type === "freetext")
+      return (
+        <Link href={`/write/${note?.id}`}>
+          <FreeTextCardNote note={note} />
+        </Link>
+      );
     if (note?.type === "todolist") return <TodolistCardNote note={note} />;
     return "";
-  };
+  }, [note]);
 
   const onClickCard = () => {
     fireBridgeEvent(HELPER_PANEL, {
@@ -57,13 +57,9 @@ export default function CardNoteCollab<T extends CollaborateProject>({
     <motion.div
       exit={{ scale: 0.3, opacity: 0, transition: { delay: 0.3 } }}
       style={{
-        opacity: !noteContext?.note
-          ? 1
-          : noteContext.note.id === note?.id
-          ? 1
-          : 0.3,
+        opacity: !noteContext?.note ? 1 : noteContext.note.id === note?.id ? 1 : 0.3,
       }}
-      className="bg-white rounded-xl p-3 flex flex-col gap-3 border border-solid border-gray-500"
+      className="bg-white rounded-xl p-2 md:p-3 focus:border-gray-500 active:border-gray-500 flex flex-col gap-3 border border-solid border-gray-300"
     >
       <div className="flex w-full items-center justify-between gap-2">
         <Link href={`/write/${note?.id}`}>
@@ -72,19 +68,11 @@ export default function CardNoteCollab<T extends CollaborateProject>({
         <div className="flex items-center gap-2">
           {attachMenu && attachMenu(note)}
           {!isMobile ? (
-            <button
-              disabled={!!proceed}
-              onClick={onClickCard}
-              title="Open in panel"
-              className=" cursor-pointer bg-transparent border-none"
-            >
+            <button disabled={!!proceed} onClick={onClickCard} title="Open in panel" className=" cursor-pointer bg-transparent border-none">
               <PanelRight className="text-gray-500" size={16} />
             </button>
           ) : null}
-          <button
-            onClick={onClickGear}
-            className="w-[25px] h-[25px] rounded-full bg-gray-300 cursor-pointer bg-transparent border-none"
-          >
+          <button onClick={onClickGear} className="w-[25px] h-[25px] rounded-full bg-gray-300 cursor-pointer bg-transparent border-none">
             <Image
               title={note?.ownerName || ""}
               height={25}
@@ -96,7 +84,7 @@ export default function CardNoteCollab<T extends CollaborateProject>({
           </button>
         </div>
       </div>
-      {content()}
+      {content}
       <ResponsiveTagsListed tags={note?.tags} size={15} />
       <div className="flex w-full items-center justify-between">
         <span className="caption">{formatDate(note?.updatedAt)}</span>
