@@ -4,11 +4,7 @@ import BottomBar from "@/components/navigation-bar/bottom-bar";
 import StateRender from "@/components/state-render";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import useToggleHideNav from "@/hooks/use-toggle-hide-nav";
 import { easeDefault } from "@/lib/utils";
 import habitsService from "@/service/habits";
@@ -30,15 +26,7 @@ import WeeklyHabits from "./components/weekly-habits";
 import SearchHabits from "./components/search-habits";
 import RunningTimer from "@/components/habits/running-timer";
 import { Card } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMobileMediaQuery } from "@/hooks/responsive";
 
 const tabs = [
@@ -77,12 +65,9 @@ export default function Habits() {
   });
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
-  const habitsToday = useQuery(
-    [habitsService.getUrgentHabit.name, "habitstoday", pickedDate],
-    async () => {
-      return (await habitsService.getUrgentHabit(5)).data.data;
-    }
-  );
+  const habitsToday = useQuery([habitsService.getUrgentHabit.name, "habitstoday", pickedDate], async () => {
+    return (await habitsService.getUrgentHabit(5)).data.data;
+  });
 
   const allHabit = useQuery([habitsService.getHabits.name, "all"], async () => {
     return (await habitsService.getHabits("all")).data.data;
@@ -129,9 +114,7 @@ export default function Habits() {
     router.push("/write?type=habits");
   };
 
-  const onGoingHabits = habitsToday.data?.length
-    ? habitsToday.data[0]?.id
-    : undefined;
+  const onGoingHabits = habitsToday.data?.length ? habitsToday.data[0]?.id : undefined;
 
   return (
     <div className="w-full bg-white min-h-screen pb-20">
@@ -152,12 +135,7 @@ export default function Habits() {
                 transition={{ ease: easeDefault }}
               >
                 <form onSubmit={onSubmitSearch}>
-                  <SearchBar
-                    value={search.query}
-                    onChange={onChangeSearch}
-                    ref={searchInputRef}
-                    placeholder="Search Habit"
-                  />
+                  <SearchBar value={search.query} onChange={onChangeSearch} ref={searchInputRef} placeholder="Search Habit" />
                 </form>
               </motion.div>
             ) : (
@@ -169,17 +147,11 @@ export default function Habits() {
                 transition={{ ease: easeDefault }}
                 className="flex gap-2 items-center"
               >
-                <Button
-                  onClick={() => router.back()}
-                  size="icon"
-                  variant="ghost"
-                  className="!w-10 flex-1"
-                >
+                <Button onClick={() => router.back()} size="icon" variant="ghost" className="!w-10 flex-1">
                   <ChevronLeft />
                 </Button>
                 <p className="m-0 font-semibold">
-                  {pickedDay},{" "}
-                  <span className="text-xs font-normal">{pickedDate}</span> 👋
+                  {pickedDay}, <span className="text-xs font-normal">{pickedDate}</span> 👋
                 </p>
               </motion.div>
             )}
@@ -187,32 +159,21 @@ export default function Habits() {
           <div className="w-fit flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  onClick={onClickSearch}
-                  size="icon"
-                  variant="ghost"
-                  className="!w-10 flex-1"
-                >
+                <Button onClick={onClickSearch} size="icon" variant="ghost" className="!w-10 flex-1">
                   {search.open ? <X size={20} /> : <CiSearch size={20} />}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
-                {search.open ? "Close Search" : "Search Note"}
-              </TooltipContent>
+              <TooltipContent>{search.open ? "Close Search" : "Search Note"}</TooltipContent>
             </Tooltip>
-            <Button onClick={onClickAdd} size="sm" variant="ghost" className="">
-              <Plus size={16} className="mr-2" /> Habit
+            <Button onClick={onClickAdd} size="icon" variant="ghost" className="!rounded">
+              <Plus size={18} />
             </Button>
           </div>
         </div>
       </motion.div>
       {search.open && search.query ? (
         <div className="container-custom mt-10">
-          <SearchHabits
-            query={search.query}
-            habits={allHabit.data}
-            onGoingHabits={onGoingHabits}
-          />
+          <SearchHabits query={search.query} habits={allHabit.data} onGoingHabits={onGoingHabits} />
         </div>
       ) : (
         <>
@@ -220,23 +181,16 @@ export default function Habits() {
             <StateRender.Data>
               {allHabit.data?.length ? (
                 <div
-                  className={`container-custom grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-3 ${
-                    habitsToday.data?.length ? "my-3" : ""
-                  }`}
+                  className={`container-custom grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-3 ${habitsToday.data?.length ? "my-3" : ""}`}
                 >
                   <div className="">
-                    <HabitsUrgent
-                      inPageHabits
-                      onChangeHabit={habitsToday.refetch}
-                    />
+                    <HabitsUrgent inPageHabits onChangeHabit={habitsToday.refetch} />
                     <div className="my-5">
                       <RunningTimer />
                     </div>
                   </div>
                   <div className="">
-                    {habitsToday.data?.length ? (
-                      <p className="text-2xl">Should Do! 💪</p>
-                    ) : null}
+                    {habitsToday.data?.length ? <p className="text-2xl">Should Do! 💪</p> : null}
                     <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3 mt-2">
                       {habitsToday.data?.map((habit, i) => (
                         <ListCardHabit key={habit.id} index={i} habit={habit} />
@@ -263,18 +217,10 @@ export default function Habits() {
                 </SelectContent>
               </Select>
             ) : (
-              <Tabs
-                defaultValue={activeTab}
-                className="sticky top-0 left-0 z-20"
-                onValueChange={onTabChange}
-              >
+              <Tabs defaultValue={activeTab} className="sticky top-0 left-0 z-20" onValueChange={onTabChange}>
                 <TabsList className="!w-full">
                   {tabs?.map((tab) => (
-                    <TabsTrigger
-                      className="!flex-1"
-                      key={tab.value}
-                      value={tab.value}
-                    >
+                    <TabsTrigger className="!flex-1" key={tab.value} value={tab.value}>
                       {tab.label}
                     </TabsTrigger>
                   ))}
@@ -283,18 +229,10 @@ export default function Habits() {
             )}
 
             <div className="flex flex-col mt-2 min-h-[50vh] pb-20">
-              {activeTab === "all" && (
-                <AllHabits onGoingHabits={onGoingHabits} />
-              )}
-              {activeTab === "day" && (
-                <DailyHabits onGoingHabits={onGoingHabits} />
-              )}
-              {activeTab === "weekly" && (
-                <WeeklyHabits onGoingHabits={onGoingHabits} />
-              )}
-              {activeTab === "monthly" && (
-                <MonthlyHabits onGoingHabits={onGoingHabits} />
-              )}
+              {activeTab === "all" && <AllHabits onGoingHabits={onGoingHabits} />}
+              {activeTab === "day" && <DailyHabits onGoingHabits={onGoingHabits} />}
+              {activeTab === "weekly" && <WeeklyHabits onGoingHabits={onGoingHabits} />}
+              {activeTab === "monthly" && <MonthlyHabits onGoingHabits={onGoingHabits} />}
             </div>
           </div>
         </>
