@@ -10,6 +10,7 @@ import Layout from "@/components/layout";
 import "react-circular-progressbar/dist/styles.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { Analytics } from "@vercel/analytics/react";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -36,6 +37,7 @@ export default async function RootLayout({ children }: { children: any }) {
         <meta property="og:description" content="Your tracker daily assistant"></meta>
       </head>
       <body style={{ pointerEvents: "auto" }} className={cn("font-sans antialiased", fontSans.variable)}>
+        <Analytics />
         <SessionProvider session={session} basePath="/api/auth">
           <Provider>
             <Layout>{children}</Layout>
