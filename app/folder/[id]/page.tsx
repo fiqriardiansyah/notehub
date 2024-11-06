@@ -46,9 +46,9 @@ export default function FolderPage() {
   const [filterTag, setFilterTag] = React.useState<Tag[]>([]);
 
   const detailFolderQuery = useQuery(
-    [noteService.getFolderAndContent.name, id, changesRandomId],
+    [noteService.getFolderAndContent.name, id, changesRandomId, orderList],
     async () => {
-      return (await noteService.getFolderAndContent(id as string)).data.data;
+      return (await noteService.getFolderAndContent({ id: id as string, order: orderList })).data.data;
     },
     {
       onSuccess(data) {
@@ -119,12 +119,16 @@ export default function FolderPage() {
     if (addNoteToFolderMutate.isLoading || detailFolderQuery.isLoading) {
       return [...pickNotes.pickedNotes, ...(detailFolderQuery.data?.notes || [])];
     }
-    return detailFolderQuery.data?.notes?.sort((a, b) => {
-      if (orderList === "desc") {
-        return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
-      }
-      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-    });
+    return detailFolderQuery.data?.notes
+      ?.sort((a, b) => {
+        if (orderList === "desc") {
+          return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+        }
+        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      })
+      ?.sort((a, b) => {
+        return a?.isHang === b?.isHang ? 0 : a?.isHang ? -1 : 1;
+      });
   };
 
   const onClickDelete = () => {

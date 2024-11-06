@@ -19,7 +19,6 @@ import React from "react";
 import ReactDom from "react-dom";
 import ButtonToWrite from "./habits/components/button-make-habit";
 import { useMobileMediaQuery } from "@/hooks/responsive";
-import habitsService from "@/service/habits";
 import { cn } from "@/lib/utils";
 
 export default function IndexPage() {

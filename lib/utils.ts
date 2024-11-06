@@ -3,6 +3,7 @@ import { type ClassValue, clsx } from "clsx";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
 import moment from "moment";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
@@ -10,13 +11,14 @@ import themeColor from "tailwindcss/colors";
 
 dayjs.extend(relativeTime);
 dayjs.extend(advancedFormat);
+dayjs.extend(utc);
 
 export const FORMAT_DATE_RETRIEVE = "YYYY-MM-DDTHH:mm:ss.SSSZ";
 export const FORMAT_DATE_SAVE = "YYYY-MM-DD HH:mm:ss.SSS";
 
 export function formatDate(date: any) {
-  const now = dayjs();
-  const givenDate = dayjs(date);
+  const now = dayjs.utc();
+  const givenDate = dayjs.utc(date);
 
   if (now.diff(givenDate, "day") < 1) {
     return givenDate.fromNow(); // e.g., "yesterday at 4pm"
@@ -183,9 +185,7 @@ export function hexToRgba(hex: string, opacity: number) {
     .toString(16)
     .padStart(2, "0");
 
-  return `#${r.toString(16).padStart(2, "0")}${g
-    .toString(16)
-    .padStart(2, "0")}${b.toString(16).padStart(2, "0")}${a}`;
+  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}${a}`;
 }
 
 export const easeDefault = [0.79, 0.14, 0.15, 0.86];
@@ -260,13 +260,7 @@ export const progressCheer = [
   },
 ];
 
-export const calculateShowProgress = ({
-  taskDone,
-  taskLength,
-}: {
-  taskDone: number;
-  taskLength: number;
-}) => {
+export const calculateShowProgress = ({ taskDone, taskLength }: { taskDone: number; taskLength: number }) => {
   const progress = Math.round((taskDone / taskLength) * 100);
   const point = Math.floor(progress / (100 / progressCheer.length));
   const stepPoint = point === 0 ? point : point - 1;

@@ -37,7 +37,7 @@ export default async function RootLayout({ children }: { children: any }) {
         <meta property="og:description" content="Your tracker daily assistant"></meta>
       </head>
       <body style={{ pointerEvents: "auto" }} className={cn("font-sans antialiased", fontSans.variable)}>
-        <Analytics />
+        {process.env.NODE_ENV === "production" && <Analytics />}
         <SessionProvider session={session} basePath="/api/auth">
           <Provider>
             <Layout>{children}</Layout>

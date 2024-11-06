@@ -27,7 +27,7 @@ export default function LayoutGrid<T>({ items, children, minWidthItem = 200, cla
     >
       {({ measureRef }) => (
         <div ref={measureRef} {...props} className={`w-full ${className}`}>
-          <Masonry columnsCount={columns} gutter="10px">
+          <Masonry columnsCount={columns || 1} gutter="10px">
             {items?.map((item, i) => (
               <Measure key={i}>{({ measureRef }) => <div ref={measureRef}>{children && children(item, i)}</div>}</Measure>
             ))}
